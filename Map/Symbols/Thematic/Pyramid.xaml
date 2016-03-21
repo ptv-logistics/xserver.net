@@ -1,0 +1,47 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	x:Class="Ptv.XServer.Controls.Map.Symbols.Pyramid"
+  x:Name="pyramid"
+	Width="10" Height="10">
+	<Grid>		
+		<Grid.Resources>
+	<DrawingBrush x:Key="EllipseBrush" Stretch="Uniform">
+		<DrawingBrush.Drawing>
+			<DrawingGroup>
+				<DrawingGroup.Children>
+					<GeometryDrawing Geometry="F1 M 14.0386,19.1833L 10.2537,2.16618L 0.698991,16.3718L 14.0386,19.1833 Z ">
+						<GeometryDrawing.Brush>
+							<SolidColorBrush Color="{Binding ElementName=pyramid, Path=Color}" />
+						</GeometryDrawing.Brush>
+                        <GeometryDrawing.Pen>
+                            <Pen Thickness="1.33333" LineJoin="Round">
+                                <Pen.Brush>
+                                    <SolidColorBrush Color="{Binding ElementName=pyramid, Path=Stroke}" />
+                                </Pen.Brush>
+                            </Pen>
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+					<GeometryDrawing Geometry="F1 M 20.9178,16.013L 10.27,2.25461L 13.9999,19.1388L 20.9178,16.013 Z ">
+						<GeometryDrawing.Brush>
+							<SolidColorBrush Color="{Binding ElementName=pyramid, Path=LightColor}" />
+						</GeometryDrawing.Brush>
+                        <GeometryDrawing.Pen>
+                            <Pen Thickness="1.33333" LineJoin="Round">
+                                <Pen.Brush>
+                                    <SolidColorBrush Color="{Binding ElementName=pyramid, Path=Stroke}" />
+                                </Pen.Brush>
+                            </Pen>
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+				</DrawingGroup.Children>
+			</DrawingGroup>
+		</DrawingBrush.Drawing>
+	</DrawingBrush>
+	</Grid.Resources>
+		<Canvas Background="{StaticResource EllipseBrush}"></Canvas>
+    </Grid>
+</UserControl>

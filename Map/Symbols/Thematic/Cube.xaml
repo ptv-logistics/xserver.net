@@ -1,0 +1,60 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	x:Class="Ptv.XServer.Controls.Map.Symbols.Cube"
+  x:Name="cube"
+	Width="10" Height="10">
+    <Grid>
+        <Grid.Resources>
+            <DrawingBrush x:Key="EllipseBrush" Stretch="Uniform">
+                <DrawingBrush.Drawing>
+                    <DrawingGroup>
+                        <DrawingGroup.Children>
+                            <GeometryDrawing Geometry="F1 M 0.690473,6.1513L 13.8579,6.1513L 13.8579,19.3187L 0.690473,19.3187L 0.690473,6.1513 Z ">
+                                <GeometryDrawing.Brush>
+                                    <SolidColorBrush Color="{Binding ElementName=cube, Path=Color}" />
+                                </GeometryDrawing.Brush>
+                                <GeometryDrawing.Pen>
+                                    <Pen Thickness="1.33333" LineJoin="Round">
+                                        <Pen.Brush>
+                                            <SolidColorBrush Color="{Binding ElementName=cube, Path=Stroke}" />
+                                        </Pen.Brush>
+                                    </Pen>
+                                </GeometryDrawing.Pen>
+                            </GeometryDrawing>
+                            
+                            <GeometryDrawing Geometry="F1 M 13.9174,6.03213L 20.5905,2.57643L 20.5905,15.863L 13.9174,19.3187L 13.9174,6.03213 Z ">
+                                <GeometryDrawing.Brush>
+                                    <SolidColorBrush Color="{Binding ElementName=cube, Path=LightColor}" />
+                                </GeometryDrawing.Brush>
+                                <GeometryDrawing.Pen>
+                                    <Pen Thickness="1.33333" LineJoin="Round">
+                                        <Pen.Brush>
+                                            <SolidColorBrush Color="{Binding ElementName=cube, Path=Stroke}" />
+                                        </Pen.Brush>
+                                    </Pen>
+                                </GeometryDrawing.Pen>
+                            </GeometryDrawing>
+                            <GeometryDrawing Geometry="F1 M 13.9175,6.14904L 20.5309,2.57644L 7.44722,2.57644L 0.684781,6.14904L 13.9175,6.14904 Z ">
+                                <GeometryDrawing.Brush>
+                                    <SolidColorBrush Color="{Binding ElementName=cube, Path=DarkColor}" />
+                                </GeometryDrawing.Brush>
+                                <GeometryDrawing.Pen>
+                                    <Pen Thickness="1.33333" LineJoin="Round">
+                                        <Pen.Brush>
+                                            <SolidColorBrush Color="{Binding ElementName=cube, Path=Stroke}" />
+                                        </Pen.Brush>
+                                    </Pen>
+                                </GeometryDrawing.Pen>
+                            </GeometryDrawing>
+                        </DrawingGroup.Children>
+                    </DrawingGroup>
+                </DrawingBrush.Drawing>
+            </DrawingBrush>
+        </Grid.Resources>
+        <Canvas Background="{StaticResource EllipseBrush}"></Canvas>
+    </Grid>
+</UserControl>

@@ -1,0 +1,58 @@
+﻿<local:MapGadget x:Class="Ptv.XServer.Controls.Map.Gadgets.ZoomSliderGadget"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:local="clr-namespace:Ptv.XServer.Controls.Map.Gadgets"
+                 x:Name="ZoomSlider"
+                 Margin="3">
+  <local:MapGadget.Resources>
+    <GeometryGroup x:Key="RoundButtonGeometry">
+      <EllipseGeometry Center="10,10" RadiusX="8" RadiusY="8"></EllipseGeometry>
+    </GeometryGroup>
+  </local:MapGadget.Resources>
+  <Grid Opacity="0.6">
+    <Grid.Triggers>
+      <EventTrigger RoutedEvent="Grid.MouseEnter"> <!-- Fade in -->
+        <EventTrigger.Actions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.6" To="1" Duration="0:0:0.3"/>
+            </Storyboard>
+          </BeginStoryboard>
+        </EventTrigger.Actions>
+      </EventTrigger>
+      <EventTrigger RoutedEvent="Grid.MouseLeave"> <!-- Fade out -->
+        <EventTrigger.Actions>
+          <BeginStoryboard>
+            <Storyboard>
+              <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.6" Duration="0:0:0.3"/>
+            </Storyboard>
+          </BeginStoryboard>
+        </EventTrigger.Actions>
+      </EventTrigger>
+    </Grid.Triggers>
+    <Border CornerRadius="5" BorderThickness="2"/>
+    <Grid x:Name="contentGrid" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="3">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+      <Viewbox x:Name="UpViewbox" Grid.Row="0" Grid.Column="0" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Button x:Name="UpButton" Height="20" Width="20" Margin="2" Click="UpButton_Click" Clip="{StaticResource RoundButtonGeometry}">
+          <Path Stroke="{Binding ElementName=UpButton, Path=Foreground}" Data="M0,4 l8,0 M4,0 l0,8" />
+        </Button>
+      </Viewbox>
+      <Viewbox x:Name="SliderViewbox" Grid.Row="1" Grid.Column="0" Stretch="Fill" >
+        <Slider x:Name="zoomSlider" Margin="0" Height="260" Width="25" Value="{Binding ElementName=ZoomSlider, Path=MapZoom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" SmallChange="1" LargeChange="20" Minimum="0" Maximum="190" TickPlacement="TopLeft" TickFrequency="10" Orientation="Vertical" VerticalAlignment="Stretch" />
+      </Viewbox>
+      <Viewbox x:Name="DownViewbox" Grid.Row="2" Grid.Column="0" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Button x:Name="DownButton" Height="20" Width="20" Margin="2" Click="DownButton_Click" Clip="{StaticResource RoundButtonGeometry}">
+          <Path Stroke="{Binding ElementName=DownButton, Path=Foreground}" Data="M0,2 l8,0" />
+        </Button>
+      </Viewbox>
+    </Grid>
+  </Grid>
+</local:MapGadget>

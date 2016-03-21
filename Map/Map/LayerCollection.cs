@@ -1,0 +1,341 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Windows;
+using Ptv.XServer.Controls.Map.Layers;
+using System.ComponentModel;
+
+namespace Ptv.XServer.Controls.Map
+{
+    /// <summary> Interface provided by the WPFClient to open an application specific dialog box to manipulate the
+    /// properties/settings of a layer object. </summary>
+    public interface ILayerSettings
+    {
+        /// <summary> The corresponding object shows a dialog box with all the settings of the specified layer. </summary>
+        /// <param name="layer"> Layer providing the settings, which should be shown in dialog. </param>
+        void ShowSettingsDialog(ILayer layer);
+    }
+
+    /// <summary> Container class managing the set of all available <see cref="ILayer"/> objects. Especially the
+    /// visibility and selection property is managed by this class. </summary>
+    public class LayerCollection : ObservableCollection<ILayer>, ICloneable, IDisposable
+    {
+        #region private variables
+        /// <summary> Dictionary of visibility settings for each layer. </summary>
+        private readonly Dictionary<ILayer, bool> visiblities = new Dictionary<ILayer, bool>();
+        /// <summary> Dictionary of selectability settings for each layer. </summary>
+        private readonly Dictionary<ILayer, bool> selectabilities = new Dictionary<ILayer, bool>();
+        /// <summary> List of maps in which the layers can be shown. </summary>
+        private readonly List<MapView> mapViews = new List<MapView>();
+        /// <summary> The single layer which is exclusive selectable (if existent). </summary>
+        private ILayer exclusiveSelectableLayer;
+        #endregion
+
+        #region public variables
+        /// <summary> Gets or sets the interface, which is used when the settings of a layer have to be shown.
+        /// Due to the fact, that this class does not know the styles of the GUI, the dialogs are deferred to the
+        /// client application implementing such an <see cref="ILayerSettings"/>-interface. </summary>
+        public ILayerSettings LayerSettings { get; set; }
+        #endregion
+
+        #region constructor
+        /// <summary> Initializes a new instance of the <see cref="LayerCollection"/> class. </summary>
+        public LayerCollection()
+        {
+            CollectionChanged += LayerCollection_CollectionChanged;
+        }
+        #endregion
+
+        #region public methods
+        /// <summary> Index operator for the set of layers, accepting the layer name for comparison. </summary>
+        /// <param name="layerName"> Name of the layer to search for. The search is case-sensitive. </param>
+        /// <returns> The layer with the specified name, if available, otherwise null. </returns>
+        public ILayer this[string layerName]
+        {
+            get { return this.FirstOrDefault(layer => layer.Name == layerName); }
+        }
+
+        /// <summary> Insert a layer before another layer. </summary>
+        /// <param name="layer"> The layer. </param>
+        /// <param name="name"> The name of the other layer. </param>
+        public void InsertBefore(ILayer layer, string name)
+        {
+            if (this[name] != null)
+                Insert(IndexOf(this[name]), layer);
+            else
+                Add(layer);
+        }
+
+        /// <summary> Activates the settings dialog, if an <see cref="ILayerSettings"/>-interface is set by the client
+        /// application. </summary>
+        /// <param name="layer"> Layer object, for which the settings have to be shown. </param>
+        public void ShowSettingsDialog(ILayer layer)
+        {
+            if (LayerSettings != null)
+                LayerSettings.ShowSettingsDialog(layer);
+        }
+
+        /// <summary> Connect a <see cref="MapView"/>-object to the called LayerCollection. In return, only visible
+        /// layers are connected to the Map object. </summary>
+        /// <param name="mapView"> Map to connect with the visible layers. </param>
+        public void Register(MapView mapView)
+        {
+            mapView.IsVisibleChanged += mapView_IsVisibleChanged;
+            mapViews.Add(mapView);
+            if (!mapView.IsVisible) return;
+
+            foreach (var layer in this.Where(IsVisible))
+                layer.AddToMapView(mapView);
+        }
+
+        /// <summary> Disconnect a <see cref="MapView"/>-object from the called LayerCollection. In return, all visible
+        /// layers are disconnected from the Map object. </summary>
+        /// <param name="mapView"> Map to disconnect from the visible layers. </param>
+        public void Unregister(MapView mapView)
+        {
+            mapView.IsVisibleChanged -= mapView_IsVisibleChanged;
+            mapViews.Remove(mapView);
+            if (!mapView.IsVisible) return;
+
+            foreach (ILayer layer in this.Where(IsVisible))
+                layer.RemoveFromMapView(mapView);
+        }
+
+        /// <summary> Retrieves for a layer whether it is visible. </summary>
+        /// <param name="layer"> Layer to look for its visibility. </param>
+        /// <returns> True, if the layer exists and it is set to visible, otherwise false. </returns>
+        public bool IsVisible(ILayer layer)
+        {
+            return visiblities.ContainsKey(layer) && visiblities[layer];
+        }
+
+        /// <summary> Set the visibility of the specified layer. </summary>
+        /// <remarks> The visibility is set for all maps added to the LayerCollection via <see cref="Register"/>.
+        /// A layer can not be hidden in one map and shown in another one. </remarks>
+        /// <param name="layer"> Layer of which the visibility should be modified. </param>
+        /// <param name="visible"> Flag indicating the (in-)visibility of the layer. </param>
+        public void SetVisible(ILayer layer, bool visible)
+        {
+            if (IsVisible(layer) == visible)
+                return;
+
+            visiblities[layer] = visible;
+
+            if (visible)
+            {
+                foreach (var mapView in mapViews.Where(mapView => mapView.IsVisible))
+                    layer.AddToMapView(mapView);
+            }
+            else
+            {
+                foreach (var mapView in mapViews.Where(mapView => mapView.IsVisible))
+                    layer.RemoveFromMapView(mapView);
+            }
+
+            if(LayerVisibilityChanged != null)
+                LayerVisibilityChanged(this, new LayerChangedEventArgs(layer.Name));
+        }
+
+        /// <summary> Retrieves if the layer is selectable without taking into account whether it is exclusively
+        /// selectable. </summary>
+        /// <param name="layer"> Layer, which is requested for its selection behavior. </param>
+        /// <returns> True, if the selectable flag is set to true without taking the exclusive selectable flag into
+        /// account.</returns>
+        public bool IsSelectableBase(ILayer layer)
+        {
+            return selectabilities.ContainsKey(layer) && selectabilities[layer];
+        }
+
+        /// <summary> Retrieves if the layer is selectable taking into account whether it is exclusively selectable. </summary>
+        /// <param name="layer"> Layer, which is requested for its selection behavior. </param>
+        /// <returns> True, if the selectable flag is set to true, taking the exclusive selectable flag into account.
+        /// It is false if another layer is marked as exclusive selectable. </returns>
+        public bool IsSelectable(ILayer layer)
+        {
+            return exclusiveSelectableLayer == null ? IsSelectableBase(layer) : layer == exclusiveSelectableLayer;
+        }
+
+        /// <summary> Sets the selectable flag of the layer, if the layer is not exclusive selectable. </summary>
+        /// <param name="layer"> Layer, which should be modified in its selection behavior. </param>
+        /// <param name="selectable"> If the selectable flag is set to true, the layer selects objects. </param>
+        public void SetSelectable(ILayer layer, bool selectable)
+        {
+            if (IsSelectable(layer) == selectable)
+                return;
+
+            selectabilities[layer] = selectable;
+
+            if (LayerSelectabilityChanged != null)
+                LayerSelectabilityChanged(this, new LayerChangedEventArgs(layer.Name));
+        }
+
+        /// <summary> Gets or sets the layer which is the one-and-only selectable layer. </summary>
+        public ILayer ExclusiveSelectableLayer
+        {
+            get { return exclusiveSelectableLayer; }
+            set
+            {
+                if (value != null && !selectabilities.ContainsKey(value))
+                    value = null;
+
+                exclusiveSelectableLayer = value;
+            }
+        }
+        #endregion
+
+        #region events
+
+        public event EventHandler<LayerChangedEventArgs> LayerVisibilityChanged;
+
+        public event EventHandler<LayerChangedEventArgs> LayerSelectabilityChanged;
+
+        #endregion
+
+        #region event handling
+        /// <summary> Event handler for a change of the layer collection. Adds and removes the layers to/from the
+        /// internal collections for selectability and visibility due to the change action. </summary>
+        /// <param name="sender"> Sender of the CollectionChanged event. </param>
+        /// <param name="e"> Event parameters. </param>
+        private void LayerCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Reset:
+                    foreach (var mapView in mapViews.Where(mapView => mapView.IsVisible))
+                        foreach (var layer in visiblities.Keys.Where(IsVisible))
+                            layer.RemoveFromMapView(mapView);
+
+                    foreach (var layer in visiblities.Keys.ToList())
+                    {
+                        selectabilities.Remove(layer);
+                        visiblities.Remove(layer);
+                        layer.PropertyChanged -= layer_PropertyChanged;      
+                    }
+                    break;
+
+                case NotifyCollectionChangedAction.Add:
+                    foreach (ILayer layer in e.NewItems)
+                    {
+                        selectabilities[layer] = true;
+                        visiblities[layer] = true;
+                        layer.PropertyChanged += layer_PropertyChanged;
+
+                        foreach (var mapView in mapViews.Where(mapView => mapView.IsVisible && IsVisible(layer) && LayerNameIsUnique(layer, e.NewStartingIndex, e.NewItems.Count)))
+                            layer.AddToMapView(mapView);
+                    }
+                    break;
+
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (ILayer layer in e.OldItems)
+                    {
+                        foreach (var mapView in mapViews.Where(mapView => mapView.IsVisible && IsVisible(layer)))
+                            layer.RemoveFromMapView(mapView);
+
+                        selectabilities.Remove(layer);
+                        visiblities.Remove(layer);
+                        layer.PropertyChanged -= layer_PropertyChanged;      
+                    }
+                    break;
+            }
+
+            // update z-index
+            for (int i = 0; i < Count; i++)
+                this[i].Priority = i;
+        }
+
+        private void layer_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "Priority" || !(sender is ILayer)) return;
+
+            var layer = sender as ILayer;
+            if(IndexOf(layer) != layer.Priority)
+                Move(IndexOf(layer), layer.Priority);
+        }
+
+        /// <summary> Event handler for a change of the map visibility property. Adds or removes the layers of the map. </summary>
+        /// <param name="sender"> Sender of the IsVisibleChanged event. </param>
+        /// <param name="e"> Event parameters. </param>
+        private void mapView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var mapView = sender as MapView;
+
+            if ((bool)e.NewValue)
+            {
+                foreach (var layer in this.Where(IsVisible))
+                    layer.AddToMapView(mapView);
+            }
+            else
+            {
+                foreach (var layer in this.Where(IsVisible))
+                    layer.RemoveFromMapView(mapView);
+            }
+        }
+        #endregion
+
+        #region private methods
+        /// <summary> Checks if the layer name of the newly added layer already exists in this map. </summary>
+        /// <param name="layer"> The layer for which we want to check the name. </param>
+        /// <param name="newStartingIndex"> Starting index of the newly inserted elements. </param>
+        /// <param name="newItemCount"> Number of newly inserted elements. </param>
+        /// <returns> Flag which shows if the layer name already exists. </returns>
+        private bool LayerNameIsUnique(ILayer layer, int newStartingIndex, int newItemCount)
+        {
+            int occurranceCounter = 0;
+            // Iterates all layers.
+            for (int index = 0; index < Count; index++)
+            {
+                // Counts how many times the name occurs in the newly inserted layers.
+                if ((index >= newStartingIndex) && (index < newStartingIndex + newItemCount))
+                {
+                    if (this[index].Name == layer.Name)
+                        occurranceCounter++;
+
+                    // Only one occurrance in the new layers is allowed.
+                    if (occurranceCounter > 1)
+                        return false;
+                }
+                else
+                {
+                    // Checks if the layer name of the new layer already exists in the old layer names.
+                    if (this[index].Name == layer.Name)
+                        return false;
+                }
+            }
+            return true;
+        }
+        #endregion
+
+        #region ICloneable Members
+        /// <inheritdoc/>
+        public object Clone()
+        {
+            var clone = new LayerCollection();
+            foreach (var layer in this)
+                clone.Add(layer);
+
+            return clone;
+        }
+        #endregion
+
+        #region IDisposable Members
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            foreach (var layer in this)
+            {
+                layer.PropertyChanged -= layer_PropertyChanged;
+                if (layer is IDisposable)
+                    (layer as IDisposable).Dispose();
+            }
+        }
+        #endregion
+    }
+
+    public class LayerChangedEventArgs : EventArgs
+    {
+        public LayerChangedEventArgs(string layerName) { LayerName = layerName; }
+        public virtual string LayerName { get; private set; }
+    }
+}

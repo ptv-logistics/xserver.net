@@ -1,0 +1,416 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{79128A3A-4886-43F5-8554-5150D77ED257}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Ptv.XServer.Controls.Map</RootNamespace>
+    <AssemblyName>Ptv.XServer.Controls.Map</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SupportedCultures>en;de</SupportedCultures>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
+    <DocumentationFile>bin\Debug\Ptv.XServer.Controls.Map.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Ptv.XServer.Controls.Map.XML</DocumentationFile>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="ReachFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Printing" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="UIAutomationProvider">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Gadgets\NavigationGadget.xaml.cs">
+      <DependentUpon>NavigationGadget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Gadgets\WatermarkControl.xaml.cs">
+      <DependentUpon>WatermarkControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Layers\Shapes\MapIcon.cs" />
+    <Compile Include="Layers\Shapes\MapPolylineBase.cs" />
+    <Compile Include="Layers\Shapes\MapShape.cs" />
+    <Compile Include="Layers\TiledLayer.cs" />
+    <Compile Include="Layers\UntiledLayer.cs" />
+    <Compile Include="Layers\ViewportBeginChangedWeakEventManager.cs" />
+    <Compile Include="Layers\ViewportEndChangedWeakEventManager.cs" />
+    <Compile Include="Layers\ViewportWhileChangedWeakEventManager.cs" />
+    <Compile Include="Layers\WmsLayer.cs" />
+    <Compile Include="Map\GlobalOptions.cs" />
+    <Compile Include="Map\IMap.cs" />
+    <Compile Include="Map\LayerCollection.cs" />
+    <Compile Include="Map\MapRectangle.cs" />
+    <Compile Include="Symbols\LightenColorExtension.cs" />
+    <Compile Include="Symbols\Misc\Crosshair.xaml.cs">
+      <DependentUpon>Crosshair.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symbols\Thematic\Truck.xaml.cs">
+      <DependentUpon>Truck.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symbols\Thematic\Ball.xaml.cs">
+      <DependentUpon>Ball.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symbols\Thematic\Cube.xaml.cs">
+      <DependentUpon>Cube.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symbols\Thematic\Diamond.xaml.cs">
+      <DependentUpon>Diamond.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symbols\Thematic\Hexagon.xaml.cs">
+      <DependentUpon>Hexagon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symbols\Thematic\Pentagon.xaml.cs">
+      <DependentUpon>Pentagon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symbols\Thematic\Pin.xaml.cs">
+      <DependentUpon>Pin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symbols\Thematic\Pyramid.xaml.cs">
+      <DependentUpon>Pyramid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symbols\Thematic\Star.xaml.cs">
+      <DependentUpon>Star.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symbols\Thematic\TriangleDown.xaml.cs">
+      <DependentUpon>TriangleDown.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Symbols\Thematic\TriangleUp.xaml.cs">
+      <DependentUpon>TriangleUp.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TileProviders\BingTiledProvider.cs" />
+    <Compile Include="TileProviders\IXserver.cs" />
+    <Compile Include="TileProviders\PtvAjaxTiledProvider.cs" />
+    <Compile Include="TileProviders\RemoteTiledProvider.cs" />
+    <Compile Include="TileProviders\XmapTiledProvider.cs" />
+    <Compile Include="TileProviders\XmapTiledProviderBase.cs" />
+    <Compile Include="TileProviders\XMapWSServiceImpl.cs" />
+    <Compile Include="TileProviders\Xserver.cs" />
+    <Compile Include="Tools\CohenSutherlandClipping.cs" />
+    <Compile Include="Tools\LineReductionClipping.cs" />
+    <Compile Include="Gadgets\DimmerGadget.xaml.cs">
+      <DependentUpon>DimmerGadget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Gadgets\MagnifierMapView.cs" />
+    <Compile Include="Gadgets\OverviewMapView.cs" />
+    <Compile Include="Gadgets\ZoomSliderGadget.xaml.cs">
+      <DependentUpon>ZoomSliderGadget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Layers\ILayer.cs" />
+    <Compile Include="Gadgets\ILayerGeoSearch.cs" />
+    <Compile Include="Gadgets\CoordinatesGadget.xaml.cs">
+      <DependentUpon>CoordinatesGadget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Gadgets\CopyrightGadget.xaml.cs">
+      <DependentUpon>CopyrightGadget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Gadgets\LayersGadget.xaml.cs">
+      <DependentUpon>LayersGadget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Gadgets\MagnifierMap.xaml.cs">
+      <DependentUpon>MagnifierMap.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Gadgets\MapGadget.cs" />
+    <Compile Include="Gadgets\OverviewMap.xaml.cs">
+      <DependentUpon>OverviewMap.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Gadgets\ScaleGadget.xaml.cs">
+      <DependentUpon>ScaleGadget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\GeoTransform.cs" />
+    <Compile Include="Layers\BaseLayer.cs" />
+    <Compile Include="Canvases\MapCanvas.cs" />
+    <Compile Include="Layers\ShapeLayer.cs" />
+    <Compile Include="Map\MapView.xaml.cs">
+      <DependentUpon>MapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Map\WpfMap.xaml.cs">
+      <DependentUpon>WpfMap.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Map\Map.cs" />
+    <Compile Include="Gadgets\PanAndZoom.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\Logging.cs" />
+    <Compile Include="Tools\MapLocalizer.cs" />
+    <Compile Include="Tools\ObservableDictionary.cs" />
+    <Compile Include="Tools\Reprojection\ArgbImage.cs" />
+    <Compile Include="Tools\Reprojection\ArgbImageUtilities.cs" />
+    <Compile Include="Tools\Reprojection\MapService.cs" />
+    <Compile Include="Tools\Reprojection\Reprojection.cs" />
+    <Compile Include="Tools\Reprojection\ReprojectionService.cs" />
+    <Compile Include="Tools\Reprojection\WmsMapService.cs" />
+    <Compile Include="Tools\TileCache.cs" />
+    <Compile Include="TileProviders\TileExceptionHandler.cs" />
+    <Compile Include="Tools\ImageTools.cs" />
+    <Compile Include="Tools\Reordering\EasingFake.cs" />
+    <Compile Include="Tools\Reordering\Extensions.cs" />
+    <Compile Include="Tools\Reordering\GridLengthAnimation.cs" />
+    <Compile Include="Tools\Reordering\GridReordering.cs" />
+    <Compile Include="Tools\Reordering\GridRow.cs" />
+    <Compile Include="Tools\Reordering\PreviewAdorner.cs" />
+    <Compile Include="Tools\ThreadPool.cs" />
+    <Compile Include="Tools\WkbToGdi.cs" />
+    <Compile Include="Tools\WkbToWpf.cs" />
+    <Compile Include="Tools\WkbTypes.cs" />
+    <Compile Include="Tools\WrappingStream.cs" />
+    <Compile Include="Tools\XmapMetaInfo.cs" />
+    <Compile Include="Tools\Tools.cs" />
+    <Compile Include="Tools\MemoryCache.cs" />
+    <Compile Include="Tools\MemoryCacheMultiThreaded.cs" />
+    <Compile Include="Tools\TileBasedLineClusterer.cs" />
+    <Compile Include="Tools\TileBasedPointClusterer.cs" />
+    <Compile Include="Tools\TransformFactory.cs" />
+    <Compile Include="Map\FormsMap.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Layers\XmapLayerFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Gadgets\CoordinatesGadget.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Gadgets\CopyrightGadget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Gadgets\DimmerGadget.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Gadgets\NavigationGadget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Gadgets\LayersGadget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Gadgets\MagnifierMap.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Gadgets\OverviewMap.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Gadgets\ScaleGadget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Gadgets\WatermarkControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Gadgets\ZoomSliderGadget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Map\MapView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Map\WpfMap.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Themes\PTVBlack.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Themes\PTVBlue.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Themes\PTVDefault.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Themes\PTVGreen.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Themes\PTVSilver.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Symbols\Misc\Crosshair.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Symbols\Thematic\Truck.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Symbols\Thematic\Ball.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Symbols\Thematic\Cube.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Symbols\Thematic\Diamond.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Symbols\Thematic\Hexagon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Symbols\Thematic\Pentagon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Symbols\Thematic\Pin.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Symbols\Thematic\Pyramid.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Symbols\Thematic\Star.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Symbols\Thematic\TriangleDown.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Symbols\Thematic\TriangleUp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Aerials.png" />
+    <Resource Include="Resources\Background.png" />
+    <Resource Include="Resources\Labels.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Strings.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Strings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Overview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\LayerDefault.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Eye-open_16.png" />
+    <Resource Include="Resources\Select_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Dim_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Select_16_grey.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Dim_16_grey.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Eye-open_16_grey.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WpfMap.Icon.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\POI.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\RoadEditor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Projections\Projections\Projections.csproj">
+      <Project>{5f7a6491-2f19-4d4c-9ee3-b5f6a884831e}</Project>
+      <Name>Projections</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

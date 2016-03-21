@@ -1,0 +1,12 @@
+﻿<UserControl Background="Transparent"
+             x:Class="Ptv.XServer.Controls.Map.MapView" 
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Focusable="True">
+  <Grid x:FieldModifier="public" x:Name="Layers">
+    <Canvas Canvas.ZIndex="256" x:FieldModifier="public" x:Name="TopPaneCanvas" />
+    <Canvas Canvas.ZIndex="128" x:FieldModifier="public" x:Name="ForePaneCanvas" />
+    <Canvas Canvas.ZIndex="64" x:FieldModifier="public" x:Name="GeoCanvas" />
+    <Canvas Canvas.ZIndex="32" x:FieldModifier="public" x:Name="BackPaneCanvas" />
+  </Grid>
+</UserControl>

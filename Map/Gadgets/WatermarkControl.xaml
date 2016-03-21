@@ -1,0 +1,13 @@
+﻿<UserControl x:Class="Ptv.XServer.Controls.Map.Gadgets.WatermarkControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Canvas.ZIndex="1024"
+             IsHitTestVisible="False">
+  <Viewbox>
+    <TextBlock Text="Demo" Opacity=".4" FontSize="48" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Center">
+      <TextBlock.RenderTransform>
+        <RotateTransform CenterX="70" CenterY="40" Angle="30"></RotateTransform>
+      </TextBlock.RenderTransform>
+    </TextBlock>
+  </Viewbox>
+</UserControl>

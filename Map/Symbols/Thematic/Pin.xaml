@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="Ptv.XServer.Controls.Map.Symbols.Pin"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             x:Name="pin"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Viewbox>
+            <Grid Width="21.3333" Height="21.3333">
+                <Canvas>
+                    <Path Canvas.Left="12.2768" Canvas.Top="12.2535" Stretch="Fill" Data="F1 M 14.1726,12.2535C 14.1726,12.2535 15.3601,13.4618 17.7559,16.6285C 20.1518,19.7951 21.4018,21.3785 21.4018,21.3785C 21.4018,21.3785 17.5268,18.5868 15.7143,17.1076C 13.9018,15.6285 12.2768,14.1076 12.2768,14.1076L 14.1726,12.2535 Z ">
+                        <Path.Fill>
+                            <LinearGradientBrush StartPoint="0.853553,0.146447" EndPoint="0.146446,0.853553">
+                                <LinearGradientBrush.GradientStops>
+                                    <GradientStop Color="#FF000000" Offset="0.384259" />
+                                    <GradientStop Color="#FFFFFFFF" Offset="0.652778" />
+                                </LinearGradientBrush.GradientStops>
+                            </LinearGradientBrush>
+                        </Path.Fill>
+                    </Path>
+                    <Path Canvas.Left="0.708064" Canvas.Top="0.855592" Stretch="Fill" Data="F1 M 4.1625,4.1493C 7.87084,0.371517 8.499,0.322903 8.80455,1.62846C 9.1101,2.93402 9.56528,5.09374 9.56528,5.09374L 14.5653,7.09374C 14.5653,7.09374 15.3986,7.53818 15.4542,8.56596C 15.5097,9.59374 15.2042,11.3437 13.2319,13.2882C 11.2597,15.2326 9.56528,15.566 8.5375,15.3993C 7.50972,15.2326 7.56528,15.1771 7.09306,14.4549C 6.62083,13.7326 4.48195,9.78818 4.48195,9.78818C 4.48195,9.78818 2.34622,9.08679 1.26288,8.58679C 0.17955,8.08679 0.454169,7.92707 4.1625,4.1493 Z ">
+                        <Path.Fill>
+                            <LinearGradientBrush StartPoint="0.630812,-0.104265" EndPoint="1.1441,-0.104265">
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TransformGroup>
+                                        <SkewTransform CenterX="0.630812" CenterY="-0.104265" AngleX="0.666945" AngleY="0" />
+                                        <RotateTransform CenterX="0.630812" CenterY="-0.104265" Angle="45.3335" />
+                                    </TransformGroup>
+                                </LinearGradientBrush.RelativeTransform>
+                                <LinearGradientBrush.GradientStops>
+                                    <GradientStop Color="{Binding ElementName=pin, Path=DarkColor}" Offset="0.152778" />
+                                    <GradientStop Color="{Binding ElementName=pin, Path=Color}" Offset="1" />
+                                </LinearGradientBrush.GradientStops>
+                            </LinearGradientBrush>
+                        </Path.Fill>
+                    </Path>
+                    <Path Canvas.Left="-0.000176095" Canvas.Top="-0.0934018" Stretch="Fill" Data="F1 M 8.2158,0.498047C 9.43244,1.71469 8.71192,4.40777 6.60646,6.51323C 4.501,8.61869 1.80791,9.33922 0.59127,8.12258C -0.625368,6.90594 0.0951619,4.21285 2.20062,2.10739C 4.30608,0.00193214 6.99916,-0.718594 8.2158,0.498047 Z ">
+                        <Path.Fill>
+                            <LinearGradientBrush StartPoint="0.0876122,0.950756" EndPoint="1.30949,0.950756">
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TransformGroup>
+                                        <SkewTransform CenterX="0.0876122" CenterY="0.950756" AngleX="5.03763" AngleY="0" />
+                                        <RotateTransform CenterX="0.0876122" CenterY="0.950756" Angle="-47.5452" />
+                                    </TransformGroup>
+                                </LinearGradientBrush.RelativeTransform>
+                                <LinearGradientBrush.GradientStops>
+                                    <GradientStop Color="{Binding ElementName=pin, Path=DarkColor}" Offset="0.12037" />
+                                    <GradientStop Color="{Binding ElementName=pin, Path=LightColor}" Offset="1" />
+                                </LinearGradientBrush.GradientStops>
+                            </LinearGradientBrush>
+                        </Path.Fill>
+                    </Path>
+                    <Path Canvas.Left="0.787478" Canvas.Top="0.742783" Stretch="Fill" Data="F1 M 7.3656,1.21721C 8.34062,2.19223 7.76467,4.34899 6.07917,6.03448C 4.39368,7.71997 2.23692,8.29592 1.2619,7.32091C 0.28689,6.3459 0.862845,4.18913 2.54833,2.50364C 4.23383,0.818148 6.39059,0.242195 7.3656,1.21721 Z ">
+                        <Path.Fill>
+                            <LinearGradientBrush StartPoint="0.782779,0.716393" EndPoint="1.49493,0.716393">
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TransformGroup>
+                                        <SkewTransform CenterX="0.782779" CenterY="0.716393" AngleX="-5.02686" AngleY="0" />
+                                        <RotateTransform CenterX="0.782779" CenterY="0.716393" Angle="217.425" />
+                                    </TransformGroup>
+                                </LinearGradientBrush.RelativeTransform>
+                                <LinearGradientBrush.GradientStops>
+                                    <GradientStop Color="{Binding ElementName=pin, Path=DarkColor}" Offset="0.208333" />
+                                    <GradientStop Color="{Binding ElementName=pin, Path=LightColor}" Offset="0.953704" />
+                                </LinearGradientBrush.GradientStops>
+                            </LinearGradientBrush>
+                        </Path.Fill>
+                    </Path>
+                </Canvas>
+            </Grid>
+        </Viewbox>
+    </Grid>
+</UserControl>

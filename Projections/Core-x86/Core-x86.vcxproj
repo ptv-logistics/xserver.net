@@ -1,0 +1,270 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D0CBB706-09E0-4517-BA92-B1D28094D600}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Proj4Core</RootNamespace>
+    <ProjectName>Core-x86</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IntDir>$(Configuration)\</IntDir>
+    <OutDir>$(Configuration)\</OutDir>
+    <TargetName>Proj.4-Core.x86d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IntDir>$(Configuration)\</IntDir>
+    <OutDir>$(Configuration)\</OutDir>
+    <TargetName>Proj.4-Core.x86</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;PROJ4CORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\3rd Party\proj-4.8.0\src</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>..\Core-x64\Core.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;PROJ4CORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\3rd Party\proj-4.8.0\src</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <FloatingPointModel>Precise</FloatingPointModel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ModuleDefinitionFile>..\Core-x64\Core.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\aasincos.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\adjlon.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\bch2bps.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\bchgen.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\biveval.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\dmstor.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\emess.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\gen_cheb.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\geocent.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\geod_for.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\geod_inv.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\geod_set.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\mk_cheby.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\nad_cvt.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\nad_init.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\nad_intr.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_aea.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_aeqd.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_airy.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_aitoff.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_apply_gridshift.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_apply_vgridshift.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_august.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_auth.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_bacon.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_bipc.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_boggs.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_bonne.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_cass.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_cc.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_cea.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_chamb.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_collg.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_crast.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_ctx.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_datums.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_datum_set.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_denoy.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_deriv.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_eck1.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_eck2.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_eck3.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_eck4.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_eck5.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_ellps.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_ell_set.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_eqc.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_eqdc.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_errno.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_factors.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_fahey.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_fouc_s.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_fwd.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_gall.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_gauss.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_geocent.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_geos.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_gins8.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_gnom.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_gn_sinu.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_goode.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_gridinfo.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_gridlist.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_gstmerc.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_hammer.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_hatano.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_healpix.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_igh.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_imw_p.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_init.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_initcache.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_inv.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_isea.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_krovak.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_labrd.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_laea.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_lagrng.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_larr.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_lask.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_latlong.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_lcc.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_lcca.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_list.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_log.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_loxim.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_lsat.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_malloc.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_mbtfpp.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_mbtfpq.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_mbt_fps.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_merc.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_mill.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_mlfn.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_mod_ster.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_moll.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_msfn.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_mutex.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_natearth.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_nell.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_nell_h.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_nocol.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_nsper.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_nzmg.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_ob_tran.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_ocea.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_oea.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_omerc.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_open_lib.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_ortho.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_param.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_phi2.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_poly.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_pr_list.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_putp2.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_putp3.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_putp4p.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_putp5.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_putp6.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_qsfn.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_release.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_robin.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_rpoly.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_sconics.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_somerc.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_stere.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_sterea.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_strerrno.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_sts.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_tcc.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_tcea.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_tmerc.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_tpeqd.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_transform.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_tsfn.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_units.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_urm5.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_urmfps.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_utils.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_vandg.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_vandg2.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_vandg4.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_wag2.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_wag3.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_wag7.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_wink1.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\PJ_wink2.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\pj_zpoly1.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\proj.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\proj_etmerc.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\proj_mdist.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\proj_rouss.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\p_series.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\rtodms.c" />
+    <ClCompile Include="..\3rd Party\proj-4.8.0\src\vector1.c" />
+    <ClCompile Include="..\Core-x64\Core.cpp" />
+    <ClCompile Include="..\Core-x64\dllmain.cpp" />
+    <ClCompile Include="..\Core-x64\stdafx.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Core-x64\Core.def" />
+    <None Include="..\Core-x64\ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Core-x64\Core.h" />
+    <ClInclude Include="..\Core-x64\resource.h" />
+    <ClInclude Include="..\Core-x64\stdafx.h" />
+    <ClInclude Include="..\Core-x64\targetver.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Core-x86.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

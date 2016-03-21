@@ -1,0 +1,50 @@
+<html>
+<head>
+	<title>PTV xServer .Net - 3rd Party Licenses</title>
+	<script type="text/javascript">
+		/*
+		 * core licese data:
+		 *
+		 * - proj  project name
+		 * - home  project home
+		 * - usge  project usage
+		 * - licn  license name
+		 * - licf  license file
+	     */
+    	var licenses = [
+    		{ proj:"Silverlight Toolkit", home:"http://silverlight.codeplex.com/", usge:"Core - Map Themes", licn:"Microsoft Public License", licf:"Ms-PL.txt" },
+	    	{ proj:"PROJ.4", home:"https://trac.osgeo.org/proj/", usge:"Core - Projections", licn:"MIT License", licf:"PROJ.4.txt" },
+	    	{ proj:"MapServer", home:"http://mapserver.org", usge:"Core - Projections", licn:"MIT License", licf:"MapServer.txt" },
+        	{ proj:"SharpMap", home:"http://sharpmap.codeplex.com/", usge:"Demo - Shapefile Demo", licn:"GNU Lesser General Public License, v2.1", licf:"lgpl-2.1.txt" },
+	        { proj:"Proj.Net", home:"http://projnet.codeplex.com/", usge:"Demo - Shapefile Demo", licn:"GNU Lesser General Public License, v2.1", licf:"lgpl-2.1.txt" },
+        	{ proj:"NetTopologySuite", home:"http://code.google.com/p/nettopologysuite/", usge:"Demo - Shapefile Demo", licn:"GNU Lesser General Public License, v3.0", licf:"lgpl-3.0.txt" },
+	        { proj:"Aviad.WPF.Controls.AutoCompleteTextBox", home:"http://www.codeproject.com/Articles/44920/A-Reusable-WPF-Autocomplete-TextBox", usge:"Demo - Geocoding Demo", licn:"The Code Project Open License, v1.02", licf:"CPOL.htm" }
+    	];
+	</script>
+	<Style>
+		body, p, td, th { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11pt; }
+		body { background-color: #FFF; color: #000; }
+		h1 { font-size: 15pt; color:black, font-weight: bold }
+		table, td, th { border-color: #000; border-style: solid; }
+		table { width: 100%; border-width: 0 0 1px 1px; border-spacing: 0; border-collapse: collapse; }
+		td, th { text-align: left; margin: 0; padding: 4px; border-width: 1px 1px 0 0; background-color: #FFC; }
+		th { background-color: #CCC; }
+	</style>
+</head>
+<body>
+	<h1>PTV xServer .Net - 3rd Party Licenses</h1>
+	<p>Portions of <i>PTV xServer .Net</i>, mainly the code samples provided, incorporate software taken from other
+	software projects. Those projects and their licenses are:<br/>&nbsp;<br/>
+	<table cellspacing="0px">
+	<tr><th>Project</th><th>Usage</th><th>License<sup>*</sup></th><tr>
+	<script type="text/javascript">
+		for (var i=0; i<licenses.length; ++i) {
+		  document.write("<tr><td><a href='" + licenses[i].home + "'>" +
+		  	licenses[i].proj + "</a></td><td>" + licenses[i].usge + "</td><td>" +
+		  	"<a href='" + licenses[i].licf + "'>" + licenses[i].licn + "</a></td></tr>\n");
+		}
+	</script>
+	</table><br/>
+	<sup>*</sup>The corresponding licenses files should have been provided along with this page.</p>
+</body>
+

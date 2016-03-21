@@ -1,0 +1,23 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing" 
+	mc:Ignorable="d"
+	x:Class="Ptv.XServer.Controls.Map.Symbols.Pentagon"
+  x:Name="pentagon"
+	Width="10" Height="10">
+	<Grid>
+        <Path Data="M8.0901,0 0,5.8778 3.0875,15.3884 13.0927,15.3884 16.1803,5.8778 8.0901,0" Stretch="Fill" StrokeLineJoin="Round" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
+              VerticalAlignment="Bottom">
+			<Path.Fill>
+				<SolidColorBrush Color="{Binding ElementName=pentagon, Path=Color}" />
+			</Path.Fill>
+            <Path.Stroke>
+                <SolidColorBrush Color="{Binding ElementName=pentagon, Path=Stroke}" />
+            </Path.Stroke>
+
+        </Path>
+	</Grid>
+</UserControl>

@@ -1,0 +1,10 @@
+EPSG database for PROJ.4 was taken from a binary 
+MapServer/GDAL release package downloaded here: 
+
+http://www.gisinternals.com/sdk/PackageList.aspx?file=release-1600-x64-gdal-mapserver.zip
+
+EPSG database file:
+
+<release-1600-x64-gdal-mapserver.zip>/bin/proj/SHARE/epsg
+
+

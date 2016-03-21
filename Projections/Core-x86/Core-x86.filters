@@ -1,0 +1,486 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Proj.4">
+      <UniqueIdentifier>{0820bd54-b8da-40b7-a345-216865185c84}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+    <None Include="Proj.4-Core.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Proj.4-Core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\aasincos.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\vector1.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\adjlon.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\bch2bps.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\bchgen.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\biveval.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\cs2cs.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\dmstor.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\emess.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\gen_cheb.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\geocent.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\geod_for.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\geod_inv.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\geod_set.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\mk_cheby.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\nad_cvt.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\nad_init.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\nad_intr.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\p_series.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_aea.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_aeqd.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_airy.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_aitoff.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_apply_gridshift.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_august.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_auth.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_bacon.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_bipc.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_boggs.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_bonne.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_cass.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_cc.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_cea.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_chamb.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_collg.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_crast.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_datum_set.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_datums.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_denoy.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_deriv.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_eck1.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_eck2.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_eck3.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_eck4.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_eck5.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_ell_set.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_ellps.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_eqc.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_eqdc.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_errno.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_factors.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_fahey.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_fouc_s.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_fwd.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_gall.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_gauss.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_geocent.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_geos.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_gins8.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_gn_sinu.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_gnom.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_goode.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_gridinfo.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_gridlist.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_gstmerc.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_hammer.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_hatano.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_imw_p.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_init.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_initcache.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_inv.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_krovak.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_labrd.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_laea.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_lagrng.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_larr.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_lask.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_latlong.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_lcc.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_lcca.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_list.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_loxim.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_lsat.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_malloc.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_mbt_fps.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_mbtfpp.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_mbtfpq.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_merc.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_mill.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_mlfn.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_mod_ster.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_moll.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_msfn.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_mutex.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_nell.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_nell_h.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_nocol.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_nsper.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_nzmg.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_ob_tran.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_ocea.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_oea.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_omerc.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_open_lib.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_ortho.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_param.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_phi2.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_poly.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_pr_list.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_putp2.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_putp3.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_putp4p.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_putp5.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_putp6.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_qsfn.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_release.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_robin.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_rpoly.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_sconics.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_somerc.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_stere.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_sterea.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_strerrno.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_sts.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_tcc.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_tcea.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_tmerc.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_tpeqd.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_transform.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_tsfn.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_units.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_urm5.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_urmfps.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_utils.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_vandg.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_vandg2.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_vandg4.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_wag2.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_wag3.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_wag7.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_wink1.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\PJ_wink2.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\pj_zpoly1.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\proj_mdist.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\proj_rouss.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd Party\proj-4.7.0\src\rtodms.c">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Proj.4</Filter>
+    </ClCompile>
+    <ClCompile Include="Proj.4-Core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

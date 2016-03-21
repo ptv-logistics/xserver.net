@@ -1,0 +1,12 @@
+﻿<local:MapGadget x:Class="Ptv.XServer.Controls.Map.Gadgets.CopyrightGadget"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:local="clr-namespace:Ptv.XServer.Controls.Map.Gadgets"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 x:Name="Copyright"
+                 Margin="3">
+  <Grid>
+    <Border CornerRadius="5" BorderThickness="2">
+      <StackPanel x:Name="TextStack"/>
+    </Border>
+  </Grid>
+</local:MapGadget>

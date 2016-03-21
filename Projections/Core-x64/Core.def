@@ -1,0 +1,10 @@
+LIBRARY Proj.4-Core
+
+EXPORTS
+	initProjection			@1
+	isLatLon				@2
+	freeProjection			@3
+	transformPoints			@4
+	transformSimplePoints	@5
+	transformPoint			@6
+	transformSimplePoint	@7

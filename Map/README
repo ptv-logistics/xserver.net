@@ -1,0 +1,33 @@
+
+PTV WPF Map
+--------------------------------------------------------------------------------------------------
+
+patterns & practices for integrating PTV xServers and data into Microsoft .NET
+--------------------------------------------------------------------------------------------------
+
+	
+Important Notes
+---------------
+
+Copyright (c) 2012 PTV Planung Transport Verkehr AG
+
+For license details, please refer to the file COPYING, which 
+should have been provided with this distribution.
+
+
+Prerequisites: 
+--------------
+
++ Visual Studio 2008/2010 or Visual C# 2008/2010 Express Edition
+
+
+How to use:
+-----------
+
++ Run a demo exe file in folder "DemoExecutables".
+or
++ Open PTV_WPFMap.2008/2010.sln to see the source codes and the demo samples.
+or
++ Open PTV_WPFMap.Demos\PTV_WPFMap.Demos.2008/2010.sln to see only the demo samples.
+or
++ Open PTV_WPFMap.Sources\PTV_WPFMap.Sources.2008/2010.sln to see only the source codes.

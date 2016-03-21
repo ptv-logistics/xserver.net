@@ -1,0 +1,28 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	x:Class="Ptv.XServer.Controls.Map.Symbols.Ball"
+  x:Name="ball"
+	Width="10" Height="10">
+	<Grid>		
+		<Viewbox>
+            <Ellipse Width="21.3333" Height="21.3333" Canvas.Left="-0.124999" Canvas.Top="-0.0138919" Stretch="Fill" StrokeThickness="1.33333" StrokeLineJoin="Round">
+                <Ellipse.Stroke>
+                    <SolidColorBrush Color="{Binding ElementName=ball, Path=Stroke}" />
+                </Ellipse.Stroke>
+                <Ellipse.Fill>
+				<RadialGradientBrush RadiusX="0.533333" RadiusY="0.533333" Center="0.289583,0.327083" GradientOrigin="0.289583,0.327083">
+					<RadialGradientBrush.GradientStops>
+						<GradientStop Color="{Binding ElementName=ball, Path=LightColor}" Offset="0.0138889"/>
+						<GradientStop Color="{Binding ElementName=ball, Path=Color}" Offset="0.578703"/>
+						<GradientStop Color="{Binding ElementName=ball, Path=DarkColor}" Offset="1"/>
+					</RadialGradientBrush.GradientStops>
+				</RadialGradientBrush>
+			</Ellipse.Fill>
+		</Ellipse>
+	</Viewbox>
+    </Grid>
+</UserControl>
