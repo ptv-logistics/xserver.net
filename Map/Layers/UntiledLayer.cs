@@ -102,6 +102,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// <inheritdoc/>
         public override void RemoveFromMapView(MapView mapView)
         {
+            objectInfos = null;
+
             if (mapView != null && mapView.Name == "Map")
             {
                 map = mapView;
