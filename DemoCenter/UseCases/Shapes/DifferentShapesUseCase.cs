@@ -37,7 +37,7 @@ namespace Ptv.XServer.Demo.UseCases.Shapes
         protected override void Disable()
         {
             wpfMap.Layers.Remove(wpfMap.Layers["DifferentShapes"]);
-            wpfMap.Layers.Remove(wpfMap.Layers["PileCharts"]);
+            wpfMap.Layers.Remove(wpfMap.Layers["PieCharts"]);
         }
 
         private bool useLabels;
@@ -67,7 +67,7 @@ namespace Ptv.XServer.Demo.UseCases.Shapes
                 SpatialReferenceId = "EPSG:31467" // set SR to Gauss-Kruger zone 3 (default is WGS84)
             };
 
-            shapeLayer2 = new ShapeLayer("PileCharts");
+            shapeLayer2 = new ShapeLayer("PieCharts");
             #endregion //doc:create ShapeLayer
 
             #region doc:add layer to map

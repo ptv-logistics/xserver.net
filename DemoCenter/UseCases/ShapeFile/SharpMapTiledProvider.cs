@@ -162,15 +162,19 @@ namespace Ptv.XServer.Demo.ShapeFile
                 var pop = Convert.ToDouble(row["POP2005"], NumberFormatInfo.InvariantInfo);
                 var area = Convert.ToDouble(row["AREA"], NumberFormatInfo.InvariantInfo);
                 // compute a scale [0..1] for the population density
-                scale = (float)((area > 0) ? Math.Min(1.0, Math.Sqrt(pop / area) / 70) : myRandom.NextDouble() * 1.0f);
+                scale = (float)((area > 0) ? Math.Min(1.0, Math.Sqrt(pop / area) / 70) : -1.0f);
             }
             catch (Exception)
             {
-                scale = (float)myRandom.NextDouble() * 1.0f;
+                scale = -1.0f;
             }
 
+            Color fillColor;
+            if (scale < 0)
+                fillColor = Color.Gray;
+            else
             // use the sharpmap ColorBlend for a color gradient green->yellow->red
-            var fillColor = ColorBlend.ThreeColors(Color.Green, Color.Yellow, Color.Red).GetColor(scale);
+                fillColor = ColorBlend.ThreeColors(Color.Green, Color.Yellow, Color.Red).GetColor(scale);
 
             // make fill color alpha-transparent
             fillColor = Color.FromArgb(180, fillColor.R, fillColor.G, fillColor.B);

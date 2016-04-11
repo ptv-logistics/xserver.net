@@ -300,6 +300,7 @@
                     <ComboBoxItem Content="Default"/>
                     <ComboBoxItem Content="Sandbox"/>
                     <ComboBoxItem Content="Silkysand"/>
+                    <ComboBoxItem Content="Gravelpit"/>
                   </ComboBox>
                   <Button x:Name="ProfileOKButton" IsEnabled="True" Click="ProfileOKButton_OnClick" Content="OK"/>
                 </StackPanel>

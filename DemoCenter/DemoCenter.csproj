@@ -172,7 +172,6 @@
     <Compile Include="UseCases\ShapeFile\ShapeFile.cs" />
     <Compile Include="UseCases\TourPlanning\RandomScenarioBuilder.cs" />
     <Compile Include="UseCases\TourPlanning\ScenarioModel.cs" />
-    <Compile Include="UseCases\TourPlanning\Tools.cs" />
     <Compile Include="UseCases\TourPlanning\TourCalculationWrapper.cs" />
     <Compile Include="UseCases\TourPlanning\TourPlanningUseCase.cs" />
     <Compile Include="UseCases\WMS\WMS.cs" />

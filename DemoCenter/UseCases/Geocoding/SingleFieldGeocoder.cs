@@ -1,5 +1,5 @@
 ﻿//--------------------------------------------------------------
-// Copyright (c) 2012 PTV Group
+// Copyright (c) PTV Group
 // 
 // For license details, please refer to the file COPYING, which 
 // should have been provided with this distribution.

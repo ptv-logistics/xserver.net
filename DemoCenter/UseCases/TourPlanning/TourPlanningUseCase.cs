@@ -13,7 +13,8 @@ using System.Windows.Media;
 
 using Ptv.XServer.Controls.Map.Layers.Shapes;
 using Ptv.XServer.Controls.Map.Symbols;
-
+using System.Threading.Tasks;
+using System.Windows.Media.Animation;
 
 namespace Ptv.XServer.Demo.UseCases.TourPlanning
 {
@@ -25,7 +26,7 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
         private ShapeLayer tourLayer;
         private ShapeLayer orderLayer;
         private ShapeLayer depotLayer;
-        private readonly Color unplannedColor = Color.FromRgb(255, 64, 64);
+        private readonly Color unplannedColor = Colors.LightGray;
         private TourCalculationWrapper tourCalculationWrapper;
 
         /// <summary>
@@ -63,23 +64,29 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
         /// Configure the tour planning with a scenario by specifying its size via <paramref name="scenarioSize"/>.
         /// </summary>
         /// <param name="scenarioSize">Specifies the amount of objects, which will be created randomly.</param>
-        public void SetScenario(ScenarioSize scenarioSize)
+        public async void SetScenario(ScenarioSize scenarioSize)
         {
             SendProgressInfo("Initializing...");
-            var center = new Point(8.4, 49); // KA, for Lux: Point(6.130833, 49.611389); 
-            const double radius = .2; // radius in degrees of latitude
 
-            Tools.AsyncUIHelper(() => ScenarioBuilder.CreateRandomScenario(scenarioSize, center, radius),
-                                 s =>
-                                 {
-                                     wpfMap.SetMapLocation(center, 10); 
-                                     SetScenario(s);
-                                     if (Finished != null)
-                                         Finished();
-                                     SendProgressInfo("Ready");
-                                     Initialized();
-                                 },
-                                ex => MessageBox.Show(ex.Message));
+            var center = new System.Windows.Point(6.130833, 49.611389); // LUX
+            //var center = new System.Windows.Point(8.4, 49); // KA
+            var radius = 7.5; // radius in km
+
+            try
+            {
+                var s = await Task.Run(() => RandomScenarioBuilder.CreateScenario(scenarioSize, center, radius));
+
+                wpfMap.SetMapLocation(center, 10);
+                SetScenario(s);
+                if (Finished != null)
+                    Finished();
+                SendProgressInfo("Ready");
+                Initialized();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void SetScenario(Scenario newScenario)
@@ -118,29 +125,21 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
             tourLayer.Shapes.Clear();
             foreach (var tour in scenario.Tours)
             {
-                var pc = new PointCollection(from tp in tour.TourPoints select new Point(tp.Longitude, tp.Latitude));
-                new RoutePolyline(tourLayer)
-                {
-                    Points = pc,
-                    ToolTip = tour.Vehicle.Id,
-                    Color = tour.Vehicle.Depot.Color,
-                    Width = 7
-                };
+                var pc = new PointCollection(from tp in tour.TourPoints select new System.Windows.Point(tp.Longitude, tp.Latitude));
+                SetPlainLine(pc, tourLayer, tour.Vehicle.Depot.Color, tour.Vehicle.Id);
+                SetAnimDash(pc, tourLayer);
             }
 
-            foreach (var frameworkElement in orderLayer.Shapes)
+            foreach (Cube cube in this.orderLayer.Shapes)
             {
-                var cube = (Cube) frameworkElement;
                 var order = (Order)cube.Tag;
                 if (order.Tour != null)
                 {
                     cube.Color = order.Tour.Vehicle.Depot.Color;
-                    Panel.SetZIndex(cube, 1); // bring to front
                 }
                 else
                 {
                     cube.Color = unplannedColor;
-                    Panel.SetZIndex(cube, 0); // bring to back
                 }
             }
 
@@ -148,6 +147,55 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
                 Finished();
         }
 
+        public void SetPlainLine(PointCollection pc, ShapeLayer layer, Color color, string toolTip)
+        {
+            MapPolyline poly = new MapPolyline();
+            poly.Points = pc;
+            poly.MapStrokeThickness = 20;
+            poly.StrokeLineJoin = PenLineJoin.Round;
+            poly.StrokeStartLineCap = PenLineCap.Flat;
+            poly.StrokeEndLineCap = PenLineCap.Triangle;
+            poly.Stroke = new SolidColorBrush(color);
+            poly.ScaleFactor = .2;
+            poly.ToolTip = toolTip;
+            poly.MouseEnter += (s, e) => poly.Stroke = new SolidColorBrush(Colors.Cyan);
+            poly.MouseLeave += (s, e) => poly.Stroke = new SolidColorBrush(color);
+            layer.Shapes.Add(poly);
+        }
+
+        public void SetAnimDash(PointCollection pc, ShapeLayer layer)
+        {
+            MapPolyline animDashLine = new MapPolyline()
+            {
+                MapStrokeThickness = 16,
+                Points = pc,
+                ScaleFactor = 0.2
+            };
+
+            animDashLine.Stroke = new SolidColorBrush(System.Windows.Media.Color.FromArgb(128, 255, 255, 255));
+            animDashLine.StrokeLineJoin = PenLineJoin.Round;
+            animDashLine.StrokeStartLineCap = PenLineCap.Flat;
+            animDashLine.StrokeEndLineCap = PenLineCap.Triangle;
+            animDashLine.StrokeDashCap = PenLineCap.Triangle;
+            var dc = new DoubleCollection { 2, 2 };
+            animDashLine.IsHitTestVisible = false;
+            animDashLine.StrokeDashArray = dc;
+
+            DoubleAnimation animation = new DoubleAnimation
+            {
+                From = 4,
+                To = 0,
+                FillBehavior = System.Windows.Media.Animation.FillBehavior.HoldEnd,
+                RepeatBehavior = RepeatBehavior.Forever
+            };
+
+            var strokeStoryboard = new Storyboard();
+            strokeStoryboard.Children.Add(animation);
+            Storyboard.SetTargetProperty(animation, new PropertyPath("(Line.StrokeDashOffset)"));
+            Storyboard.SetTarget(animation, animDashLine);
+            strokeStoryboard.Begin();
+            layer.Shapes.Add(animDashLine);
+        }
         private void SendProgressInfo(string message, int percentage = 0)
         {
             if (Progress == null)

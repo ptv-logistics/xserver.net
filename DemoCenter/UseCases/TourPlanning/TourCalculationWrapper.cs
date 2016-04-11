@@ -1,120 +1,104 @@
-﻿//--------------------------------------------------------------
-// Copyright (c) PTV Group
-// 
-// For license details, please refer to the file COPYING, which 
-// should have been provided with this distribution.
-//--------------------------------------------------------------
-
+﻿using Ptv.XServer.Demo.Tools;
+using Ptv.XServer.Demo.XtourService;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.ComponentModel;
-
-using Ptv.XServer.Demo.Tools;
-using Ptv.XServer.Demo.XtourService;
+using System.Linq;
 
 namespace Ptv.XServer.Demo.UseCases.TourPlanning
 {
-    /// <summary>
-    /// Encapsulates the handling of the xTour server by more convenient methods. Especially 
-    /// dictionaries are used to map the business entities to xtour entities.
-    /// This is needed, because the xtour entities can only be identified by integer IDs.
-    /// </summary>
     public class TourCalculationWrapper
     {
-        /// <summary>Dictionary for orders, encapsulating the xTour's identification via IDs.</summary>
+        // these dictionaries are used to map the business entities to xtour entities.
+        // This is needed, because the xtour entities can only be identified by integer IDs.
         public BusinessToX<Order, string> orderMap;
-        /// <summary>Dictionary for depots, encapsulating the xTour's identification via IDs.</summary>
         public BusinessToX<Depot, string> depotMap;
-        /// <summary>Dictionary for vehicles, encapsulating the xTour's identification via IDs.</summary>
         public BusinessToX<Vehicle, string> vehicleMap;
 
-        /// <summary>Delegate, which is called during the tour calculation for intermediate steps.</summary>
         public Action Progress;
-        /// <summary>Delegate, which is called after termination of the tour calculation.</summary>
         public Action Finished;
 
-        /// <summary>Message text for each individual intermediate step. </summary>
         public string ProgressMessage;
-        /// <summary>Percentage value indicating the qualitative progress of the tour calculation. </summary>
         public int ProgressPercent;
 
-        private BackgroundWorker bw;
+        BackgroundWorker bw;
+        public Scenario scenario;
 
-        /// <summary>Aborts the tour calculation.</summary>
         public void Cancel()
         {
             bw.CancelAsync();
         }
 
-        /// <summary>Scenario containing the orders, depots and vehicles used for tour calculation.</summary>
-        public Scenario scenario;
-
-        /// <summary> Start planning according the settings of the specified scenario. </summary>
-        /// <param name="newScenario"></param>
-        public void StartPlanScenario(Scenario newScenario)
+        public void StartPlanScenario(Scenario scenario)
         {
-            scenario = newScenario;
-
             orderMap = new BusinessToX<Order, string>();
             depotMap = new BusinessToX<Depot, string>();
             vehicleMap = new BusinessToX<Vehicle, string>();
 
-            bw = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
+            this.scenario = scenario;
+
+            bw = new BackgroundWorker();
+            bw.WorkerReportsProgress = true;
+            bw.WorkerSupportsCancellation = true;
             bw.DoWork += bw_DoWork;
-            bw.RunWorkerCompleted += bw_RunWorkerCompleted;
-            bw.ProgressChanged += bw_ProgressChanged;
+            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
+            bw.ProgressChanged += new ProgressChangedEventHandler(bw_ProgressChanged);
             bw.RunWorkerAsync();
         }
 
-        private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            if (Progress == null) return;
-
-            var job = e.UserState as Job;
-            if (job.progress == null)
+            if (Progress != null)
             {
-                var status = job.status.ToString();
-                ProgressMessage = status[0].ToString(CultureInfo.InvariantCulture).ToUpper() + status.Substring(1).ToLower();
-            }
-            else if (job.progress is PlanProgress)
-            {
-                var planProgress = job.progress as PlanProgress;
-                switch (planProgress.action)
+                var job = e.UserState as Job;
+                if (job.progress == null)
+                    this.ProgressMessage = job.status.ToString();
+                else if (job.progress is PlanProgress)
                 {
-                    case "DistanceMatrix.Calculation":
-                        var dimaProgress = planProgress.distanceMatrixCalculationProgress.currentDistanceMatrixProgress;
+                    var pp = job.progress as PlanProgress;
+                    if (pp.action == "DistanceMatrix.Calculation")
+                    {
+                        var dimaProgress = pp.distanceMatrixCalculationProgress.currentDistanceMatrixProgress;
                         var currentRowIndex = dimaProgress.currentRowIndex;
                         var lastRowIndex = dimaProgress.lastRowIndex;
-                        ProgressPercent = 50*currentRowIndex/lastRowIndex;
-                        ProgressMessage = string.Format("Calculating distance matrix: {0}/{1}", currentRowIndex, lastRowIndex);
-                        break;
-                    case "Optimization.Improvement":
-                        var improvementProgress = planProgress.improvementProgress;
+                        this.ProgressPercent = 50 * currentRowIndex / lastRowIndex;
+                        this.ProgressMessage = string.Format("Calculating Distance Matrix: {0}/{1}", currentRowIndex, lastRowIndex);
+                    }
+                    else if (pp.action == "Optimization.Improvement")
+                    {
+                        var improvementProgress = pp.improvementProgress;
                         var availableMachineTime = improvementProgress.availableMachineTime;
                         var usedMachineTime = improvementProgress.usedMachineTime;
                         var iterationIndex = improvementProgress.iterationIndex;
-                        ProgressPercent = 50 + 50*usedMachineTime/availableMachineTime;
-                        ProgressMessage = string.Format("Improving plan, iteration index: {0}, machine time: {1}/{2}", iterationIndex, usedMachineTime, availableMachineTime);
-                        break;
-                    default:
-                        ProgressMessage = planProgress.action;
-                        break;
+                        this.ProgressPercent = 50 + 50 * usedMachineTime / availableMachineTime;
+                        this.ProgressMessage = string.Format("Improving plan, iteration index: {0}, machine time: {1}/{2}", iterationIndex, usedMachineTime, availableMachineTime);
+                    }
+                    else
+                    {
+                        this.ProgressMessage = pp.action;
+                    }
                 }
-            }
-            else
-                ProgressMessage = job.progress.ToString();
+                else
+                    this.ProgressMessage = job.progress.ToString();
 
-            Progress();
+                Progress();
+            }
         }
 
-        private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if(Progress != null)
+            if (Progress != null)
             {
-                ProgressMessage = e.Cancelled ? "Cancelled" : "Finished";
-                ProgressPercent = e.Cancelled ? 0 : 100;
+                if (!e.Cancelled)
+                {
+                    this.ProgressMessage = "Finished";
+                    this.ProgressPercent = 100;
+                }
+                else
+                {
+                    this.ProgressMessage = "Cancelled";
+                    this.ProgressPercent = 0;
+                }
                 Progress();
             }
 
@@ -122,20 +106,21 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
                 Finished();
         }
 
-        private void bw_DoWork(object sender, DoWorkEventArgs e)
+        void bw_DoWork(object sender, DoWorkEventArgs e)
         {
             // reset old plan
             scenario.Tours = new List<Tour>();
-            scenario.Orders.ForEach((order => order.Tour = null));
+            foreach (var o in scenario.Orders)
+                o.Tour = null;
 
             var xtour = XServerClientFactory.CreateXTourClient(Properties.Settings.Default.XUrl);
             var orders = (from o in scenario.Orders
                           select new TransportDepot
                           {
-                              id = orderMap.MapObject(o, o.Id),
+                              id = orderMap.B2X(o, o.Id),
                               transportPoint = new TransportPoint
                               {
-                                  id = orderMap.MapObject(o, o.Id),                                  
+                                  id = orderMap.B2X(o, o.Id),
                                   servicePeriod = 0,  // 0sec; unrealistic but okay for this sample                                  
                                   location = new Point
                                   {
@@ -147,39 +132,42 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
                                   },
                                   openingIntervalConstraint = OpeningIntervalConstraint.START_OF_SERVICE,
                               },
-                              deliveryQuantities = new Quantities { wrappedQuantities = new[] { o.Quantity } }
+                              deliveryQuantities = new Quantities { wrappedQuantities = new int[] { o.Quantity } }
                           }).ToArray();
 
             var depots = (from d in scenario.Depots
                           select new XtourService.Depot
                           {
-                              id = depotMap.MapObject(d, d.Id),
+                              id = depotMap.B2X(d, d.Id),
                               location = new Point
                               {
                                   point = new PlainPoint
                                   {
-                                      x = d.Longitude,
-                                      y = d.Latitude
+                                      y = d.Latitude,
+                                      x = d.Longitude
                                   }
-                              }                          
+                              }
                           }).ToArray();
 
-            var yy = (from d in scenario.Depots select d.Fleet).SelectMany(x => x);
+            var allVehicles = (from d in scenario.Depots select d.Fleet).SelectMany(x => x);
 
-            var interval = new Interval { from = 0, till = scenario.OperatingPeriod*200 };
+            var interval = new Interval();
+            interval.from = 0;
+            interval.till = Convert.ToInt32(scenario.OperatingPeriod.TotalSeconds);
 
-            var vehicles = (from v in yy
+            var vehicles = (from v in allVehicles
                             select new XtourService.Vehicle
                             {
-                                id = vehicleMap.MapObject(v, v.Id),
-                                depotIdStart = depotMap.bTos[v.Depot.Id],
-                                depotIdEnd = depotMap.bTos[v.Depot.Id],
-                                isPreloaded = false,                        
+                                id = vehicleMap.B2X(v, v.Id),
+                                depotIdStart = depotMap.B2X(v.Depot, v.Depot.Id),
+                                depotIdEnd = depotMap.B2X(v.Depot, v.Depot.Id),
+                                isPreloaded = false,
                                 capacities = new Capacities
                                 {
-                                    wrappedCapacities = new[] { new Quantities { wrappedQuantities = new[] { v.Capacity } } }
+                                    wrappedCapacities = new Quantities[] { new Quantities { wrappedQuantities =
+                                    new int[] { v.Capacity } } }
                                 },
-                                wrappedOperatingIntervals = new[] { interval },
+                                wrappedOperatingIntervals = new Interval[] { interval },
                                 dimaId = 1,
                                 dimaIdSpecified = true,
                             }).ToArray();
@@ -188,9 +176,9 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
 
             var planningParams = new StandardParams
             {
-                wrappedDistanceMatrixCalculation = new DistanceMatrixCalculation[] {new DistanceMatrixByRoad
+                wrappedDistanceMatrixCalculation = new[] {new DistanceMatrixByRoad
                 {
-                    dimaId = 1,                    
+                    dimaId = 1,
                     deleteBeforeUsage = true,
                     deleteAfterUsage = true,
                     profileName = "dimaTruck",
@@ -202,7 +190,7 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
             var xtourJob = xtour.startPlanBasicTours(orders, depots, fleet, planningParams, null,
                 new CallerContext
                 {
-                    wrappedProperties = new[] { 
+                    wrappedProperties = new[] {
                     new CallerContextProperty { key = "CoordFormat", value = "OG_GEODECIMAL" },
                     new CallerContextProperty { key = "TenantId", value = Guid.NewGuid().ToString() }}
                 });
@@ -228,6 +216,9 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
                 status = xtourJob.status;
 
                 bw.ReportProgress(-1, xtourJob);
+
+                // wait a bit on the client-side to reduce network+server load
+                System.Threading.Thread.Sleep(250);
             }
 
             var result = xtour.fetchPlan(xtourJob.id, null);
@@ -237,66 +228,67 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
                 foreach (var wt in c.wrappedTours)
                 {
                     var tour = new Tour();
-                    var tourPoints = new List<TourPoint>();
-                    foreach (var wrappedTourPoint in wt.wrappedTourPoints)
+
+                    List<TourPoint> tps = new List<TourPoint>();
+                    foreach (var tp in wt.wrappedTourPoints)
                     {
-                        switch (wrappedTourPoint.type)
+                        switch (tp.type)
                         {
                             case TourPointType.DEPOT:
-                                tourPoints.Add(new TourPoint
+                                tps.Add(new TourPoint
                                 {
-                                    Longitude = depotMap.sTob[wrappedTourPoint.id].Longitude,
-                                    Latitude = depotMap.sTob[wrappedTourPoint.id].Latitude
+                                    Longitude = depotMap.X2B(tp.id).Longitude,
+                                    Latitude = depotMap.X2B(tp.id).Latitude
                                 });
                                 break;
                             case TourPointType.TRANSPORT_POINT:
-                                orderMap.sTob[wrappedTourPoint.id].Tour = tour;
-                                tourPoints.Add(new TourPoint
+                                orderMap.X2B(tp.id).Tour = tour;
+                                tps.Add(new TourPoint
                                 {
-                                    Longitude = orderMap.sTob[wrappedTourPoint.id].Longitude,
-                                    Latitude = orderMap.sTob[wrappedTourPoint.id].Latitude
+                                    Longitude = orderMap.X2B(tp.id).Longitude,
+                                    Latitude = orderMap.X2B(tp.id).Latitude
                                 });
                                 break;
                         }
                     }
 
-                    tour.Vehicle = vehicleMap.sTob[c.vehicleId];
-                    tour.TourPoints = tourPoints;
+                    tour.Vehicle = vehicleMap.X2B(c.vehicleId);
+                    tour.TourPoints = tps;
                     scenario.Tours.Add(tour);
-                }   
+                }
         }
     }
 
     /// <summary>
     /// A helper class which maps business objects (usually identified by a unique string) To xServer objects
     /// identified by an int.
+    /// Note: The mapping is not unique! If you create it repeatedly, you get different IDs.
+    /// Remind this if you need to work with persistant xTour objects, for example if you re-use distance matrices.
     /// </summary>
-    /// <typeparam name="B">Object type which should be mapped.</typeparam>
-    /// <typeparam name="K">Key value type used for mapping.</typeparam>
+    /// <typeparam name="B">The type of the business object</typeparam>
+    /// <typeparam name="K">The type of the key (id)</typeparam>
     public class BusinessToX<B, K>
     {
         private int idx;
+        private Dictionary<K, int> bTox = new Dictionary<K, int>();
+        private Dictionary<int, B> xTob = new Dictionary<int, B>();
 
-        /// <summary>Mapping of the xTour id to an internally used identification.</summary>
-        public Dictionary<K, int> bTos = new Dictionary<K, int>();
-        /// <summary>Mapping of the internally used identification to the addressed object.</summary>
-        public Dictionary<int, B> sTob = new Dictionary<int, B>();
-
-        /// <summary>Returns the internally used identification of the object.</summary>
-        /// <param name="obj">Business object, i.e. an order, depot or vehicle.</param>
-        /// <param name="key">xTour id of the business object.</param>
-        /// <returns></returns>
-        public int MapObject(B obj, K key)
+        public int B2X(B obj, K key)
         {
-            if (bTos.ContainsKey(key))
-                return bTos[key];
+            if (bTox.ContainsKey(key))
+                return bTox[key];
 
             idx++;
 
-            bTos[key] = idx;
-            sTob[idx] = obj;
+            bTox[key] = idx;
+            xTob[idx] = obj;
 
             return idx;
+        }
+
+        public B X2B(int key)
+        {
+            return xTob[key];
         }
     }
 }
