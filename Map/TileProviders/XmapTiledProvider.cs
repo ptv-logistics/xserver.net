@@ -61,7 +61,6 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <param name="mode"> The mode of this tiled provider instance. </param>
         public XMapTiledProvider(string url, string user, string password, XMapMode mode)
         {
-            ServicePointManager.FindServicePoint(new Uri(url)).ConnectionLimit = 8;
             this.url = url;
             User = user;
             Password = password;
