@@ -23,6 +23,16 @@ namespace Ptv.XServer.Controls.Map.UnitTests
         public void TestCompleting()
         {
             // No scheme . is Azure
+            Assert.That(XServerUrl.Complete("api", "XMAP"), Is.EqualTo("https://api.cloud.ptvgroup.com/xmap/ws/XMap"), "Check minimal input for world map in Azure.");
+            Assert.That(XServerUrl.Complete("api-eu", "XMAP"), Is.EqualTo("https://api-eu.cloud.ptvgroup.com/xmap/ws/XMap"), "Check minimal input for world map in Azure.");
+            Assert.That(XServerUrl.Complete("api-test", "XMAP"), Is.EqualTo("https://api-test.cloud.ptvgroup.com/xmap/ws/XMap"), "Check minimal input for world map in Azure.");
+            Assert.That(XServerUrl.Complete("api-eu-test", "XMAP"), Is.EqualTo("https://api-eu-test.cloud.ptvgroup.com/xmap/ws/XMap"), "Check minimal input for world map in Azure.");
+
+            Assert.That(XServerUrl.Complete("china", "XMAP"), Is.EqualTo("https://china.cloud.ptvgroup.com/xmap/ws/XMap"), "Check minimal input for world map in Azure.");
+            Assert.That(XServerUrl.Complete("china-cn", "XMAP"), Is.EqualTo("https://china-cn.cloud.ptvgroup.com/xmap/ws/XMap"), "Check minimal input for world map in Azure.");
+            Assert.That(XServerUrl.Complete("china-test", "XMAP"), Is.EqualTo("https://china-test.cloud.ptvgroup.com/xmap/ws/XMap"), "Check minimal input for world map in Azure.");
+            Assert.That(XServerUrl.Complete("china-cn-test", "XMAP"), Is.EqualTo("https://china-cn-test.cloud.ptvgroup.com/xmap/ws/XMap"), "Check minimal input for world map in Azure.");
+
             Assert.That(XServerUrl.Complete("eu-n", "XMAP"), Is.EqualTo("https://xmap-eu-n.cloud.ptvgroup.com/xmap/ws/XMap"), "Check minimal input for European map in Azure.");
             Assert.That(XServerUrl.Complete("eu-n", "XROUTE"), Is.EqualTo("https://xroute-eu-n.cloud.ptvgroup.com/xroute/ws/XRoute"), "Check minimal input for European map in Azure.");
             Assert.That(XServerUrl.Complete("eu-n", "XLOCATE"), Is.EqualTo("https://xlocate-eu-n.cloud.ptvgroup.com/xlocate/ws/XLocate"), "Check minimal input for European map in Azure.");

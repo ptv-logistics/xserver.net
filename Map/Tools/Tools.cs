@@ -599,7 +599,7 @@ namespace Ptv.XServer.Controls.Map.Tools
                 }
 
                 // api(-eu) style
-                regex = new Regex(@"^(?:([a-z]+(?:-[a-z]+)?(?:-test|-integration)?))(?:\.cloud\.ptvgroup\.com)?$", RegexOptions.IgnoreCase);
+                regex = new Regex(@"^(?:([a-z]+(?:-[a-z]{2})?(?:-test|-integration)?))(?:\.cloud\.ptvgroup\.com)?$", RegexOptions.IgnoreCase);
                 match = regex.Match(host);
                 if (match.Success)
                 {
