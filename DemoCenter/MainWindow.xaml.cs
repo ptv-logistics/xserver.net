@@ -30,10 +30,10 @@ using Ptv.XServer.Demo.UseCases.RoutingDragAndDrop;
 using Ptv.XServer.Demo.UseCases.TourPlanning;
 using Ptv.XServer.Demo.UseCases.Selection;
 using System.Globalization;
-using System.Threading;
 using Ptv.XServer.Demo.UseCases;
 using System.Collections.Generic;
 using Ptv.XServer.Demo.Resources.MessageBox;
+using Ptv.XServer.Controls.Map.Tools;
 
 namespace Ptv.XServer.Demo
 {
@@ -80,7 +80,7 @@ namespace Ptv.XServer.Demo
             bool result = ConfigureWPFMap(wpfMap);
             if (!result)
             {
-                var authenticationOK = UseCase.ManagedAuthentication.Set("eu-n-test", DefaultXServerInternetToken.Value);
+                var authenticationOK = UseCase.ManagedAuthentication.Set("api-eu-test", DefaultXServerInternetToken.Value);
 
                 if (authenticationOK)
                 {
@@ -218,7 +218,10 @@ namespace Ptv.XServer.Demo
             // Triggers the MapProfile use case to change the maps profile.
             ProfileOKButton_OnClick(null, null);
 
-            if (!XServerUrl.IsDecartaBackend(UseCase.ManagedAuthentication.XMapMetaInfo.Url))
+            // add POI layer (if available)
+            var url = UseCase.ManagedAuthentication.XMapMetaInfo.Url;
+            if (!(XServerUrl.IsDecartaBackend(url) 
+                || XServerUrl.IsXServerInternet(url) && url.Contains("china")))
             {
                 #region doc:AdditionalLayerCreation
                 map.InsertPoiLayer(UseCase.ManagedAuthentication.XMapMetaInfo, "Poi", "default.points-of-interest", "Points of interest");
@@ -230,11 +233,11 @@ namespace Ptv.XServer.Demo
             foreach (string layerName in layerOrder.Where(layer => map.Layers[layer] != null))
                 map.Layers.Move(map.Layers.IndexOf(map.Layers[layerName]), a++);
 
-            if (UseCase.ManagedAuthentication.XMapMetaInfo.IsEuropeCluster)
+            if (UseCase.ManagedAuthentication.XMapMetaInfo.GetRegion() == Region.eu)
                 map.SetMapLocation(new Point(8.4, 49), 10); // Center in Karlsruhe
-            else if (UseCase.ManagedAuthentication.XMapMetaInfo.IsNorthAmericaCluster)
+            else if (UseCase.ManagedAuthentication.XMapMetaInfo.GetRegion() == Region.na)
                 map.SetMapLocation(new Point(-74.11, 40.93), 10); // Center in New York
-            else if (UseCase.ManagedAuthentication.XMapMetaInfo.IsAustraliaCluster)
+            else if (UseCase.ManagedAuthentication.XMapMetaInfo.GetRegion() == Region.au)
                 map.SetMapLocation(new Point(149.16, -35.25), 10); // Center in Canberra
             else
                 map.SetMapLocation(new Point(0, 33), 1.8); // Center on equator, meridian

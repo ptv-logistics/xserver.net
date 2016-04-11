@@ -54,7 +54,9 @@ namespace Ptv.XServer.Demo.Tools
 
         public static void InsertDataManagerLayer(this Map map, XMapMetaInfo xMapMetaInfo, string layerName, string layerId, string layerCaption, int minZoom = 0, bool markerIsBalloon = false)
         {
-            var layer = new XMapLayer(layerName, xMapMetaInfo.Url, xMapMetaInfo.User, xMapMetaInfo.Password)
+            // always use xmap-eu
+            var url = "https://xmap-eu-n-test.cloud.ptvgroup.com/xmap/ws/XMap/";
+            var layer = new XMapLayer(layerName, url, xMapMetaInfo.User, xMapMetaInfo.Password)
             {
                 Caption = layerCaption,
                 MaxRequestSize = new System.Windows.Size(2048, 2048),

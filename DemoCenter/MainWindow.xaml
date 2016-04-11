@@ -132,7 +132,7 @@
                 <StackPanel>
                   <TextBlock><Run Text="Define the xMap URL and xToken, if PTV xServer is used on Azure."/></TextBlock>
                   <ComboBox x:Name="XURLComboBox" IsEditable="True">
-                    <ComboBoxItem Content="eu-n-test"/>
+                    <ComboBoxItem Content="api-eu-test"/>
                     <ComboBoxItem Content="localhost"/>
                     <ComboBoxItem Tag="80.146.239.180" Content="Legacy xServer DEV"/>
                   </ComboBox>

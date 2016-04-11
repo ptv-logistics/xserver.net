@@ -582,23 +582,39 @@ namespace Ptv.XServer.Controls.Map.Tools
 
             // Host
             string host = match.Groups[2].ToString();
+
             // if no scheme is specified, the host is examined for an xServer internet like name
             if (string.IsNullOrEmpty(scheme))
             {
+                // eu-n style
                 regex = new Regex(@"^(?:" + lowerModuleName + @"-)?([a-z]+-[hnt](?:-test|-integration)?)(?:\.cloud\.ptvgroup\.com)?$", RegexOptions.IgnoreCase);
                 match = regex.Match(host);
-                if (match.Success) // i.e. it seems to be an xServer internet host name like eu-n
+                if (match.Success)
                 {
                     scheme = "https://";
                     host = lowerModuleName + "-" + match.Groups[1] + ".cloud.ptvgroup.com";
                     port = string.Empty;
+
+                    return scheme + host + port + "/" + lowerModuleName + "/ws/" + camelModuleName;
                 }
-                else
+
+                // api(-eu) style
+                regex = new Regex(@"^(?:([a-z]+(?:-[a-z]+)?(?:-test|-integration)?))(?:\.cloud\.ptvgroup\.com)?$", RegexOptions.IgnoreCase);
+                match = regex.Match(host);
+                if (match.Success)
                 {
-                    scheme = "http://";
-                    if (string.IsNullOrEmpty(port))
-                        port = ":" + Port(lowerModuleName).ToString(CultureInfo.InvariantCulture);
+                    scheme = "https://";
+                    host = match.Groups[1] + ".cloud.ptvgroup.com";
+                    port = string.Empty;
+
+                    return scheme + host + port + "/" + lowerModuleName + "/ws/" + camelModuleName;
                 }
+
+                // on-premise
+                scheme = "http://";
+                if (string.IsNullOrEmpty(port))
+                    port = ":" + Port(lowerModuleName).ToString(CultureInfo.InvariantCulture);
+
                 return scheme + host + port + "/" + lowerModuleName + "/ws/" + camelModuleName;
             }
             else

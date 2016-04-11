@@ -99,12 +99,12 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
                 if (featureLayerXElement != null) return featureLayerXElement;
 
                 // Select the whole set of scenarios for the complete map, containing all Feature Layer themes known by the demo implementation.
-                var clusterName = UseCase.ManagedAuthentication.XMapMetaInfo.Cluster;
-                if (clusterName.Contains("eu-n") || clusterName.Contains("eu-t"))
+                var region = UseCase.ManagedAuthentication.XMapMetaInfo.GetRegion();
+                if (region == Region.eu || region == Region.world)
                     FeatureLayerXElement = XElement.Parse(Settings.Default.FeatureLayerEurope);
-                else if (clusterName.Contains("na-n") || clusterName.Contains("na-t"))
+                else if (region == Region.na)
                     FeatureLayerXElement = XElement.Parse(Settings.Default.FeatureLayerNorthAmerica);
-                else if (clusterName.Contains("au-n") || clusterName.Contains("au-t"))
+                else if (region == Region.au)
                     FeatureLayerXElement = XElement.Parse(Settings.Default.FeatureLayerAustralia);
                 else
                 {
@@ -454,11 +454,12 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
                 if (scenariosByCluster != null) return scenariosByCluster;
 
                 // Select the whole set of scenarios for the complete map, containing all Feature Layer themes known by the demo implementation.
-                if (UseCase.ManagedAuthentication.XMapMetaInfo.IsEuropeCluster)
+                var region = UseCase.ManagedAuthentication.XMapMetaInfo.GetRegion();
+                if (region == Region.eu || region == Region.world)
                     scenariosByCluster = europeanScenarios;
-                else if (UseCase.ManagedAuthentication.XMapMetaInfo.IsNorthAmericaCluster)
+                else if (region == Region.na)
                     scenariosByCluster = northAmericanScenarios;
-                else if (UseCase.ManagedAuthentication.XMapMetaInfo.IsAustraliaCluster)
+                else if (region == Region.au)
                     scenariosByCluster = australiaScenarios;
                 else
                     scenariosByCluster = new List<Scenarios>(); // Insert empty list to avoid repeated trials for getting the scenarios

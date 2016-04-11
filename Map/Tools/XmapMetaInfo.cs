@@ -30,21 +30,6 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <summary> Gets or sets the password for basic Http authentication. </summary>
         public string Password { get; private set; }
 
-        /// <summary> 
-        /// Gets or sets the cluster name of the URL which is part of the host, if an xServer internet URL is used. 
-        /// "eu-n-test" is an example for such a cluster name. 
-        /// </summary>
-        public string Cluster { get; private set; }
-
-        /// <summary> Flag indicating if an xServer internet is used with an Europe map. </summary>
-        public bool IsEuropeCluster { get { return Cluster.Contains("eu-n") || Cluster.Contains("eu-t"); } }
-
-        /// <summary> Flag indicating if an xServer internet is used with a North America map. </summary>
-        public bool IsNorthAmericaCluster { get { return Cluster.Contains("na-n") || Cluster.Contains("na-t"); } }
-
-        /// <summary> Flag indicating if an xServer internet is used with an Australia map. </summary>
-        public bool IsAustraliaCluster { get { return Cluster.Contains("au-n") || Cluster.Contains("au-t"); } }
-
         /// <summary> Gets or sets the copyright text. </summary>
         public string CopyrightText { get; private set; }
 
@@ -78,11 +63,6 @@ namespace Ptv.XServer.Controls.Map.Tools
 
             if (baseUrl.ToUpper().EndsWith("/XMAP/WS/XMAP"))
                 baseUrl = baseUrl.Substring(0, baseUrl.Length - "/XMAP/WS/XMAP".Length);
-
-            var regex = new Regex(@"xmap-([a-z]+-[hnt](?:-test|-integration)?)\.cloud\.ptvgroup\.com",
-                RegexOptions.IgnoreCase);
-            var match = regex.Match(baseUrl);
-            Cluster = (match.Success) ? match.Groups[1].ToString() : String.Empty;
 
             try // Customers get Index-out-of-range
             {

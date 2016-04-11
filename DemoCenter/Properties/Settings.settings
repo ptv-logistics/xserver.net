@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="XUrl" Type="System.String" Scope="User">
-      <Value Profile="(Default)">eu-n-test</Value>
+      <Value Profile="(Default)">api-eu-test</Value>
     </Setting>
     <Setting Name="XToken" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

@@ -23,6 +23,8 @@ namespace Ptv.XServer.Demo.UseCases.ShapeFile
                 return;
 
             wpfMap.InsertDataManagerLayer(ManagedAuthentication.XMapMetaInfo, "POS", "t_f07ef3f0_ce7a_4913_90ea_b072ec07e6ff", "Points Of Sales", 10, true);
+
+            wpfMap.SetMapLocation(new System.Windows.Point(8.4, 49), 12);
         }
 
         /// <summary>
