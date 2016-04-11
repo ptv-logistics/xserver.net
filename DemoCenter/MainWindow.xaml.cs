@@ -44,7 +44,7 @@ namespace Ptv.XServer.Demo
         
 #if(!DEBUG)
         /// <summary> Splash window which is shown at startup. </summary>
-        private static readonly SplashWindow splashWindow = new SplashWindow("PTV xServer .NET Demo Center;component/Resources/Splash_PTV Group_640x478_e_weiß.jpg");
+        private static readonly SplashWindow splashWindow = new SplashWindow("PTV xServer .NET Demo Center;component/Resources/Splash_PTV Group_640x478_e_white.jpg");
 #endif
 
         #region constructor

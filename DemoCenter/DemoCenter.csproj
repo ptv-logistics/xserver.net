@@ -439,7 +439,7 @@
   <ItemGroup>
     <Resource Include="Resources\bg_page.png" />
     <Resource Include="Resources\PTV_Group_Logo_RGB_trns.png" />
-    <Resource Include="Resources\Splash_PTV Group_640x478_e_weiß.jpg" />
+    <Resource Include="Resources\Splash_PTV Group_640x478_e_white.jpg" />
     <Resource Include="Resources\SharpMapLogo.png" />
     <Resource Include="Resources\delete.png" />
     <Resource Include="Resources\CalculatorHS.png" />
