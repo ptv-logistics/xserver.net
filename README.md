@@ -1,6 +1,6 @@
 PTV xServer .NET
 
-Copyright (c) 2014 PTV Group, Karlsruhe, Germany.
+Copyright (c) 2016 PTV Group, Karlsruhe, Germany.
 
 
 What is PTV xServer .NET?
@@ -26,7 +26,7 @@ Prerequisites
 
 - At least Windows Vista, Windows 7 or Windows 8 is recommended.
 
-- At least Microsoft .NET 3.5 for running the demos provided through our 
+- At least Microsoft .NET 4.5.1 for running the demos provided through our 
   Demo Center.
 
 - At least Visual Studio C# 2008 Express Edition for developing applications
@@ -61,7 +61,7 @@ Visual Studio Toolbox
 - Toolbox registration has to be done for every user separately.
 
 - Toolbox registration is done by the setup of PTV xServer .NET for Microsoft
-  Visual Studio 2008, 2010, 2012 and 2014 installations. Due to limitations of the
+  Visual Studio 2008, 2010, 2012 and 2015 installations. Due to limitations of the
   Microsoft Visual Studio Express editions the PTV xServer .NET Toolbox Installer 
   is not capable of adding toolbox items in this case. 
   You can add the toolbox items manually as follows:
@@ -77,6 +77,40 @@ Visual Studio Toolbox
 
 Release Notes 
 -------------
+
+Version 1.5.0.0 (2016/04/18)
+
+  Bugfixes:
+
+     - xMap ObjectInfos were still displayed after layer was disabled.
+     - Incorrect Rendering for MapPolygon when InifiteZoom was activated.
+     - MapRengtagle.GetEnvelope didn't consider the spatialReferenceId.
+     - MapRectange.Equals() threw exception when rectangle was null.
+     - XMapMetaInfo(baseUrl) didn't invoke the base constructor.
+
+
+  Changes and Optimizations:
+
+    - ConnectionLimit for ServicePointManager now isn't changed inside control classes.
+    - Added china and world-map support for CompleteUrl().
+    - Optimized tile loading and pruning.
+    - Toolbox installer now also supports Visual Studio 2015.
+    - Signing algorithm for SDK-Setup and DemoCenter.exe is now SHA256.
+
+
+  DemoCenter Updates: 
+
+    - Setting default map to World map.
+    - Updated FeatureLayer samples for DemoCenter to match the current situation.
+    - Added Gravelpit to profile selection.
+    - Added link-button to the xServer.NET forum.
+    - "Reset Use cases" button resets the DataManager and FeatureLayer use case too.
+    - Fix map&market .mdb-Path for ClickOnce demo.
+    - Fix swapped latitude/longitude in TourPlanning demo.
+    - Cleaned up TourPlanning demo code.
+    - FeatureLayer is only inserted at sample use case.
+
+
 
 Version 1.4.0.0 (2015/07/30)
 

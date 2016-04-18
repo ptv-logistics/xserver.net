@@ -1,6 +1,6 @@
 PTV xServer .Net
 
-Copyright (c) 2014 PTV Group, Karlsruhe, Germany.
+Copyright (c) 2016 PTV Group, Karlsruhe, Germany.
 
 Permission is hereby granted, free of charge, to any person obtaining a 
 copy of this software and associated documentation files, to deal in the 
@@ -41,7 +41,6 @@ additional information is provided in the folder "Licenses".
 The incorporated software projects and their corresponding licenses are:
 
 Core:
-- Silverlight Toolkit                    [Ms-PL.txt    ] 
 - PROJ.4                                 [PROJ.4.txt   ] 
 - MapServer                              [MapServer.txt]
 

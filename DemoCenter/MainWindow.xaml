@@ -407,6 +407,10 @@
         </ScrollViewer>
       </Grid>
     </DockPanel>
+    <StackPanel Margin="0 0 210 10" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" MouseLeftButtonUp="Forum_OnMouseLeftButtonUp" MouseEnter="Logo_MouseEnter" MouseLeave="Logo_MouseLeave">
+        <Image Height="30" Source="/Resources/Forum.png" />
+        <TextBlock TextDecorations="Underline" FontWeight="Bold"><Run Text="Forum"/></TextBlock>
+    </StackPanel>
     <StackPanel Margin="0 0 105 10" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" MouseLeftButtonUp="XServerInternet_OnMouseLeftButtonUp" MouseEnter="Logo_MouseEnter" MouseLeave="Logo_MouseLeave">
         <Image Height="30" Source="/Resources/xserverinternet.png" />
         <TextBlock TextDecorations="Underline" FontWeight="Bold"><Run Text="xServer internet"/></TextBlock>

@@ -60,7 +60,7 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
         private readonly Map map;
 
         /// <summary>Displays way points and courses of the example routes.</summary>
-        private readonly ShapeLayer shapeLayer;
+        private ShapeLayer shapeLayer;
 
 
         /// <summary>
@@ -72,9 +72,6 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
         public FeatureLayerUseCase(Map map)
         {
             this.map = map;
-
-            shapeLayer = new ShapeLayer("Feature Layer routes") {SpatialReferenceId = "OG_GEODECIMAL"};
-            map.Layers.Add(shapeLayer);
         }
 
         private XElement featureLayerXElement;
@@ -185,6 +182,23 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
                     .First(theme => theme.Attribute("id").Value == themeId)
                     .Attribute("enabled")
                     .Value = value.ToString().ToLower();
+
+                if (UseTrafficIncidents || UseTruckAttributes || UsePreferredRoutes || UseRestrictionZones || UseSpeedPatterns)
+                {
+                    if (map.Layers["Feature Layer routes"] == null)
+                    {
+                        shapeLayer = new ShapeLayer("Feature Layer routes") {SpatialReferenceId = "OG_GEODECIMAL"};
+                        map.Layers.InsertBefore(shapeLayer, "Labels");
+                    }
+                }
+                else
+                {
+                    if (map.Layers["Feature Layer routes"] != null)
+                    {
+                        map.Layers.Remove(map.Layers["Feature Layer routes"]);
+                        shapeLayer = null;
+                    }
+                }
             }
             catch { return; } // Something does not match the XML
 
@@ -298,8 +312,9 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
                     // The insertion of xserver.FeatureLayer objects into the CustomXMapLayers results in a providing of ObjectInfo objects in the return value
                     // of XMap.RenderMapBoundingBox(). Only by means of these objects, it is possible to retrieve information for tool tips.
                     var xServerLayers = new List<xserver.Layer>();
+
                     if (UseTrafficIncidents)
-                        xServerLayers.Add( new xserver.FeatureLayer { name = "PTV_TrafficIncidents", visible = true, objectInfos = xserver.ObjectInfoType.REFERENCEPOINT });
+                        xServerLayers.Add(new xserver.FeatureLayer { name = "PTV_TrafficIncidents", visible = true, objectInfos = xserver.ObjectInfoType.REFERENCEPOINT });
                     if (UseTruckAttributes)
                         xServerLayers.Add(new xserver.FeatureLayer { name = "PTV_TruckAttributes", visible = true, objectInfos = xserver.ObjectInfoType.REFERENCEPOINT });
                     if (UsePreferredRoutes)
@@ -349,8 +364,8 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
                 theme = Theme.TrafficIncidents,
                 scenarios = new List<Scenario>
                 {
-                    new Scenario { description = "DE, Hagsfeld", wayPoints = new [] { new PlainPoint { x = 8.44838, y = 49.02485 }, new PlainPoint { x = 8.46003, y = 49.02771 } } },
-                    new Scenario { description = "BE, Brussel", wayPoints = new [] { new PlainPoint { x = 4.356422424316405, y = 50.854292310482485 }, new PlainPoint { x = 4.339857101440429, y = 50.831366652366626 } } },
+                    new Scenario { description = "DE, Karlsruhe", wayPoints = new [] { new PlainPoint { x = 8.40118, y = 49.00722 }, new PlainPoint { x = 8.40437, y = 48.99926 } } },
+                    new Scenario { description = "BE, Brussel", wayPoints = new [] { new PlainPoint { x = 4.31084, y = 50.83376 }, new PlainPoint { x = 4.31798, y = 50.83062 } } },
                 }
             },
             new Scenarios
@@ -368,7 +383,7 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
                 scenarios = new List<Scenario>
                 {
                     new Scenario { description = "DE, Fellbach \u2192 DE, Musberg", wayPoints = new [] { new PlainPoint { x = 9.28413, y = 48.81319 }, new PlainPoint { x = 9.12277, y = 48.69413 } } },
-                    new Scenario { description = "DE, Ulm (bypass road) ", wayPoints = new [] { new PlainPoint { x = 9.94909, y = 48.45669 }, new PlainPoint { x = 10.09026, y = 48.31968 } } },
+                    new Scenario { description = "DE, Ulm (bypass road) ", wayPoints = new [] { new PlainPoint { x = 9.96867, y = 48.43358 }, new PlainPoint { x = 10.09026, y = 48.31968 } } },
                 }
             },
             new Scenarios
@@ -377,6 +392,7 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
                 scenarios = new List<Scenario>
                 {
                     new Scenario { description = "DE, Karlsruhe Adenauerring", wayPoints = new [] { new PlainPoint { x = 8.37922, y = 49.01502 }, new PlainPoint { x = 8.42806, y = 49.01328 } } },
+                    new Scenario { description = "US, New York", wayPoints = new [] { new PlainPoint { x = -74.03283, y = 40.78560 }, new PlainPoint { x = -74.00660, y = 40.71387 } } },
                 }
             }
         };

@@ -867,6 +867,12 @@ namespace Ptv.XServer.Demo
             process.Start();
         }
 
+        private void Forum_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var process = new System.Diagnostics.Process { StartInfo = { FileName = "http://xserver.ptvgroup.com/forum/viewforum.php?f=14", Verb = "Open", WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal } };
+            process.Start();
+        }
+
         /// <summary> Event handler preventing a bubbling up of the event. The event is marked to be handled and thus
         /// will be stopped here. So the upper elements do not get them. </summary>
         /// <param name="sender"> Sender of the event. </param>
