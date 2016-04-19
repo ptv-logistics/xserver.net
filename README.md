@@ -81,25 +81,20 @@ Release Notes
 Version 1.5.0.0 (2016/04/18)
 
   Bugfixes:
-
   - xMap ObjectInfos were still displayed after layer was disabled.
   - Incorrect Rendering for MapPolygon when InifiteZoom was activated.
   - MapRengtagle.GetEnvelope didn't consider the spatialReferenceId.
   - MapRectange.Equals() threw exception when rectangle was null.
   - XMapMetaInfo(baseUrl) didn't invoke the base constructor.
 
-
   Changes and Optimizations:
-
   - ConnectionLimit for ServicePointManager now isn't changed inside control classes.
   - Added china and world-map support for CompleteUrl().
   - Optimized tile loading and pruning.
   - Toolbox installer now also supports Visual Studio 2015.
   - Signing algorithm for SDK-Setup and DemoCenter.exe is now SHA256.
 
-
   DemoCenter Updates: 
-
   - Setting default map to World map.
   - Updated FeatureLayer samples for DemoCenter to match the current situation.
   - Added Gravelpit to profile selection.
@@ -109,7 +104,6 @@ Version 1.5.0.0 (2016/04/18)
   - Fix swapped latitude/longitude in TourPlanning demo.
   - Cleaned up TourPlanning demo code.
   - FeatureLayer is only inserted at sample use case.
-
 
 
 Version 1.4.0.0 (2015/07/30)
