@@ -121,7 +121,7 @@
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="WPFToolkit">
-      <HintPath>..\Lib\3rdParty\WPFToolkit.dll</HintPath>
+      <HintPath>Lib\3rdparty\WPFToolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -487,7 +487,7 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-</PropertyGroup>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

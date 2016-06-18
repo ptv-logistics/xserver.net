@@ -58,15 +58,17 @@ namespace Ptv.XServer.Demo.UseCases
 
             location.Children.Add(introControls[index]);
 
-            if (HandlerCallback != null)
+            if (HandlerCallback != null && handlerIds.Length > index)
                 HandlerCallback(handlerIds[index], true);
 
             introControls[index].Forwarded = () =>
             {
-                if (HandlerCallback != null)
+                if (HandlerCallback != null && handlerIds.Length > index)
                     HandlerCallback(handlerIds[index], false);
 
-                location.Children.Remove(introControls[index]);
+                if (introControls.Length > index)
+                    location.Children.Remove(introControls[index]);
+
                 index++;
 
                 if (index < introControls.Length)
@@ -77,10 +79,12 @@ namespace Ptv.XServer.Demo.UseCases
 
             introControls[index].Backwarded = () =>
             {
-                if (HandlerCallback != null)
+                if (HandlerCallback != null && handlerIds.Length > index)
                     HandlerCallback(handlerIds[index], false);
 
-                location.Children.Remove(introControls[index]);
+                if(introControls.Length > index)
+                    location.Children.Remove(introControls[index]);
+
                 index--;
                 ShowIntro(index);
             };
