@@ -36,7 +36,7 @@ namespace Ptv.XServer.Demo.Tools
             {
                 Caption = layerCaption,
                 MaxRequestSize = new System.Windows.Size(2048, 2048),
-                MinLevel = 15, // Minimal level (defined by Google), for which Poi objects are shown. 
+                MinLevel = 16, // Minimal level (defined by Google), for which Poi objects are shown. 
                 Icon = ResourceHelper.LoadBitmapFromResource("Ptv.XServer.Controls.Map;component/Resources/POI.png"),
                 CustomXMapLayers = new xserver.Layer[] {  
                     new xserver.SMOLayer
