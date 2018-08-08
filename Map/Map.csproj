@@ -94,10 +94,12 @@
     <Compile Include="Layers\ViewportEndChangedWeakEventManager.cs" />
     <Compile Include="Layers\ViewportWhileChangedWeakEventManager.cs" />
     <Compile Include="Layers\WmsLayer.cs" />
+    <Compile Include="Layers\Xmap2LayerFactory.cs" />
     <Compile Include="Map\GlobalOptions.cs" />
     <Compile Include="Map\IMap.cs" />
     <Compile Include="Map\LayerCollection.cs" />
     <Compile Include="Map\MapRectangle.cs" />
+    <Compile Include="Map\ToolTipManagement.cs" />
     <Compile Include="Symbols\LightenColorExtension.cs" />
     <Compile Include="Symbols\Misc\Crosshair.xaml.cs">
       <DependentUpon>Crosshair.xaml</DependentUpon>
@@ -137,6 +139,7 @@
     </Compile>
     <Compile Include="TileProviders\BingTiledProvider.cs" />
     <Compile Include="TileProviders\IXserver.cs" />
+    <Compile Include="TileProviders\MapObject.cs" />
     <Compile Include="TileProviders\PtvAjaxTiledProvider.cs" />
     <Compile Include="TileProviders\RemoteTiledProvider.cs" />
     <Compile Include="TileProviders\XmapTiledProvider.cs" />
@@ -201,6 +204,7 @@
     <Compile Include="Tools\Reprojection\Reprojection.cs" />
     <Compile Include="Tools\Reprojection\ReprojectionService.cs" />
     <Compile Include="Tools\Reprojection\WmsMapService.cs" />
+    <Compile Include="Tools\SimpleJSON.cs" />
     <Compile Include="Tools\TileCache.cs" />
     <Compile Include="TileProviders\TileExceptionHandler.cs" />
     <Compile Include="Tools\ImageTools.cs" />
@@ -226,6 +230,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Layers\XmapLayerFactory.cs" />
+    <Compile Include="UntiledProviders\XServer2UntiledProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Gadgets\CoordinatesGadget.xaml">
@@ -368,6 +373,9 @@
     <Resource Include="Resources\Overview.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Map.snk" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Resources\LayerDefault.png" />
   </ItemGroup>
   <ItemGroup>
@@ -401,6 +409,13 @@
       <Name>Projections</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Transport.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\PlainBackground.png" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

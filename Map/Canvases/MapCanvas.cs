@@ -85,6 +85,11 @@ namespace Ptv.XServer.Controls.Map.Canvases
         /// <param name="updateMode"> The update mode. This mode tells which kind of change is to be processed by the
         /// update call. </param>
         public abstract void Update(UpdateMode updateMode);
+
+        protected virtual void BeforeUpdate(UpdateMode updateMode)
+        {
+            
+        }
         #endregion
 
         #region IWeakEventListener Members
@@ -93,16 +98,19 @@ namespace Ptv.XServer.Controls.Map.Canvases
         {
             if (managerType == typeof(ViewportBeginChangedWeakEventManager))
             {
+                BeforeUpdate(UpdateMode.BeginTransition);
                 Update(UpdateMode.BeginTransition);
                 return true;
             }
             if (managerType == typeof(ViewportWhileChangedWeakEventManager))
             {
+                BeforeUpdate(UpdateMode.WhileTransition);
                 Update(UpdateMode.WhileTransition);
                 return true;
             }
             if (managerType == typeof(ViewportEndChangedWeakEventManager))
             {
+                BeforeUpdate(UpdateMode.EndTransition);
                 Update(UpdateMode.EndTransition);
                 return true;
             }
@@ -231,6 +239,8 @@ namespace Ptv.XServer.Controls.Map.Canvases
         /// <summary> Transformation instance of the canvas. This variable is used to transform coordinates from one
         /// format to another. </summary>
         private readonly Transform canvasTransform;
+
+        private readonly TranslateTransform offsetTransform;
         #endregion
 
         #region constructor
@@ -247,7 +257,13 @@ namespace Ptv.XServer.Controls.Map.Canvases
         protected WorldCanvas(MapView mapView, bool addToMap)
             : base(mapView)
         {
-            canvasTransform = TransformFactory.CreateTransform(SpatialReference.PtvMercatorInvertedY);
+            var ct = TransformFactory.CreateTransform(SpatialReference.PtvMercatorInvertedY);
+            offsetTransform = new TranslateTransform(mapView.OriginOffset.X, mapView.OriginOffset.Y);
+            var tg = new TransformGroup();
+            tg.Children.Add(offsetTransform);
+            tg.Children.Add(ct);
+            canvasTransform = tg;
+
             InitializeTransform();
 
             if (addToMap)
@@ -277,9 +293,18 @@ namespace Ptv.XServer.Controls.Map.Canvases
         protected override Point PtvMercatorToCanvas(Point mercatorPoint)
         {
             return (RenderTransform == canvasTransform) ? 
-                new Point(mercatorPoint.X + MapView.OriginOffset.X, -mercatorPoint.Y + MapView.OriginOffset.Y) :
+                new Point(mercatorPoint.X, -mercatorPoint.Y) :
                 RenderTransform.Transform(canvasTransform.Inverse.Transform(
-                    new Point(mercatorPoint.X + MapView.OriginOffset.X, -mercatorPoint.Y + MapView.OriginOffset.Y)));
+                    new Point(mercatorPoint.X, -mercatorPoint.Y)));
+        }
+
+        protected override void BeforeUpdate(UpdateMode updateMode)
+        {
+            if (updateMode == UpdateMode.EndTransition)
+            {
+                offsetTransform.X = MapView.OriginOffset.X;
+                offsetTransform.Y = MapView.OriginOffset.Y;
+            }
         }
 
         #endregion

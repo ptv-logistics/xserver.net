@@ -115,12 +115,15 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 
 
         /// <inheritdoc />
-        public override Stream GetImageStream(IBoundingBox box, Size size)
+        public override Stream GetImageStream(IBoundingBox box, Size requestedSize, out Size effectiveSize)
         {
             try
             {
+                // we're going to return requestd size ...
+                effectiveSize = requestedSize;
+
                 // create web request
-                var request = CreateRequest(InstantiateUrl(box, size));
+                var request = CreateRequest(InstantiateUrl(box, requestedSize));
 
                 // trigger event handler, if any
                 if (OnRequestCreated != null)

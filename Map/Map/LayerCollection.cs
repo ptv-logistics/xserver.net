@@ -45,6 +45,8 @@ namespace Ptv.XServer.Controls.Map
         public LayerCollection()
         {
             CollectionChanged += LayerCollection_CollectionChanged;
+            LayerAdded += Layer_Added;
+            LayerRemoved += Layer_Removed;
         }
         #endregion
 
@@ -134,8 +136,7 @@ namespace Ptv.XServer.Controls.Map
                     layer.RemoveFromMapView(mapView);
             }
 
-            if(LayerVisibilityChanged != null)
-                LayerVisibilityChanged(this, new LayerChangedEventArgs(layer.Name));
+            LayerVisibilityChanged?.Invoke(this, new LayerChangedEventArgs(layer));
         }
 
         /// <summary> Retrieves if the layer is selectable without taking into account whether it is exclusively
@@ -167,8 +168,7 @@ namespace Ptv.XServer.Controls.Map
 
             selectabilities[layer] = selectable;
 
-            if (LayerSelectabilityChanged != null)
-                LayerSelectabilityChanged(this, new LayerChangedEventArgs(layer.Name));
+            LayerSelectabilityChanged?.Invoke(this, new LayerChangedEventArgs(layer));
         }
 
         /// <summary> Gets or sets the layer which is the one-and-only selectable layer. </summary>
@@ -187,8 +187,21 @@ namespace Ptv.XServer.Controls.Map
 
         #region events
 
+        /// <summary>Callback for indicating the insertion of a new layer to this collection.
+        /// This is useful when layer specific callbacks have to be set, for example to indicate a layer's property change.
+        /// </summary>
+        public event EventHandler<LayerChangedEventArgs> LayerAdded;
+
+        /// <summary>Callback for indicating the removal of a layer from this collection.
+        /// It becomes important when layer specific callbacks were set in <see cref="LayerAdded"/>, 
+        /// and have to be removed now.
+        /// </summary>
+        public event EventHandler<LayerChangedEventArgs> LayerRemoved;
+
+        /// <summary>Callback for indicating the visibility changing. </summary>
         public event EventHandler<LayerChangedEventArgs> LayerVisibilityChanged;
 
+        /// <summary>Callback for indicating the selectability changing. </summary>
         public event EventHandler<LayerChangedEventArgs> LayerSelectabilityChanged;
 
         #endregion
@@ -208,19 +221,14 @@ namespace Ptv.XServer.Controls.Map
                             layer.RemoveFromMapView(mapView);
 
                     foreach (var layer in visiblities.Keys.ToList())
-                    {
-                        selectabilities.Remove(layer);
-                        visiblities.Remove(layer);
-                        layer.PropertyChanged -= layer_PropertyChanged;      
-                    }
+                        LayerRemoved?.Invoke(sender, new LayerChangedEventArgs(layer));
+
                     break;
 
                 case NotifyCollectionChangedAction.Add:
                     foreach (ILayer layer in e.NewItems)
                     {
-                        selectabilities[layer] = true;
-                        visiblities[layer] = true;
-                        layer.PropertyChanged += layer_PropertyChanged;
+                        LayerAdded?.Invoke(sender, new LayerChangedEventArgs(layer));
 
                         foreach (var mapView in mapViews.Where(mapView => mapView.IsVisible && IsVisible(layer) && LayerNameIsUnique(layer, e.NewStartingIndex, e.NewItems.Count)))
                             layer.AddToMapView(mapView);
@@ -233,9 +241,7 @@ namespace Ptv.XServer.Controls.Map
                         foreach (var mapView in mapViews.Where(mapView => mapView.IsVisible && IsVisible(layer)))
                             layer.RemoveFromMapView(mapView);
 
-                        selectabilities.Remove(layer);
-                        visiblities.Remove(layer);
-                        layer.PropertyChanged -= layer_PropertyChanged;      
+                        LayerRemoved?.Invoke(sender, new LayerChangedEventArgs(layer));
                     }
                     break;
             }
@@ -243,6 +249,20 @@ namespace Ptv.XServer.Controls.Map
             // update z-index
             for (int i = 0; i < Count; i++)
                 this[i].Priority = i;
+        }
+
+        private void Layer_Added(object sender, LayerChangedEventArgs e)
+        {
+            selectabilities[e.Layer] = true;
+            visiblities[e.Layer] = true;
+            e.Layer.PropertyChanged += layer_PropertyChanged;
+        }
+
+        private void Layer_Removed(object sender, LayerChangedEventArgs e)
+        {
+            selectabilities.Remove(e.Layer);
+            visiblities.Remove(e.Layer);
+            e.Layer.PropertyChanged -= layer_PropertyChanged;
         }
 
         private void layer_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -333,9 +353,27 @@ namespace Ptv.XServer.Controls.Map
         #endregion
     }
 
+    /// <summary>Additional argument class for events concerning some changes in the context of an individual layer. </summary>
     public class LayerChangedEventArgs : EventArgs
     {
+        /// <summary>Constructor needed for defining which layer is addressed concering its changes. </summary>
+        /// <param name="layer">Layer which changes its properties or is added to/removed from the layer collection.</param>
+        public LayerChangedEventArgs(ILayer layer)
+        {
+            Layer = layer;
+            LayerName = layer.Name;
+        }
+
+        /// <summary>Legacy contructor containing only the name of the layer. </summary>
+        /// <remarks>The property <see cref="Layer"/> remains uninitialized.</remarks>
+        /// <param name="layerName">Name of the layer which was changed one of its properties or is added to /removed from the
+        /// collection list.</param>
         public LayerChangedEventArgs(string layerName) { LayerName = layerName; }
+
+        /// <summary>Name of the layer.</summary>
         public virtual string LayerName { get; private set; }
+
+        /// <summary>Layer which was changed one of its properties or is added to /removed from the collection list.</summary>
+        public virtual ILayer Layer { get; private set; }
     }
 }

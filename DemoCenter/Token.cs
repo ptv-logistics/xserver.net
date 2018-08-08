@@ -23,7 +23,7 @@ namespace Ptv.XServer.Demo
       {
          get
          {
-            return "9577C530-1861-4616-A8B0-2D6341D2E45F";
+            return "9358789A-A8CF-4CA8-AC99-1C0C4AC07F1E";
          }
       }
    }

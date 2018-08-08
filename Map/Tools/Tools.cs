@@ -9,7 +9,8 @@ using System.Windows.Media.Imaging;
 using xserver;
 using Ptv.XServer.Controls.Map.TileProviders;
 using System.Text.RegularExpressions;
-
+using System.Web.Services.Protocols;
+using System.Net;
 
 namespace Ptv.XServer.Controls.Map.Tools
 {
@@ -371,7 +372,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// </param>
         /// <returns>True if one or n layers are available, false if at least one layer is not available. 
         /// May throw exceptions in case of malformed url or wrong contextKey definition.</returns>
-        public static bool AreXMapLayersAvailable(string url, string contextKey, Layer[] layers, string profile, string expectedErrorCode)
+        public static bool AreXMapLayersAvailable(string url, string contextKey, Layer[] layers, string profile, string expectedErrorCode, string xserverUser = null, string xServerPassword = null)
         {
             string key = url + profile;
 
@@ -383,6 +384,13 @@ namespace Ptv.XServer.Controls.Map.Tools
             try
             {
                 Service = Service ?? new XMapWSServiceImpl(url);
+
+                if (!string.IsNullOrEmpty(xserverUser) && !string.IsNullOrEmpty(xServerPassword))
+                {
+                    ((SoapHttpClientProtocol)Service).PreAuthenticate = true;
+                    ((SoapHttpClientProtocol)Service).Credentials = new CredentialCache { { new Uri(url), "Basic", new NetworkCredential(xserverUser, xServerPassword) } };
+                }
+
                 var mapParams = new MapParams { showScale = false, useMiles = false };
                 var imageInfo = new ImageInfo { format = ImageFileFormat.GIF, height = 32, width = 32 };
                 var bbox = new BoundingBox

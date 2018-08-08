@@ -5,13 +5,16 @@
 // should have been provided with this distribution.
 //--------------------------------------------------------------
 
+using xserver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Media;
 using Ptv.XServer.Controls.Map.TileProviders;
 using Ptv.XServer.Controls.Map.Canvases;
+using Point = System.Windows.Point;
 
 namespace Ptv.XServer.Controls.Map
 {
@@ -41,12 +44,18 @@ namespace Ptv.XServer.Controls.Map
             {
                 InitializeFactory(CanvasCategory.Content, mapView => new UntiledCanvas(mapView, UntiledProvider) { MaxRequestSize = MaxRequestSize, MinLevel = MinLevel });
                 UntiledProvider = new XMapTiledProvider(url, user, password, XMapMode.Custom);
-                
-                // Getting the description of layer objects by retrieving the second substring (separator = ':')
-                GetToolTipFromLayerObject = o =>
+
+                var prevGetToolTipFromMapObject = 
+                    GetToolTipFromMapObject;
+
+                GetToolTipFromMapObject = o =>
                 {
-                    var texts = o.descr.Split(new[] { ':' });
-                    return (texts.Length == 2) ? texts[1] : o.descr;
+                    // Getting the description of layer objects by retrieving the second substring (separator = ':')
+                    var m = Regex.Match((o.Source as LayerObject)?.descr ?? "", @"^(?:[^\|=:]+):([^\|=:]*)$");
+
+                    return m.Success
+                        ? m.Groups[1].Value
+                        : prevGetToolTipFromMapObject(o);
                 };
             }
 
@@ -81,32 +90,31 @@ namespace Ptv.XServer.Controls.Map
             /// <param name="center">Point to test</param>
             /// <param name="maxPixelDistance">Maximal distance from the specified position to get the tool tips for.</param>
             /// <returns>Matching layer objects.</returns>
-            protected override IEnumerable<xserver.LayerObject> ToolTipHitTest(IEnumerable<xserver.ObjectInfos> infos, Point center, double maxPixelDistance)
+            protected override IEnumerable<IMapObject> ToolTipHitTest(IEnumerable<IMapObject> infos, Point center, double maxPixelDistance)
             {
-                int yOffset = MarkerIsBalloon ? Convert.ToInt32(maxPixelDistance / 2) : 0;
+                var list = base.ToolTipHitTest(infos, center, maxPixelDistance).ToList();
 
-                foreach (var info in infos.Where(info => (info.wrappedObjects != null) && (info.wrappedObjects.Length > 0)))
-                {
-                    foreach (var xServerObject in info.wrappedObjects)
+                foreach (var info in infos.Except(list))
+                { 
+                    var isMatch = false;
+                    var layerObject = info.Source as LayerObject;
+
+                    if (layerObject?.geometry?.pixelGeometry != null)
                     {
-                        var isMatch = false;
-
-                        if (xServerObject.geometry != null && xServerObject.geometry.pixelGeometry != null)
+                        var lineString = layerObject.geometry.pixelGeometry as xserver.PlainLineString;
+                        if (lineString?.wrappedPoints != null)
                         {
-                            var lineString = xServerObject.geometry.pixelGeometry as xserver.PlainLineString;
-                            if (lineString != null && lineString.wrappedPoints != null)
-                            {
-                                if (lineString.wrappedPoints.Length > 1)
-                                    isMatch = PointInRangeOfLinestring(lineString.wrappedPoints.Select(pp => new Point(pp.x, pp.y)).ToArray(), center, maxPixelDistance);
-                                else if (lineString.wrappedPoints.Length == 1)
-                                    isMatch = (center - new Point(lineString.wrappedPoints[0].x, lineString.wrappedPoints[0].y)).Length <= maxPixelDistance;
-                            }
+                            isMatch = (lineString.wrappedPoints.Length > 1)
+                                ? PointInRangeOfLinestring(lineString.wrappedPoints.Select(pp => new Point(pp.x, pp.y)).ToArray(), center, maxPixelDistance)
+                                : (lineString.wrappedPoints.Length == 1) && (center - new Point(lineString.wrappedPoints[0].x, lineString.wrappedPoints[0].y)).Length <= maxPixelDistance;
                         }
-
-                        if (isMatch || (center - new Point(xServerObject.pixel.x, xServerObject.pixel.y - yOffset)).Length <= maxPixelDistance)
-                            yield return xServerObject;
                     }
+
+                    if (isMatch)
+                        list.Add(info);
                 }
+
+                return list;
             }
 
             /// <summary>

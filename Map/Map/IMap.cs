@@ -180,24 +180,9 @@ namespace Ptv.XServer.Controls.Map
         /// <param name="useScaling"> Flag indicating whether the map should be scaled to the paper size. </param>
         /// <param name="description"> Description text for the print document. </param>
         void PrintMap(bool useScaling, string description);
-    }
 
-    /// <summary>
-    /// Separate interface of the map control, dedicated to the management of tool tips.
-    /// </summary>
-    public interface IToolTipManagement
-    {
-        /// <summary> Enables/disables the management for tool tips. </summary>
-        bool IsEnabled { get; set; }
-
-        /// <summary> Reads or writes the value (in [ms]) to delay tool tip display. </summary>
-        int ToolTipDelay { get; set; }
-
-        /// <summary>
-        /// Distance (specified in Pixels) between the current mouse position and a layer object, for which tooltip information should be shown.
-        /// Each layer has to interpolate to its own coordinate format, what is meant by the pixel sized distance.  
-        /// </summary>
-        double MaxPixelDistance { get; set; }
+        /// <summary> Gets the object providing all functionality relevant for tool tip management. </summary>
+        ToolTipManagement ToolTipManagement { get; }
     }
 
     /// <summary>

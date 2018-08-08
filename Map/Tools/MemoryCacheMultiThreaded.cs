@@ -59,6 +59,10 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <param name="value"> The value. </param>
         public void AddValue(string key, byte[] value)
         {
+            if (value == null)
+                return; // only cache empty (bing) images, but not null images
+
+
             // remove unlocked entries while cache size is exceeded
             LinkedListNode<string> node = lastUsed.Last;
             while (node != null && lastUsed.Count >= CacheSize)

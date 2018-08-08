@@ -77,7 +77,7 @@ namespace Ptv.XServer.Demo.Tools
                     key = "ProfileXMLSnippet", value = "/profiles/datamanager/xmap/" + layerId
                 } },
                 MarkerIsBalloon = markerIsBalloon,
-                GetToolTipFromLayerObject = o => o.descr.Split('#')[1].Trim('|').Replace("|", "\n")
+                GetToolTipFromMapObject = o => o.ToString().Split('#')[1].Trim('|').Replace("|", "\n")
             };
 
             map.Layers.Add(layer);

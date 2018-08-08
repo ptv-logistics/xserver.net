@@ -5,8 +5,7 @@ using System.Windows;
 using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Windows.Controls;
-using System.Threading;
+using System.Text.RegularExpressions;
 using System.Windows.Threading;
 using System.Windows.Media.Imaging;
 using Ptv.XServer.Controls.Map.Canvases;
@@ -14,6 +13,13 @@ using Ptv.XServer.Controls.Map.TileProviders;
 using Ptv.XServer.Controls.Map.Tools;
 using Ptv.XServer.Controls.Map.Layers.Tiled;
 using Ptv.XServer.Controls.Map.Localization;
+using xserver;
+using Environment = System.Environment;
+using Timer = System.Threading.Timer;
+using UserControl = System.Windows.Controls.UserControl;
+using Image = System.Windows.Controls.Image;
+using Point = System.Windows.Point;
+using Ptv.XServer.Controls.Map.UntiledProviders;
 
 namespace Ptv.XServer.Controls.Map.Layers.Untiled
 {
@@ -63,8 +69,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
 
         /// <summary>the map itself</summary>
         protected UserControl map;
-        /// <summary>xMap object information</summary>
-        protected xserver.ObjectInfos[] objectInfos;
+        /// <summary>xServer object information</summary>
+        protected IMapObject[] mapObjects;
         /// <summary>xMap image size</summary>
         protected Size imageSize;
 
@@ -92,9 +98,13 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
                 mapView.ViewportBeginChanged += ViewportBeginChanged;
             }
 
-            var xMapTiledProvider = UntiledProvider as IObjectInfoProvider;
-            if (xMapTiledProvider != null)
-                xMapTiledProvider.MapUdpate += UdpateOjectInfos;
+            var objectInfoProvider = UntiledProvider as IObjectInfoProvider;
+            if (objectInfoProvider != null)
+                objectInfoProvider.MapUdpate += UdpateOjectInfos;
+
+            var xmap2objectInfoProvider = UntiledProvider as IXmap2ObjectInfos;
+            if (xmap2objectInfoProvider != null)
+                xmap2objectInfoProvider.Update = UpdateXmap2ObjectInfos;
 
             base.AddToMapView(mapView);
         }
@@ -102,7 +112,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// <inheritdoc/>
         public override void RemoveFromMapView(MapView mapView)
         {
-            objectInfos = null;
+            mapObjects = null;
 
             if (mapView != null && mapView.Name == "Map")
             {
@@ -117,105 +127,56 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
 
         private void ViewportBeginChanged(object o, EventArgs e)
         {
-            objectInfos = null;
+            mapObjects = null;
         }
 
-        /// <summary>Object infos needed for providing texts for tool tips are stored when request are sent to xMap.
+        /// <summary>Object infos which are stored when request is sent to xMap2. </summary>
+        /// <param name="mapObjects"></param>
+        /// <param name="size"></param>
+        public void UpdateXmap2ObjectInfos(IEnumerable<IMapObject> mapObjects, Size size)
+        {
+            if (mapObjects != null)
+            {
+                map.Dispatcher.Invoke((Action)(() =>
+                {
+                    this.mapObjects = mapObjects.ToArray();
+                    imageSize = size;
+                }), DispatcherPriority.Send, null);
+            }
+        }
+
+        /// <summary>
+        /// Provides a hook to generate tool tips for map objects.
+        /// </summary>
+        /// <returns>
+        /// Method that returns a tool tip for a map object. The defualt implementation returns the stringified map object.
+        /// </returns>
+        public Func<IMapObject, string> GetToolTipFromMapObject = mapObject => mapObject.ToString(); 
+        
+        /// <summary>Handles an object information update for xMap-1.
         /// See comments on <see cref="Ptv.XServer.Controls.Map.TileProviders.MapUpdateDelegate"/>.
         /// </summary>
         /// <param name="xServerMap">Map object of xServer</param>
         /// <param name="requestedSize">Requested image size.</param>
         public void UdpateOjectInfos(xserver.Map xServerMap, Size requestedSize)
         {
-            if (map == null) return;
+            if (map == null)
+                return;
+
+            var mapObjects = xServerMap?.wrappedObjects?
+                .Select(objects => objects.wrappedObjects?.Select(layerObject => new XMap1MapObject(objects, layerObject)))
+                .Where(objects => objects != null && objects.Any())
+                .SelectMany(objects => objects)
+                .ToArray();
+
+            if (mapObjects == null || !mapObjects.Any())
+                return;
 
             map.Dispatcher.Invoke((Action)(() =>
             {
-                objectInfos = xServerMap != null ? xServerMap.wrappedObjects : null;
+                this.mapObjects = mapObjects;
                 imageSize = requestedSize;
             }), DispatcherPriority.Send, null);
-        }
-
-        /// <summary> Gets a method for returning a tool tip for a LayerObject. </summary>
-        /// <returns>Method for returning a tool tip string.</returns>
-        /// <remarks>The default implementation returns the description of the layer object (as is).</remarks>
-        public Func<xserver.LayerObject, string> GetToolTipFromLayerObject = layerObject =>
-        {
-            var result = new StringBuilder(4);
-            var message = string.Empty;
-
-            var subStrings = layerObject.descr.Split(new [] {'|'});
-            foreach (var subString in subStrings)
-            {
-                var keyValue = subString.Split(new[] {'='});
-                var key = keyValue[0].Trim().ToUpper();
-                var value = keyValue[1].Trim();
-                switch (key)
-                {
-                    // Traffic incidents 
-                    case "ABSOLUTESPEED": 
-                        var s = Convert.ToInt16(value);
-                        if (s > 0)
-                            result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTrafficIncidentsAbsoluteSpeed), s), Environment.NewLine); 
-                        break;
-                    case "MESSAGE": message = value; break;
-                    case "LENGTH": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTrafficIncidentsLength), Convert.ToDouble(value) / 1000), Environment.NewLine); break;
-                    case "DELAY": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTrafficIncidentsDelay), Math.Round(Convert.ToDouble(value) / 60)), Environment.NewLine); break;
-
-                    // Truck attributes
-                    case "TOTALPERMITTEDWEIGHT": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesPermittedTotalWeight), Convert.ToDouble(value)), Environment.NewLine); break;
-                    case "LOADTYPE":
-                        switch (value)
-                        {
-                            case "0": value = MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesLoadTypePassenger); break;
-                            case "1": value = MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesLoadTypeGoods); break;
-                            default: value = MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesLoadTypeMixed); break;
-                        }
-                        result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesLoadType), value), Environment.NewLine); 
-                        break;
-                    case "MAXHEIGHT": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesMaxHeight), Convert.ToDouble(value) / 100), Environment.NewLine); break;
-                    case "MAXWEIGHT": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesMaxWeight), Convert.ToDouble(value)), Environment.NewLine); break;
-                    case "MAXWIDTH": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesMaxWidth), Convert.ToDouble(value) / 100), Environment.NewLine); break;
-                    case "MAXLENGTH": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesMaxLength), Convert.ToDouble(value) / 100), Environment.NewLine); break;
-                    case "MAXAXLELOAD": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesMaxAxleLoad), Convert.ToDouble(value)), Environment.NewLine); break;
-                    case "HAZARDOUSTOWATERS": result.AppendWithSeparator(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesHazardousToWaters), Environment.NewLine); break;
-                    case "HAZARDOUSGOODS": result.AppendWithSeparator(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesHazardousGoods), Environment.NewLine); break;
-                    case "COMBUSTIBLES": result.AppendWithSeparator(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesCombustibles), Environment.NewLine); break;
-                    case "FREEFORDELIVERY": result.AppendWithSeparator(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesFreeForDelivery), Environment.NewLine); break;
-                    case "TUNNELRESTRICTION": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesTunnelRestriction), value), Environment.NewLine); break;
-                }
-            }
-
-            if (string.IsNullOrEmpty(message)) return result.ToString();
-
-            var startText = MapLocalizer.GetString(MapStringId.ToolTipTrafficIncidentsMessage);
-            result.AppendWithSeparator(startText + BreakIntoLines(message, startText.Length, 50), Environment.NewLine);
-            
-            return result.ToString();
-        };
-
-        private static string BreakIntoLines(string text, int charsInLine, int maxLength)
-        {
-            var result = new StringBuilder();
-            var words = text.Split(null);
-            foreach (var word in words)
-            {
-                if (charsInLine + word.Length + 1 <= maxLength)
-                { // This word fits into line
-                    result.Append(' ');
-                    result.Append(word);
-                    charsInLine += (1 + word.Length);
-                }
-                else
-                { // This word does not fit, insert it into the next line.
-                    result.Append(Environment.NewLine);
-                    result.Append("  "); // Indent
-                    result.Append(word);
-                    charsInLine = 2 + word.Length;
-                }
-            }
-
-            return result.ToString();
         }
 
         /// <summary> Determines the tool tip texts for a given position </summary>
@@ -224,24 +185,26 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// <returns>Tool tip texts.</returns>
         public IEnumerable<string> Get(Point center, double maxPixelDistance)
         {
-            if (map == null || objectInfos == null || objectInfos.Length <= 0) yield break;
-
-            center = new Point(center.X * imageSize.Width / map.ActualWidth, center.Y * imageSize.Height / map.ActualHeight);
-            foreach (var description in ToolTipHitTest(objectInfos, center, maxPixelDistance)
-                                             .Select(layerObject => (GetToolTipFromLayerObject != null) ? GetToolTipFromLayerObject(layerObject) : layerObject.descr)
-                                             .Where(description => !String.IsNullOrEmpty(description))) 
-                                             { yield return description; }
+            if (map != null && GetToolTipFromMapObject != null && mapObjects != null && mapObjects.Length > 0)
+            { 
+                center = new Point(center.X * imageSize.Width / map.ActualWidth, center.Y * imageSize.Height / map.ActualHeight);
+                foreach (var description in ToolTipHitTest(mapObjects, center, maxPixelDistance)
+                    .Select(GetToolTipFromMapObject)
+                    .Where(description => !string.IsNullOrEmpty(description)))
+                    { yield return description; }
+            }
         }
 
-        /// <summary> Hit tests the given layer objects.  </summary>
-        /// <param name="infos">Object information to hit test.</param>
+        /// <summary> Hit tests the given layer features.  </summary>
+        /// <param name="mapObjects">Object information to hit test.</param>
         /// <param name="center">Point to test</param>
         /// <param name="maxPixelDistance">Maximal distance from the specified position to get the tool tips for.</param>
         /// <returns>Matching layer objects.</returns>
-        protected virtual IEnumerable<xserver.LayerObject> ToolTipHitTest(IEnumerable<xserver.ObjectInfos> infos, Point center, double maxPixelDistance) 
+        protected virtual IEnumerable<IMapObject> ToolTipHitTest(IEnumerable<IMapObject> mapObjects, Point center, double maxPixelDistance)
         {
-            return infos.Where(info => (info.wrappedObjects != null) && (info.wrappedObjects.Length > 0))
-                        .SelectMany(info => info.wrappedObjects.Where(xServerObject => (center - new Point(xServerObject.pixel.x, xServerObject.pixel.y)).Length <= maxPixelDistance));
+            return mapObjects
+                .Where(mapObject => mapObject.Count > 0)
+                .Where(mapObject => (center - mapObject.Point).Length <= maxPixelDistance);
         }
     }
 
@@ -678,5 +641,113 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             }
         }
         #endregion
+    }
+
+    /// <summary>
+    /// Represents an xServer-1 map object.
+    /// </summary><remarks>
+    /// The implementation of XServer1MapObject re-uses the implementation previously provided by UntiledLayer. 
+    /// Especially the tool tip hook UntiledLayer.GetToolTipFromLayerObject along with its default implementation 
+    /// has been moved to XServer1MapObject to provide backward compatibility. UntiledLayer itself has been 
+    /// generalized to support multiple xServer versions.
+    /// </remarks>
+    public class XMap1MapObject : MapObject
+    {
+        public XMap1MapObject(ObjectInfos objectInfos, LayerObject layerObject) : base(
+            (((long) layerObject.hiId << 32) + layerObject.loId).ToString(),
+            objectInfos.name,
+            new Point(layerObject.pixel.x, layerObject.pixel.y),
+            new Point(layerObject.@ref.point.x, layerObject.@ref.point.y),
+            () => new[] {new KeyValuePair<string, string>("description", layerObject.descr)}
+        ) {
+            Source = layerObject;
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            // match KVP-style description string: a=b|b=c|...
+            var m = Regex.Match(((LayerObject)Source).descr, @"^(?!\|)(?:\|?([^\|=]+)=([^\|]+))+$");
+
+            if (!m.Success)
+                return base.ToString();
+
+            var result = new StringBuilder(4);
+            var message = string.Empty;
+
+            for (var i=0; i<m.Groups[1].Captures.Count; ++i)
+            {
+                var key = m.Groups[1].Captures[i].Value.Trim().ToUpper();
+                var value = m.Groups[2].Captures[i].Value.Trim();
+
+                switch (key)
+                {
+                    // Traffic incidents 
+                    case "ABSOLUTESPEED":
+                        var s = Convert.ToInt16(value);
+                        if (s > 0)
+                            result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTrafficIncidentsAbsoluteSpeed), s), Environment.NewLine);
+                        break;
+                    case "MESSAGE": message = value; break;
+                    case "LENGTH": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTrafficIncidentsLength), Convert.ToDouble(value) / 1000), Environment.NewLine); break;
+                    case "DELAY": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTrafficIncidentsDelay), Math.Round(Convert.ToDouble(value) / 60)), Environment.NewLine); break;
+
+                    // Truck attributes
+                    case "TOTALPERMITTEDWEIGHT": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesPermittedTotalWeight), Convert.ToDouble(value)), Environment.NewLine); break;
+                    case "LOADTYPE":
+                        switch (value)
+                        {
+                            case "0": value = MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesLoadTypePassenger); break;
+                            case "1": value = MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesLoadTypeGoods); break;
+                            default: value = MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesLoadTypeMixed); break;
+                        }
+                        result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesLoadType), value), Environment.NewLine);
+                        break;
+                    case "MAXHEIGHT": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesMaxHeight), Convert.ToDouble(value) / 100), Environment.NewLine); break;
+                    case "MAXWEIGHT": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesMaxWeight), Convert.ToDouble(value)), Environment.NewLine); break;
+                    case "MAXWIDTH": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesMaxWidth), Convert.ToDouble(value) / 100), Environment.NewLine); break;
+                    case "MAXLENGTH": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesMaxLength), Convert.ToDouble(value) / 100), Environment.NewLine); break;
+                    case "MAXAXLELOAD": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesMaxAxleLoad), Convert.ToDouble(value)), Environment.NewLine); break;
+                    case "HAZARDOUSTOWATERS": result.AppendWithSeparator(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesHazardousToWaters), Environment.NewLine); break;
+                    case "HAZARDOUSGOODS": result.AppendWithSeparator(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesHazardousGoods), Environment.NewLine); break;
+                    case "COMBUSTIBLES": result.AppendWithSeparator(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesCombustibles), Environment.NewLine); break;
+                    case "FREEFORDELIVERY": result.AppendWithSeparator(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesFreeForDelivery), Environment.NewLine); break;
+                    case "TUNNELRESTRICTION": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesTunnelRestriction), value), Environment.NewLine); break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(message))
+                result.AppendWithSeparator(FormatToolTip(MapLocalizer.GetString(MapStringId.ToolTipTrafficIncidentsMessage), message), Environment.NewLine);
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// Used by the default function returned by GetToolTipFromLayerObject to format a message string.
+        /// Breaks a given message into several lines, each line having a specific maximum length.
+        /// </summary>
+        /// <param name="title">String to start the first line with.</param>
+        /// <param name="message">The text to format.</param>
+        /// <param name="maxLength">Maximum length of a single line. Defaults to 50.</param>
+        /// <returns></returns>
+        private static string FormatToolTip(string title, string message, int maxLength = 50)
+        {
+            // list of lines; initialize first line to given title
+            var line = new StringBuilder(title);
+            var lines = new List<StringBuilder> { line };
+
+            foreach (var word in message.Split(null /* white-space characters as delimiters */))
+            {
+                if (line.Length + word.Length >= maxLength)
+                    // Word will not fit, create new line. Start each follow-up line with ' ' (indentation).
+                    lines.Add(line = new StringBuilder(' '));
+
+                // add word to last line
+                line.Append(' ').Append(word);
+            }
+
+            // finally concat all lines using Environment.NewLine as the delimeter and return the string
+            return string.Join(Environment.NewLine, lines.Select(l => l.ToString()).ToArray());
+        }
     }
 }

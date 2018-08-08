@@ -103,7 +103,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
             var minY = rect.South;
             var maxX = rect.East;
             var maxY = rect.North;
-            Rect clippingRect = new Rect(minX + mapView.OriginOffset.X, -maxY + mapView.OriginOffset.Y, maxX - minX, maxY - minY);
+            Rect clippingRect = new Rect(minX, -maxY, maxX - minX, maxY - minY);
 
             double thickness = CurrentThickness(mapView.CurrentScale);
 

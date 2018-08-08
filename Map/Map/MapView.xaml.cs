@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Controls;
 
 namespace Ptv.XServer.Controls.Map
 {
@@ -206,6 +208,11 @@ namespace Ptv.XServer.Controls.Map
         {
             MaxZoom = 19;
             MinZoom = 0;
+
+            // unset UseLayoutRounding, by-name cause it's a 4.0 property
+            var useLayoutRoundingDescriptor = DependencyPropertyDescriptor.FromName(
+                "UseLayoutRounding", typeof(MapView), typeof(MapView));
+            useLayoutRoundingDescriptor?.SetValue(this, false);
 
             InitializeComponent();
 

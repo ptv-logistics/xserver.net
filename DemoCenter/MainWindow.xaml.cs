@@ -96,18 +96,13 @@ namespace Ptv.XServer.Demo
             // use case 'XServerConnection'
             XURLComboBox.DefaultText("Enter URL here", Properties.Settings.Default.XUrl);
 
-            if (DefaultXServerInternetToken.Value.Equals(Properties.Settings.Default.XToken) || String.IsNullOrEmpty(Properties.Settings.Default.XToken))
-            {
-                XTokenToggleButton.IsChecked = true;
-                XTokenTextBox.DefaultText("Azure: Enter xToken here", DefaultXServerInternetToken.Value + " (Trial-Key)");
-                XTokenTextBox.IsReadOnly = true;
-            }
-            else
-            {
-                XTokenToggleButton.IsChecked = false;
-                XTokenTextBox.DefaultText("Azure: Enter xToken here", Properties.Settings.Default.XToken);
-                XTokenTextBox.IsReadOnly = false;
-            }
+            bool useDefaultToken = DefaultXServerInternetToken.Value.Equals(Properties.Settings.Default.XToken)
+                || string.IsNullOrEmpty(Properties.Settings.Default.XToken);
+
+            XTokenToggleButton.IsChecked = XTokenTextBox.IsReadOnly = useDefaultToken;
+            XTokenTextBox.DefaultText("Azure: Enter xToken here", useDefaultToken
+                ? DefaultXServerInternetToken.Value + " (Trial-Key)"
+                : Properties.Settings.Default.XToken);
 
             // Use case 'HERE'
             HereAppIdTextBox.DefaultText("Enter AppId here", Properties.Settings.Default.HereAppId);
@@ -182,6 +177,8 @@ namespace Ptv.XServer.Demo
 
         private bool ConfigureWPFMap(Map map)
         {
+            Ptv.XServer.Controls.Map.GlobalOptions.InfiniteZoom = true;
+
             #region doc:Static Map Control
             // Initialize map control with xMap layers, especially the URL of the xServer. 
             // For layers provided on Azure xServers, an xToken has to be taken into consideration. This information is 
@@ -228,10 +225,16 @@ namespace Ptv.XServer.Demo
                 #endregion
             }
 
-            var a = 0;
-            // Recreates the old layer order.
-            foreach (string layerName in layerOrder.Where(layer => map.Layers[layer] != null))
-                map.Layers.Move(map.Layers.IndexOf(map.Layers[layerName]), a++);
+            // recreate the old layer order if the set of layers has not changed
+            if (map.Layers.All(layer => layerOrder.Contains(layer.Name)))
+            {
+                var layers = layerOrder
+                    .Where(name => map.Layers[name] != null)
+                    .Select((name, index) => new { newIndex = index, oldIndex = map.Layers.IndexOf(map.Layers[name]) });
+
+                foreach (var item in layers)
+                    map.Layers.Move(item.oldIndex, item.newIndex);
+            }
 
             if (UseCase.ManagedAuthentication.XMapMetaInfo.GetRegion() == Region.eu)
                 map.SetMapLocation(new Point(8.4, 49), 10); // Center in Karlsruhe
@@ -260,18 +263,9 @@ namespace Ptv.XServer.Demo
         {
             if (wait) return;
 
-            oldCursor = Cursor;
             Cursor = Cursors.Wait;
-
-            var urlItem = XURLComboBox.SelectedItem as ComboBoxItem;
-            var xUrl = ((urlItem == null) || String.IsNullOrEmpty(urlItem.Tag as string)) ? XURLComboBox.Text.Trim() : urlItem.Tag as string;
-            var xToken = XTokenTextBox.Text.Trim();
-
-            if (XTokenToggleButton.IsChecked ?? false)
-                xToken = xToken.Replace(" (Trial-Key)", "");
-
-            var authenticationOK = UseCase.ManagedAuthentication.Set(xUrl, xToken);
-            Cursor = oldCursor;
+            var authenticationOK = UseCase.ManagedAuthentication.Set(getUrlFromComboBox(), getXTokenFromTextBox());
+            Cursor = null;
 
             if (!authenticationOK)
             {
@@ -281,6 +275,23 @@ namespace Ptv.XServer.Demo
             }
 
             ConfigureWPFMap(wpfMap);
+        }
+
+        private string getUrlFromComboBox()
+        {
+            ComboBoxItem urlItem = XURLComboBox.SelectedItem as ComboBoxItem;
+            return ((urlItem == null) || string.IsNullOrEmpty(urlItem.Tag as string)) 
+                ? XURLComboBox.Text.Trim() 
+                : urlItem.Tag as string;
+        }
+
+        private string getXTokenFromTextBox()
+        {
+            string result = XTokenTextBox.Text.Trim();
+
+            return (XTokenToggleButton.IsChecked ?? false)
+                ? result.Replace(" (Trial-Key)", "")
+                : result;
         }
 
         #endregion

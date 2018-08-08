@@ -4,11 +4,11 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
-using Microsoft.Win32;
 
 namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 {
+    using PointD = System.Windows.Point;
+
     /// <summary>
     /// Represents an image in 32bpp ARGB format.
     /// </summary>
@@ -53,13 +53,14 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                 throw new ArgumentException("unexpected image size");
 
             if (argbValues == null)
-                argbValues = new byte[width * height * 4];
+                argbValues = new byte[height * (width << 2)];
 
             if (argbValues.Length != width * height * 4)
                 throw new InvalidDataException("invalid image buffer");
 
             Width = width;
             Height = height;
+
             this.argbValues = argbValues;
 
             // setup interpolation level by evaluating the given interpolation mode.
@@ -68,12 +69,22 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                 case InterpolationMode.Bicubic:
                 case InterpolationMode.Default:
                 case InterpolationMode.HighQualityBicubic:
-                case InterpolationMode.High: interpolationLevel = 2; break;
+                case InterpolationMode.High:
+                    interpolationLevel = 2;
+                    break;
+
                 case InterpolationMode.Bilinear:
-                case InterpolationMode.HighQualityBilinear: interpolationLevel = 1; break;
+                case InterpolationMode.HighQualityBilinear:
+                    interpolationLevel = 1;
+                    break;
+
                 case InterpolationMode.Low:
-                case InterpolationMode.NearestNeighbor: interpolationLevel = 0; break;
-                default: throw new ArgumentException("unsupported interpolation mode " + mode);
+                case InterpolationMode.NearestNeighbor:
+                    interpolationLevel = 0;
+                    break;
+
+                default:
+                    throw new ArgumentException("unsupported interpolation mode " + mode);
             }
         }
 
@@ -329,6 +340,18 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             set { this[p.X, p.Y] = value; }
         }
 
+        /// <summary>
+        /// Reads or writes the color of a pixel.
+        /// </summary>
+        /// <param name="p">Pixel location.</param>
+        /// <returns>The color of the pixel or "transparent white" if the location is invalid.</returns>
+        /// <remarks>Uses bicubic interpolation when reading colors. When settings colors, changes the nearest pixel.</remarks>
+        public uint this[PointD p]
+        {
+            get { return this[p.X, p.Y]; }
+            set { this[p.X, p.Y] = value; }
+        }
+
         /// <summary> Returns an image stream for further processing. </summary>
         /// <remarks> The stream returned will contain a 32bpp png image, including alpha. </remarks>
         public Stream Stream
@@ -406,7 +429,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                 //   (CMF, FLG bytes at the beginning and the 4-byte Adler32 checksum at the end)
 
                 var lineSize = (Width << 2) + 1;
-                var linesPerBlock = 65535 / lineSize;
+                var linesPerBlock = 32768 / lineSize;
                 var nBlocks = (Height + linesPerBlock - 1) / linesPerBlock;
                 var idatSize = 6 + (nBlocks * 5) + (lineSize * Height);
 
@@ -424,6 +447,12 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                         0x78,
 
                         // FLG field: 0x01 refers to the FCHECK of the FLG field. The rest says "no compression".
+                        // According to https://www.ietf.org/rfc/rfc1951.txt:
+                        // 
+                        //    SPEC: The FCHECK value must be such that CMF and FLG, when viewed as a 16-bit unsigned integer 
+                        //    SPEC: stored in MSB order (CMF*256 + FLG), is a multiple of 31.
+                        //
+                        // In our case: (0x7801 = 30721) / 31 = 991
                         0x01
                     );
 
@@ -439,9 +468,26 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                         // size in bytes of current zlib block
                         var size = nLines * lineSize;
 
-                        // begin zlib block header
-                        // write 1 if this if the last block and 0 otherwise
-                        mem.WriteByte(h + linesPerBlock >= Height ? (byte)1 : (byte)0);
+                        // begin zlib block header, write 1 if this if the last block and 0 otherwise. 
+                        // According to https://www.ietf.org/rfc/rfc1951.txt:
+                        //
+                        //    SPEC:  ...
+                        //    SPEC: 
+                        //    SPEC:  Each block of compressed data begins with 3 header bits containing the following data:
+                        //    SPEC: 
+                        //    SPEC:     first bit  BFINAL
+                        //    SPEC:    next 2 bits BTYPE
+                        //    SPEC: 
+                        //    SPEC:  ...
+                        //    SPEC: 
+                        //    SPEC:  Any bits of input up to the next byte boundary are ignored. The rest of the block consists 
+                        //    SPEC:  of the following information:
+                        //    SPEC: 
+                        //    SPEC:  ...
+                        //
+                        // Be aware that the last header byte is 0x80 and not 0x01 (BTYPE=00).
+
+                        mem.WriteByte(h + linesPerBlock >= Height ? (byte) 0x80 : (byte) 0);
 
                         // block size in bytes. Little endian required here.
                         mem.Write(BitConverter.GetBytes((ushort)size).ToLittleEndian());

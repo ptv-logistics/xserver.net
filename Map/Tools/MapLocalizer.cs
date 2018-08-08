@@ -145,5 +145,7 @@
         ToolTipTruckAttributesFreeForDelivery,
         /// <summary> Tool tip text for tunnel restriction code. </summary>
         ToolTipTruckAttributesTunnelRestriction,
+        /// <summary> Text for transport layer </summary>
+        Transport
     }
 }

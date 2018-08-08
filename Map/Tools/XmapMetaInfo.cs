@@ -82,7 +82,7 @@ namespace Ptv.XServer.Controls.Map.Tools
                         if (!jspFound)
                         {
                             copyrightResult = content;
-                            jspFound = SearchValueInJSON(new[] { "\"modules\"", "\"xmap\"", "\"profiles\"", "\"default\"", "\"map\"", "\"copyright\" : \""}, ref copyrightResult);
+                            jspFound = SearchValueInJSON(new[] { "\"modules\"", "\"xmap\"", "\"profiles\"", "\"default\"", "\"map\"", "\"copyright\" : \"" }, ref copyrightResult);
                         }
 
                         if (jspFound)
@@ -91,7 +91,7 @@ namespace Ptv.XServer.Controls.Map.Tools
                         ///////
 
                         var maxSizeResult = content;
-                        if (SearchValueInJSON(new[] { "\"modules\"", "\"xmap\"", "\"profiles\"", "\"default\"", "\"image\"", "\"maxSize\" : \""}, ref maxSizeResult))
+                        if (SearchValueInJSON(new[] { "\"modules\"", "\"xmap\"", "\"profiles\"", "\"default\"", "\"image\"", "\"maxSize\" : \"" }, ref maxSizeResult))
                         {
                             var values = maxSizeResult.Split(',');
                             MaxRequestSize = new Size(Int32.Parse(values[0]), Int32.Parse(values[1]));

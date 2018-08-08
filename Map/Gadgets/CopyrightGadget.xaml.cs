@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Ptv.XServer.Controls.Map.Layers;
-
+using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 namespace Ptv.XServer.Controls.Map.Gadgets
 {
@@ -67,15 +66,35 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         {
             Loaded -= CopyrightGadget_Loaded;
 
-            layers = Map.Layers; 
-            layers.CollectionChanged += Layers_CollectionChanged;
+            layers = Map.Layers;
+            // For all already inserted layers the missing calls to Layers_LayerAdded have to be caught up on everything.
+            layers.ForEach(null, layer => Layers_LayerAdded(null, new LayerChangedEventArgs(layer)));
+
+            layers.LayerAdded += Layers_LayerAdded;
+            layers.LayerRemoved += Layers_LayerRemoved;
+            layers.LayerVisibilityChanged += Layers_LayerVisibilityChanged;
             UpdateCopyrightText();
         }
 
-        /// <summary> Event handler for a change of the layer collection. Updates the copyright text. </summary>
-        /// <param name="sender"> Sender of the CollectionChanged event. </param>
-        /// <param name="e"> The event parameters. </param>
-        private void Layers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void Layers_LayerAdded(object sender, LayerChangedEventArgs e)
+        {
+            UpdateCopyrightText();
+            e.Layer.PropertyChanged += Layer_PropertyChanged;
+        }
+
+        private void Layers_LayerRemoved(object sender, LayerChangedEventArgs e)
+        {
+            UpdateCopyrightText();
+            e.Layer.PropertyChanged -= Layer_PropertyChanged;
+        }
+
+        private void Layer_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Copyright")
+                UpdateCopyrightText();
+        }
+
+        private void Layers_LayerVisibilityChanged(object sender, LayerChangedEventArgs e)
         {
             UpdateCopyrightText();
         }
@@ -96,15 +115,30 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         {
             TextStack.Children.Clear();
 
-            var copyrightTexts = new List<string>();
-            foreach (var layer in layers.Where(layer => !(string.IsNullOrEmpty(layer.Copyright)) && !copyrightTexts.Contains(layer.Copyright)))
-                copyrightTexts.Add(layer.Copyright);
+            var copyrightTexts = new HashSet<string>(layers
+                .Where(layer => layers.IsVisible(layer))
+                .Where(layer => !string.IsNullOrEmpty(layer.Copyright))
+                .SelectMany(layer => layer.Copyright.Split('|')));
 
-            copyrightTexts.Sort();
+            // Removal to be discussed
+            // copyrightTexts.Sort();
 
-            var alg = copyrightTexts.Count > 1 ? TextAlignment.Left : TextAlignment.Center;
+            TextStack.Children.Add(new TextBlock
+            {
+                Padding = new Thickness(4, 1, 4, 1),
+                Text = string.Join(", ", copyrightTexts.ToArray()),
+                FontSize = 10,
+                TextAlignment = copyrightTexts.Count > 1 ? TextAlignment.Left : TextAlignment.Center
+            });
 
-            copyrightTexts.ForEach(text => TextStack.Children.Add(new TextBlock { Padding = new Thickness(4, 1, 4, 1), Text = text, FontSize = 10, TextAlignment = alg }));
+
+            //copyrightTexts.ForEach(null, text => TextStack.Children.Add(new TextBlock
+            //{
+            //    Padding = new Thickness(4, 1, 4, 1),
+            //    Text = text,
+            //    FontSize = 10,
+            //    TextAlignment = copyrightTexts.Count > 1 ? TextAlignment.Left : TextAlignment.Center
+            //}));
         }
         #endregion
     }

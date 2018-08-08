@@ -210,4 +210,7 @@
   <data name="ToolTipTruckAttributesLoadTypePassenger" xml:space="preserve">
     <value>Passenger</value>
   </data>
+  <data name="Transport" xml:space="preserve">
+    <value>Streets</value>
+  </data>
 </root>

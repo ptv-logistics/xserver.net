@@ -48,6 +48,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         /// Gets or sets the provider for the tiles.
         /// </summary>
         public ITiledProvider TiledProvider { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether dynamic update is enabled.
+        /// </summary>
+        public bool TransitionUpdates { get; set;  }
         #endregion
 
         #region constructor
@@ -58,9 +63,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         public TiledLayer(string name)
             : base(name)
         {
+            TransitionUpdates = true;
+
             InitializeFactory(
                 CanvasCategory.Content,
-                map => new TiledCanvas(map, TiledProvider) { IsTransparentLayer = IsTransparentLayer, IsLabelLayer = IsLabelLayer });
+                map => new TiledCanvas(map, TiledProvider) { IsTransparentLayer = IsTransparentLayer, IsLabelLayer = IsLabelLayer, GetTransitionUpdates = () => TransitionUpdates });
         }
         #endregion
     }
@@ -120,6 +127,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         /// <summary> Gets or sets a value indicating whether threading is used for tile loading. </summary>
         /// <value> Flag indicating whether threading is used for tile loading. </value>
         public bool UseThreading { get; set; }
+
+        /// <summary> Gets or sets an function that returns a value indicating whether dynamic update is used for tile loading. </summary>
+        public Func<bool> GetTransitionUpdates { get; set; }
         #endregion
 
         #region private properties
@@ -168,6 +178,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             RenderTransform = transformGroup;
         }
 
+        private bool TransitionUpdates => (GetTransitionUpdates?.Invoke()).GetValueOrDefault(true);
+
         /// <inheritdoc/>  
         public override void Update(UpdateMode updateMode)
         {
@@ -175,15 +187,20 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             {
                 case UpdateMode.Refresh:
                     RemoveAllTiles();
-                    OnMapSectionStartChange();
+                    OnMapSectionStartChange(updateMode);
                     break;
                 case UpdateMode.BeginTransition:
-                    OnMapSectionStartChange();
+                    OnMapSectionStartChange(updateMode);
                     break;
                 case UpdateMode.WhileTransition:
                     WhileMapSectionChange();
                     break;
                 case UpdateMode.EndTransition:
+                    if (GetTransitionUpdates != null && !GetTransitionUpdates())
+                    {
+                        RemoveTilesWithDifferentZoom();
+                        OnMapSectionStartChange(updateMode);
+                    }
                     OnAnimationFinished();
                     break;
             }
@@ -204,6 +221,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             var mapParam = new MapParam(MapView.ActualWidth, MapView.ActualHeight, MapView.FinalX, MapView.FinalY, GetTileZoom(), MapView.FinalZoom);
 
             currentlyVisibleTiles = new HashSet<TileParam>(GetVisibleTiles(mapParam));
+            currentlyVisibleTiles.ExceptWith(new HashSet<TileParam>(shownImages.Keys));
 
             if (!MapView.Printing)
             {
@@ -226,6 +244,19 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             }
         }
 
+
+        /// <summary> Just as the name says: Remove tiles with a different zoom. </summary>
+        private void RemoveTilesWithDifferentZoom()
+        {
+            var visibleTiles = GetVisibleTiles(new MapParam(MapView.ActualWidth, MapView.ActualHeight, MapView.FinalX, MapView.FinalY, GetTileZoom(), MapView.FinalZoom))
+                    .ToDictionary<TileParam, TileParam, object>(tile => tile, tile => null);
+
+            var tmpList = new List<TileParam>(shownImages.Keys.Where(imageKey => !visibleTiles.ContainsKey(imageKey)));
+
+            foreach (var key in tmpList)
+                RemoveImage(key);
+        }
+
         /// <summary> Just as the name says: Remove all visible tiles. </summary>
         private void RemoveInvisibleTiles()
         {
@@ -235,32 +266,21 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 return;
             }
 
-            int tileZoom = GetTileZoom();
-
-            var visibleTileKeys = GetVisibleTiles(new MapParam(MapView.ActualWidth, MapView.ActualHeight, MapView.FinalX, MapView.FinalY, tileZoom, MapView.FinalZoom)).ToDictionary<TileParam, TileParam, object>(tile => tile, tile => null);
-
-            // for tiled label layer remove tiles which are not at the current level
-            var tmpList = new List<TileParam>();
             if (IsLabelLayer)
             {
-                tmpList.AddRange(shownImages.Keys.Where(imageKey => !visibleTileKeys.ContainsKey(imageKey)));
-
-                foreach (var key in tmpList)
-                {
-                    RemoveImage(key);
-                }
-
+                RemoveTilesWithDifferentZoom();
                 return;
             }
 
             // remove all images at deeper level that contains the current level
-            tmpList = new List<TileParam>();
+            var tileZoom = GetTileZoom();
+            var tmpList = new List<TileParam>();
             foreach (var imageKey in shownImages.Keys)
             {
                 if (imageKey.Zoom <= tileZoom) continue;
                 int dx = imageKey.TileX / (imageKey.Zoom - tileZoom + 1);
                 int dy = imageKey.TileY / (imageKey.Zoom - tileZoom + 1);
-                var tk = new TileParam(dx, dy, tileZoom);
+                var tk = new TileParam(dx, dy, tileZoom, tiledProvider.CacheId);
                 if (shownImages.ContainsKey(tk) && (Math.Abs(shownImages[tk].Opacity - 1) < 0.00001))
                 {
                     tmpList.Add(imageKey);
@@ -337,15 +357,20 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         /// <summary>
         /// Refreshes the tiles which are shown on the canvas. This method is designed to be called at the start of a map section change.
         /// </summary>
-        private void OnMapSectionStartChange()
+        /// <param name="updateMode"> The update mode. This mode tells which kind of change is to be processed by the update call. </param>
+        private void OnMapSectionStartChange(UpdateMode updateMode)
         {
-            if (MapView.FinalZoom < tiledProvider.MinZoom - 1)
-            {
-                RemoveAllTiles();
-                return;
-            }
+            if (updateMode != UpdateMode.BeginTransition || TransitionUpdates)
+                if (updateMode != UpdateMode.EndTransition || !TransitionUpdates)
+                {
+                    if (MapView.FinalZoom < tiledProvider.MinZoom - 1)
+                    {
+                        RemoveAllTiles();
+                        return;
+                    }
 
-            GetTiles();
+                    GetTiles();
+                }
         }
 
         /// <summary>
@@ -437,7 +462,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                         continue;
                     }
 
-                    result.Add(new TileParam(tx, ty, mapParam.TileZoom));
+                    result.Add(new TileParam(tx, ty, mapParam.TileZoom, tiledProvider.CacheId));
                 }
             }
 
@@ -577,34 +602,24 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         /// <returns> True if the image was found in the cache, false otherwise. </returns>
         private bool GetImage(TileParam tileKey, out byte[] buffer)
         {
-            string cacheKey = tiledProvider.CacheId + tileKey.ToString();
-            if (tileCache.TryGetValue(cacheKey, out buffer))
+            // don't use memory-cache if the provider returns an empty CacheId
+            var useTileCache = !string.IsNullOrEmpty(tiledProvider.CacheId);
+            string cacheKey = tiledProvider.CacheId + tileKey;
+            if (useTileCache && tileCache.TryGetValue(cacheKey, out buffer))
                 return true;
-
-            int x = tileKey.TileX;
-            int y = tileKey.TileY;
-            int zoom = tileKey.Zoom;
-
+   
             try
             {
-                using (var stream = tiledProvider.GetImageStream(x, y, zoom))
+                using (var stream = tiledProvider.GetImageStream(tileKey.TileX, tileKey.TileY, tileKey.Zoom))
                 {
-                    if (stream == null)
-                    {
-                        buffer = null;
-                    }
-                    else
-                    {
-                        // get bytes
-                        buffer = stream.GetBytes(true);
+                    buffer = stream?.GetBytes(true);
 
-                        // only cache empty (bing) images, but not null images
+                    if(useTileCache)
                         tileCache.AddValue(cacheKey, buffer);
-                    }
                 }
             }
-            catch { } // should handle web exception gracefully here 
-            finally { tileCache.UnlockKey(cacheKey); }
+            catch { buffer = null; } // should handle web exception gracefully here 
+            finally { if(useTileCache) tileCache.UnlockKey(cacheKey); }
 
             return false;
         }
@@ -629,7 +644,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
 
             if (buffer == null && zoom > tiledProvider.MinZoom)
             {
-                LoadImage(new TileParam(x / 2, y / 2, zoom - 1), true);
+                LoadImage(new TileParam(x / 2, y / 2, zoom - 1, tiledProvider.CacheId), true);
             }
 
             // only animate if the tile is not in the cache or the zoom level changed
@@ -707,11 +722,13 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             /// <param name="tileX"> Tile position for according x-coordinate. </param>
             /// <param name="tileY"> Tile position for according y-coordinate. </param>
             /// <param name="zoom"> Zoom level. </param>
-            public TileParam(int tileX, int tileY, int zoom)
+            /// <param name="cacheKey"> Cache Key. </param>
+            public TileParam(int tileX, int tileY, int zoom, string cacheKey)
             {
                 TileX = tileX;
                 TileY = tileY;
                 Zoom = zoom;
+                CacheKey = cacheKey;
             }
             #endregion
 
@@ -726,13 +743,15 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
 
             /// <summary> Gets or sets the zoom level.</summary>
             public int Zoom { get; set; }
+
+            public string CacheKey { get; set; }
             #endregion
 
             #region public methods
             /// <inheritdoc/>
             public override string ToString()
             {
-                return string.Format("Tx{0}x{1}x{2}", Zoom, TileX, TileY);
+                return string.Format("Tx{0}x{1}x{2}x{3}", Zoom, TileX, TileY, CacheKey);
             }
 
             #endregion
@@ -748,7 +767,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 if (p == null) return false;
 
                 // Return true if the fields match:
-                return (TileX == p.TileX) && (TileY == p.TileY) && (Zoom == p.Zoom);
+                return (TileX == p.TileX) && (TileY == p.TileY) && (Zoom == p.Zoom) && (CacheKey == p.CacheKey);
             }
 
             public bool Equals(TileParam p)
@@ -757,12 +776,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 if (p == null) return false;
 
                 // Return true if the fields match:
-                return (TileX == p.TileX) && (TileY == p.TileX) && (Zoom == p.Zoom);
+                return (TileX == p.TileX) && (TileY == p.TileX) && (Zoom == p.Zoom) && (CacheKey == p.CacheKey);
             }
 
             public override int GetHashCode()
             {
-                return TileX ^ TileY ^ Zoom;
+                return TileX ^ TileY ^ Zoom ^ CacheKey.GetHashCode();
             }
         }
     }

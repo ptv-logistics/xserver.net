@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using Ptv.Components.Projections;
 
 namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 {
+    using SizeD = System.Windows.Size;
+    using PointD = System.Windows.Point;
+
     /// <summary>
     /// Encapsulates the options for ReprojectionService.
     /// </summary>
@@ -64,6 +68,12 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <summary> The coordinate transformation that transforms target (this.CRS) to source (mapService.CRS) points </summary>
         protected readonly ICoordinateTransformation TargetToSourceTransformation;
 
+        /// <summary>Transparent white - the color used when creating default images</summary>
+        protected static readonly Color TransparentWhite = Color.FromArgb(0, 255, 255, 255);
+
+        /// <summary>In case the ReprojectionService is used to render tiles, prepare a transparent tile that can be re-used by RenderTransparentImage.</summary>
+        protected static readonly byte[] TransparentTile = new Size(256, 256).CreateImage(TransparentWhite).StreamPng().ToArray();
+
         /// <summary>
         /// Creates and initializes an instance of ReprojectionService.
         /// </summary>
@@ -89,72 +99,141 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         public ImageReprojector Reprojector { get; private set; }
         
         /// <summary>
-        /// Generates a line string, given the start and end location and the number of points to generate.
-        /// This helper is used by DetermineSourceRectangle. Coordinates are expected in the target CRS, 
-        /// the generated line string is transformed into the source CRS.
+        /// Used internally to describe the covering of a requested map section.
         /// </summary>
-        /// <param name="n">Number of equidistant points to generate, at least two.</param>
-        /// <param name="x0">x-coordinate of start point</param>
-        /// <param name="y0">y-coordinate of start point</param>
-        /// <param name="x1">x-coordinate of end point</param>
-        /// <param name="y1">y-coordinate of end point</param>
-        /// <returns>Generated line string, transformed into source CRS.</returns>
-        protected virtual Location[] MakeLineString(int n, double x0, double y0, double x1, double y1)
+        private enum Covering
         {
-            // create interpolator
-            var pointInterpolator = new PointInterpolator(x0, y0, x1, y1, n - 1);
+            /// <summary>
+            /// MapService has no known bounds; cannot determine covering.
+            /// </summary>
+            Unknown,
 
-            // create locations using interpolator
-            var locations = Enumerable.Range(0, n)
-                .Select(index => pointInterpolator[index])
-                .Select(point => new Location(point.X, point.Y))
-                .ToArray();
+            /// <summary>
+            /// Requested map is outside of the MapService's bounds.
+            /// </summary>
+            None,
 
-            // transform into source CRS.
-            return TargetToSourceTransformation.Transform(locations);
+            /// <summary>
+            /// Requested map is partially covered by the MapService's bounds.
+            /// </summary>
+            Partial,
+
+            /// <summary>
+            /// Requested map is fully covered by the MapService's bounds.
+            /// </summary>
+            Full
         }
 
         /// <summary>
-        /// This method determines the initial source bounds out of the target rectangle, knowing both, 
-        /// source and the target CRS. The source bounds at this stage may not be rectangular and are 
-        /// therefore represented by four line strings, one at each side (order: left, top, right, bottom).
+        /// Determines the coverage of a requested map.
         /// </summary>
-        /// <param name="rc">The targeted map rectangle.</param>
-        /// <returns>Transformed rectangle represented by four line strings. </returns>
-        protected virtual Location[][] DetermineSourceBounds(MapRectangle rc)
+        /// <param name="target">MapRectangle of the requested map.</param>
+        /// <param name="covering">Contains the covered area upon return.</param>
+        /// <returns>Coverage of the requested map.</returns>
+        private Covering DetermineCovering(MapRectangle target, out MapRectangle covering)
         {
-            var n = ReprojectionServiceOptions.SourceBoundsSupportingPoints;
+            // assume full coverage
+            covering = target;
 
-            return new[]
-            {
-                MakeLineString(n, rc.Left, rc.Top, rc.Left, rc.Bottom),
-                MakeLineString(n, rc.Left, rc.Top, rc.Right, rc.Top),
-                MakeLineString(n, rc.Right, rc.Top, rc.Right, rc.Bottom),
-                MakeLineString(n, rc.Left, rc.Bottom, rc.Right, rc.Bottom)
-            };
-        }
+            var source = SourceMapService.Limits;
 
-        /// <summary> Checks if bounds, represented by four line strings, are rectangular. </summary>
-        /// <param name="bounds">Bounds to check</param>
-        /// <returns>True, if the bounds are rectangular. False otherwise.</returns>
-        protected virtual bool IsRectangular(Location[][] bounds)
-        {
-            // Function that checks if a set of locations share a common coordinate, 
-            // given the function that selects the coordinate of the location.
-            Func<int, Func<Location, double>, bool> shareCoordinate = (boundsIndex, selectCoordinate) =>
-            {
-                var coordinates = bounds[boundsIndex].Select(selectCoordinate).ToArray();
-                return coordinates.All(c => Math.Abs(coordinates[0] - c) < 1e-6);
-            };
+            // no limits > unknown covering
+            if (source == null)
+                return Covering.Unknown;
 
-            // check each side
-            return shareCoordinate(0, loc => loc.X) && shareCoordinate(1, loc => loc.Y) && shareCoordinate(2, loc => loc.X) && shareCoordinate(3, loc => loc.Y);
+            // requested map is within limits > full covering
+            if (target.MinX >= source.MinX && target.MaxX <= source.MaxX && target.MinY >= source.MinY && target.MaxY <= source.MaxY)
+                return Covering.Full;
+
+            // intersect limits and requested map
+            covering = new MapRectangle(
+                Math.Max(target.MinX, source.MinX),
+                Math.Min(target.MaxY, source.MaxY),
+                Math.Min(target.MaxX, source.MaxX),
+                Math.Max(target.MinY, source.MinY)
+            );
+
+            // if they don't intersect there's not covering; otherwise there's partial covering 
+            //
+            // we'll have to use left, right, top and bottom for the check; due to the implementation 
+            // in MapRectangle, min < max will always be true. See how we set left, right, top and bottom 
+            // above.
+            return covering.Left < covering.Right && covering.Bottom < covering.Top
+                ? Covering.Partial
+                : Covering.None;
         }
 
         /// <inheritdoc />
         public virtual Stream GetImageStream(MapRectangle targetMapRectangle, Size targetSize)
         {
-            return GetImageStream(targetMapRectangle, targetSize, true, false);
+            MapRectangle covered;
+
+            // determine coverage, render accordingly
+            switch (DetermineCovering(targetMapRectangle, out covered))
+            {
+                // MapService is only partially visible in the requested map
+                case Covering.Partial:
+                    using (var image = targetSize.CreateImage(TransparentWhite))
+                    {
+                        using (var graphics = Graphics.FromImage(image))
+                        {
+                            // determine the pixel rectangle corresponding to 
+                            // the rectangle defined through covered
+
+                            var scaleX = (double)targetSize.Width / (targetMapRectangle.MaxX - targetMapRectangle.MinX);
+                            var scaleY = (double)targetSize.Height / (targetMapRectangle.MaxY - targetMapRectangle.MinY);
+
+                            var x0 = (int)Math.Round(scaleX * (covered.MinX - targetMapRectangle.MinX));
+                            var y0 = (int)Math.Round(scaleY * (targetMapRectangle.MaxY - covered.MaxY));
+                            var x1 = (int)Math.Round(scaleX * (covered.MaxX - targetMapRectangle.MinX));
+                            var y1 = (int)Math.Round(scaleY * (targetMapRectangle.MaxY - covered.MinY));
+
+                            // using the pixel rectange from above, 
+                            // request the visible portion and render it into the result image
+                            using (var stm = GetImageStream(covered, new Size(x1 - x0, y1 - y0)))
+                            {
+                                if (stm == null)
+                                    return null;
+
+                                graphics.DrawImageUnscaled(Image.FromStream(stm), x0, y0);
+                            }
+                        }
+
+                        return image.StreamPng();
+                    }
+
+                // visibility is either unknown or the MapService full covers the tile; proceed and request the full map
+                case Covering.Unknown:
+                case Covering.Full:
+                    return GetImageStream(targetMapRectangle, targetSize, true, false);
+
+                // MapService does not cover the requested map, return fully transparent map image
+                case Covering.None:
+                    return RenderTransparentImage(targetSize);
+
+                // default = unknown enumeration value; also return fully transparent map image
+                default:
+                    return RenderTransparentImage(targetSize);
+            }
+        }
+
+        /// <summary>
+        /// Renders a PNG image filled with transparent white.
+        /// </summary>
+        /// <param name="size">Size if the image to return.</param>
+        /// <returns>PNG image.</returns>
+        private static Stream RenderTransparentImage(Size size)
+        {
+            // re-use transparent tile if possible, otherwise render image
+            Stream stm = (size.Width == 256 && size.Height == 256 && TransparentTile != null)
+                ? new MemoryStream(TransparentTile)
+                : size.CreateImage(TransparentWhite).StreamPng();
+
+            // be sure re-position stream
+            stm.Seek(0, SeekOrigin.Begin);
+
+            // return stream
+            return stm;
         }
 
         /// <summary>
@@ -181,15 +260,19 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         protected virtual Stream GetImageStream(MapRectangle targetMapRectangle, Size targetSize, bool reproject, bool includeGrid)
         {
             // knowing the target parameters, determine the initial source bounds. 
-            var sourceBounds = DetermineSourceBounds(targetMapRectangle);
+            var sourceBounds = targetMapRectangle.TransformBoundingBox(TargetToSourceTransformation, ReprojectionServiceOptions.SourceBoundsSupportingPoints);
+
+            // immediately fail if transformed bounds has invalid coordinates
+            if (!sourceBounds.AllCoordinatesValid)
+                return null;
 
             MapRectangle sourceBoundingBox;
 
             // we don't need to re-project if the source bounds are rectangular and have the same aspect ratio
             // as the target rectangle. In this case, we can also use the target size as the source size.
-            if (IsRectangular(sourceBounds))
+            if (sourceBounds.IsRectangular)
             {
-                sourceBoundingBox = new MapRectangle(new[] { sourceBounds.First().First() /* lt */, sourceBounds.Last().Last() /* rb */ });
+                sourceBoundingBox = new MapRectangle(new[] { sourceBounds.LeftTop, sourceBounds.RightBottom });
 
                 if (sourceBoundingBox.EqualsAspect(targetMapRectangle))
                 {
@@ -203,18 +286,17 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             // bounding box. Using this bounding box, we need to setup the source size so that the re-projection 
             // can work in an acceptable way.
 
-            // The source bounding box is calculated using the minimum and maximum x- and y-coordinates 
-            // from sourceBounds, adding an additional buffer to be on the safe side.
-            sourceBoundingBox = new MapRectangle(sourceBounds.SelectMany(p => p)).Resize(1.025);
+            // approximate bounding box 
+            sourceBoundingBox = sourceBounds.ApproximateBoundingBox(1.025);
 
             // For details on the source size, please refer to DetermineSourceSize.
             var sourceSize = DetermineSourceSize(sourceBoundingBox, targetSize);
 
             // Get original stream
-            var originalStream = SourceMapService.GetImageStream(sourceBoundingBox, sourceSize);
+            var originalStream = SourceMapService.GetImageStream(sourceBoundingBox, sourceSize, out sourceSize);
 
             // depending on the parameterization we can directly pass through inner image
-            if (!reproject && !includeGrid)
+            if ((!reproject && !includeGrid) || originalStream == null)
                 return originalStream;
 
             // ... otherwise we need to process the image 
@@ -267,10 +349,10 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             var aspect = sourceBoundingBox.AspectRatio();
 
             var sizes = new [] {
-                new SizeF((float)(targetSize.Height*aspect), targetSize.Height),
-                new SizeF((float)(targetSize.Width*aspect), targetSize.Width), 
-                new SizeF(targetSize.Width, (float)(targetSize.Width / aspect)),
-                new SizeF(targetSize.Height, (float)(targetSize.Height / aspect))
+                new SizeD(targetSize.Height*aspect, targetSize.Height),
+                new SizeD(targetSize.Width*aspect, targetSize.Width), 
+                new SizeD(targetSize.Width, targetSize.Width / aspect),
+                new SizeD(targetSize.Height, targetSize.Height / aspect)
             };
 
             var min = sizes.Select(s => s.Area()).Min();
@@ -304,7 +386,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <param name="sourceBoundingBox">The source bounding box corresponding to the target map rectangle..</param>
         /// <param name="sourceSize">The source size corresponding to the target size.</param>
         /// <returns>Position of source pixel</returns>
-        protected virtual Func<PointF, PointF> GetTransformFunction(MapRectangle targetMapRectangle, Size targetSize, IBoundingBox sourceBoundingBox, Size sourceSize)
+        protected virtual Func<PointD, PointD> GetTransformFunction(MapRectangle targetMapRectangle, Size targetSize, IBoundingBox sourceBoundingBox, Size sourceSize)
         {
             return target =>
             {
@@ -319,19 +401,19 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 
                 // knowing the source bounding box and its configured orientation, we can now
                 // turn the logical source coordinate into the logical offsets (left and top)
-                var sourceOffset = new SizeF(
+                var sourceOffset = new SizeD(
 
                     new[] {ContentAlignment.TopLeft, ContentAlignment.BottomLeft}.Contains(SourceMapService.MinAlignment)
-                        ? (float)(pLogicalSource.X - sourceBoundingBox.MinX)
-                        : (float)(sourceBoundingBox.MaxX - pLogicalSource.X),
+                        ? pLogicalSource.X - sourceBoundingBox.MinX
+                        : sourceBoundingBox.MaxX - pLogicalSource.X,
 
                     new[] { ContentAlignment.BottomLeft, ContentAlignment.BottomRight }.Contains(SourceMapService.MinAlignment)
-                        ? (float)(sourceBoundingBox.MaxY - pLogicalSource.Y)
-                        : (float)(pLogicalSource.Y - sourceBoundingBox.MinY)
+                        ? sourceBoundingBox.MaxY - pLogicalSource.Y
+                        : pLogicalSource.Y - sourceBoundingBox.MinY
                 );
 
                 // and finally, we an turn the logical offsets into the pixel position  
-                return new PointF(
+                return new PointD(
                     sourceSize.Width * sourceOffset.Width / sourceBoundingBox.Size().Width,
                     sourceSize.Height * sourceOffset.Height / sourceBoundingBox.Size().Height
                 );

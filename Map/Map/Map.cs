@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
 using System.Linq;
 using System.Windows.Media.Imaging;
 using System.Reflection;
@@ -15,6 +13,7 @@ using Ptv.XServer.Controls.Map.Gadgets;
 using Ptv.XServer.Controls.Map.Layers.Tiled;
 using Ptv.XServer.Controls.Map.Layers.Untiled;
 using Ptv.XServer.Controls.Map.TileProviders;
+using System.Collections.Generic;
 
 namespace Ptv.XServer.Controls.Map
 {
@@ -51,9 +50,9 @@ namespace Ptv.XServer.Controls.Map
                 if (GlobalOptions.MemoryPressureMode == MemoryPressureMode.Disable ||
                     GlobalOptions.MemoryPressureMode == MemoryPressureMode.Automatic && System.IntPtr.Size == 8)
                 {
-                    typeof (BitmapImage).Assembly.GetType("MS.Internal.MemoryPressure")
+                    typeof(BitmapImage).Assembly.GetType("MS.Internal.MemoryPressure")
                         .GetField("_totalMemory", BindingFlags.NonPublic | BindingFlags.Static)
-                        .SetValue(null, Int64.MinValue/2);
+                        .SetValue(null, Int64.MinValue / 2);
                 }
             }
             catch { }
@@ -115,22 +114,21 @@ namespace Ptv.XServer.Controls.Map
         public Map()
         {
             Loaded += Map_Loaded;
-            
-            Layers = new LayerCollection();
-
-            UseAnimation = true;
-            InvertMouseWheel = false;
-            MouseWheelSpeed = .5;
-            UseMiles = false;
-            
-            MouseDoubleClickZoom = true;
-            MouseDragMode = DragMode.SelectOnShift;
-            CoordinateDiplayFormat = CoordinateDiplayFormat.Degree;
 
             DefaultThemeResources = new ResourceDictionary { Source = new Uri("Ptv.XServer.Controls.Map;component/Resources/Themes/PTVDefault.xaml", UriKind.Relative) };
             UseDefaultTheme = true;
+            UseMiles = false;
 
             InitializeToolTipManagement();
+        }
+
+        private void InitializeToolTipManagement()
+        {
+            ToolTipManagement = new ToolTipManagement(this);
+            
+            // Check if the mouse is not over a MapGadget control. Maybe this lambda needs to be extended for additional control types.
+            ToolTipManagement.IsHitTestOKFunc = (Point currentPosition) => VisualTreeHelper.HitTest(this, currentPosition)?.VisualHit?.FindAncestor<MapGadget>() == null;
+            ToolTipManagement.FillToolTipEntriesFunc = (Point position, double maxPixelDistance) => Layers.OfType<IToolTips>().SelectMany(layer => layer.Get(position, maxPixelDistance));
         }
         #endregion
 
@@ -144,7 +142,7 @@ namespace Ptv.XServer.Controls.Map
 
             SetXMapUrlHint();
 
-            ((Grid) Content).Children.Insert(0, mapView);
+            ((Grid)Content).Children.Insert(0, mapView);
 
             foreach (var view in MapElementExtensions.FindChildren<MapView>(this))
                 Layers.Register(view);
@@ -168,141 +166,30 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Event indicating a change of the UseMiles property. It can be used to update the scale gadget. </summary>
         public event EventHandler UseMilesChanged;
 
-
-        /// <summary> Active tool tip, may be null. </summary>
-        private ToolTip toolTip;
-        /// <summary> A timer for popping up the tool tips. </summary>
-        private readonly DispatcherTimer toolTipTimer = new DispatcherTimer();
-        // Strings which should be shown in the tooltip
-        private readonly List<string> toolTipEntries = new List<string>();
+        /// <inheritdoc/>
+        public ToolTipManagement ToolTipManagement { get; private set; }
 
         /// <inheritdoc/>
-        bool IToolTipManagement.IsEnabled { get; set; }
+        bool IToolTipManagement.IsEnabled
+        {
+            get { return ToolTipManagement.IsEnabled; }
+            set { ToolTipManagement.IsEnabled = value; }
+        }
 
         /// <inheritdoc/>
-        public int ToolTipDelay { get; set; }
-
-        /// <summary> 
-        /// Stores the latest known position handled by method <see cref="StartToolTipTimer"/>. If the mouse position is outside the bounds
-        ///  of the map control, its value is null. 
-        /// </summary>
-        private Point? LatestPosition { get; set; }
+        public int ToolTipDelay
+        {
+            get { return ToolTipManagement.ToolTipDelay;  }
+            set { ToolTipManagement.ToolTipDelay = value;  }
+        }
 
         /// <inheritdoc/>
-        public double MaxPixelDistance { get; set; }
-
-        private void InitializeToolTipManagement()
+        public double MaxPixelDistance
         {
-            (this as IToolTipManagement).IsEnabled = true;
-
-            ToolTipDelay = ToolTipService.GetInitialShowDelay(new Canvas());
-            toolTipTimer.Tick += ShowToolTip;
-
-            MaxPixelDistance = 10;
-
-            MouseMove += (s, mouseEventArgs) => StartToolTipTimer(mouseEventArgs); // raised when the mouse pointer moves.
-            MouseLeave += (s, mouseEventArgs) => StartToolTipTimer(); // raised when the mouse pointer leaves the bounds of the Map object.
+            get { return ToolTipManagement.MaxPixelDistance; }
+            set { ToolTipManagement.MaxPixelDistance = value; }
         }
 
-        /// <summary> Tests if the cursor position has changed. If so, stores the new position and triggers the tool tip timer. </summary>
-        /// <param name="mouseEventArgs">Mouse event arguments, a null value represents an invalid position.</param>
-        private void StartToolTipTimer(MouseEventArgs mouseEventArgs = null)
-        {
-            if (!(this as IToolTipManagement).IsEnabled)
-                return;
-
-            // test if position has changed
-            var currentPosition = (mouseEventArgs == null) ? null : (Point?)mouseEventArgs.GetPosition(this);
-            if ((LatestPosition.HasValue == currentPosition.HasValue) && (!currentPosition.HasValue || ((LatestPosition.Value - currentPosition.Value).Length <= 1e-4)))
-                return;
-
-            // clear previous tool tip
-            ClearToolTip();
-
-            // trigger update, if not any mouse button is pressed
-            if (Mouse.LeftButton != MouseButtonState.Released || Mouse.MiddleButton != MouseButtonState.Released || Mouse.RightButton != MouseButtonState.Released) 
-                return;
-
-            LatestPosition = currentPosition;
-
-            // flag indicating if a tool tip is to be shown. Initially, specified position must be valid.
-            bool showToolTips = currentPosition.HasValue && (ToolTipDelay >= 0) && IsHitTestOK((Point)currentPosition);
-
-            GetToolTipEntries();
-
-            // disable or enable the tooltip timer, according to hasToolTip
-            toolTipTimer.Stop();
-            if (!showToolTips) return;
-
-            toolTipTimer.Interval = TimeSpan.FromMilliseconds(ToolTipDelay);
-            toolTipTimer.Start();
-        }
-
-        // Check if the mouse is not over a MapGadget control. Maybe this method needs to be extended for additional control types.
-        private bool IsHitTestOK(Point currentPosition)
-        {
-            var test = VisualTreeHelper.HitTest(this, currentPosition);
-            return ((test == null) || (test.VisualHit.FindAncestor<MapGadget>() == null));
-        }
-
-
-        /// <summary> Event handler: Tool tip timer has elapsed, tool tip is to be shown. </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ShowToolTip(object sender, EventArgs e)
-        {
-            // stop the timer and clear any previous tool tips.
-            toolTipTimer.Stop();
-            ClearToolTip();
-
-            // check if texts exist
-            if (toolTipEntries.Count <= 0) return;
-
-            StackPanel stackPanel = new StackPanel();
-
-            bool isFirst = true;
-            foreach (var toolTipEntry in toolTipEntries)
-            {
-                var label = new Label {Margin = new Thickness(1), Content = toolTipEntry};
-                stackPanel.Children.Add(isFirst ? (UIElement) label : (new Border { BorderThickness = new Thickness(0, 1, 0, 0), BorderBrush = new SolidColorBrush(Colors.White), Child = label }));
-                isFirst = false;
-            }
-            // create and show tool tip
-            toolTip = new ToolTip
-            {
-                Content = stackPanel,
-                IsOpen = true
-            };
-        }
-
-        /// <summary> Removes the latest tool tip created by this layer. </summary>
-        private void ClearToolTip()
-        {
-            if (toolTip == null) return;
-
-            // close tool tip
-            toolTip.IsOpen = false;
-            toolTip = null;
-        }
-        
-        private void GetToolTipEntries()
-        {
-            toolTipEntries.Clear();
-            if (!LatestPosition.HasValue) return;
-
-            foreach (var toolTipsEnumeration in Layers.OfType<IToolTips>().Select(layer => layer.Get((Point) LatestPosition, MaxPixelDistance)).Where(enumeration => enumeration != null)) 
-                toolTipEntries.AddRange(toolTipsEnumeration);
-        }
-
-
-
-
-        /// <summary> Fires the UseMilesChanged event. </summary>
-        private void FireUseMilesChanged()
-        {
-            if (UseMilesChanged != null)
-                UseMilesChanged(this, EventArgs.Empty);
-        }
 
         /// <summary> Flag to choose whether the metric or the mile based system is to be used for example for the scale display. </summary>
         private bool useMiles;
@@ -310,7 +197,11 @@ namespace Ptv.XServer.Controls.Map
         public bool UseMiles
         {
             get { return useMiles; }
-            set { useMiles = value; FireUseMilesChanged(); }
+            set
+            {
+                useMiles = value;
+                UseMilesChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         /// <summary> Flag indicating whether the default theme is to be used for gadget display. </summary>
@@ -336,7 +227,7 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <inheritdoc/>  
-        public LayerCollection Layers { get; private set; }
+        public LayerCollection Layers { get; private set; } = new LayerCollection();
 
         /// <inheritdoc/>  
         public string XMapCredentials
@@ -370,10 +261,9 @@ namespace Ptv.XServer.Controls.Map
         {
             get { return xmapUrl; }
             set
-            {        
+            {
                 xmapUrl = value;
                 InitializeMapLayers();
-
                 SetXMapUrlHint();
             }
         }
@@ -406,9 +296,9 @@ namespace Ptv.XServer.Controls.Map
         {
             get
             {
-                if (string.IsNullOrEmpty(xMapCopyright) || xMapCopyright.Length < 3)
-                    return "Please configure a valid copyright text!";
-                return xMapCopyright;
+                return (string.IsNullOrEmpty(xMapCopyright) || xMapCopyright.Length < 3)
+                    ? "Please configure a valid copyright text!"
+                    : xMapCopyright;
             }
             set
             {
@@ -416,9 +306,7 @@ namespace Ptv.XServer.Controls.Map
                 Layers.UpdateXMapCoprightText(xMapCopyright);
                 if (!Gadgets.ContainsKey(GadgetType.Copyright)) return;
 
-                var mapGadget = Gadgets[GadgetType.Copyright] as MapGadget;
-                if (mapGadget != null)
-                    mapGadget.UpdateContent();
+                (Gadgets[GadgetType.Copyright] as MapGadget)?.UpdateContent();
             }
         }
 
@@ -569,9 +457,9 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>
         public Point GeoAsRelToMapView(Point point, string spatialReferenceId)
         {
-            point.GeoTransform(spatialReferenceId, "PTV_MERCATOR");
+            var mercatorPoint = point.GeoTransform(spatialReferenceId, "PTV_MERCATOR");
 
-            return mapView.PtvMercatorToCanvas(mapView, point);
+            return mapView.PtvMercatorToCanvas(mapView, mercatorPoint);
         }
 
         /// <inheritdoc/>
@@ -590,7 +478,7 @@ namespace Ptv.XServer.Controls.Map
         public MapRectangle GetEnvelope(string spatialReferenceId)
         {
             MapRectangle rectangle = mapView.FinalEnvelope;
-            return new MapRectangle(rectangle.SouthWest.GeoTransform("PTV_MERCATOR", spatialReferenceId), 
+            return new MapRectangle(rectangle.SouthWest.GeoTransform("PTV_MERCATOR", spatialReferenceId),
                                     rectangle.NorthEast.GeoTransform("PTV_MERCATOR", spatialReferenceId));
         }
 
@@ -624,22 +512,22 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <inheritdoc/>  
-        public bool UseAnimation { get; set; }
+        public bool UseAnimation { get; set; } = true;
 
         /// <inheritdoc/>  
-        public bool InvertMouseWheel { get; set; }
+        public bool InvertMouseWheel { get; set; } = false;
 
         /// <inheritdoc/>
-        public double MouseWheelSpeed { get; set; }
+        public double MouseWheelSpeed { get; set; } = .5;
 
         /// <inheritdoc/>
-        public bool MouseDoubleClickZoom { get; set; }
+        public bool MouseDoubleClickZoom { get; set; } = true;
 
         /// <inheritdoc/>
-        public DragMode MouseDragMode { get; set; }
+        public DragMode MouseDragMode { get; set; } = DragMode.SelectOnShift;
 
         /// <inheritdoc/>
-        public CoordinateDiplayFormat CoordinateDiplayFormat { get; set; }
+        public CoordinateDiplayFormat CoordinateDiplayFormat { get; set; } = CoordinateDiplayFormat.Degree;
 
         /// <inheritdoc/>  
         public double ZoomLevel
@@ -684,13 +572,9 @@ namespace Ptv.XServer.Controls.Map
             if (obj == null) return null;
 
             var ce = obj as ContentElement;
-            if (ce == null) return VisualTreeHelper.GetParent(obj);
-
-            DependencyObject parent = ContentOperations.GetParent(ce);
-            if (parent != null) return parent;
-
-            var fce = ce as FrameworkContentElement;
-            return fce != null ? fce.Parent : null;
+            return (ce == null) 
+                ? VisualTreeHelper.GetParent(obj)
+                : ContentOperations.GetParent(ce) ?? (ce as FrameworkContentElement)?.Parent;
         }
 
         /// <summary> Finds a specific ancestor of a dependency object. </summary>

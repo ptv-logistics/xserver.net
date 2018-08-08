@@ -369,7 +369,7 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <inheritdoc/>  
-        public double Scale
+        public new double Scale
         {
             get { return wpfMap.Scale; }
         }
@@ -404,6 +404,14 @@ namespace Ptv.XServer.Controls.Map
         {
             wpfMap.PrintMap(useScaling, description);
         }
+
+        /// <inheritdoc/>  
+        public ToolTipManagement ToolTipManagement
+        {
+            get { return wpfMap.ToolTipManagement; }
+        }
+
+
         #endregion
 
         #region fix for http://support.microsoft.com/kb/955753

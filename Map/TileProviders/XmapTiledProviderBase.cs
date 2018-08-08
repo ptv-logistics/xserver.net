@@ -14,16 +14,16 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         #region private variables
 
         /// <summary> Minimum x coordinate value. </summary>
-        private const int minX = -20000000;
+        protected int minX = -20000000;
 
         /// <summary> Maximum x coordinate value. </summary>
-        private const int maxX = 20000000;
+        protected int maxX = 20000000;
 
         /// <summary> Minimum y coordinate value. </summary>
-        private const int minY = -10000000;
+        protected int minY = -10000000;
 
         /// <summary> Maximum y coordinate value. </summary>
-        private const int maxY = 20000000;
+        protected int maxY = 20000000;
 
         /// <summary> Constant value for the earth radius used in calculations. </summary>
         private const double earthRadius = 6371000.0;
@@ -45,6 +45,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             // factor for scaling of the MSI
             Factor = 1;
             OverlapFactor = 1.0 / 64;
+            Border = 6;
             MinZoom = 0;
             MaxZoom = 18;
         }
@@ -230,7 +231,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         }
 
         /// <summary> Gets or sets the custom profile of the xMapServer. </summary>
-        public string CustomProfile { get; set; }
+        public virtual string CustomProfile { get; set; }
 
         /// <summary> Retrieves the map image from the xMapServer as stream. </summary>
         /// <param name="left"> Left coordinates. </param>
@@ -245,13 +246,13 @@ namespace Ptv.XServer.Controls.Map.TileProviders
 
         #region ITiledProvider Members
         /// <inheritdoc/>
-        public Stream GetImageStream(int tileX, int tileY, int zoom)
+        public virtual Stream GetImageStream(int tileX, int tileY, int zoom)
         {
             double xMin, yMin, xMax, yMax;
             TileToPtvMercatorAtZoom(tileX, tileY, zoom, out xMin, out yMin, out xMax, out yMax);
 
             return GetStream(xMin, yMin, xMax, yMax,
-                256 + (int)Math.Round(256 * OverlapFactor), 256 + (int)Math.Round(256 * OverlapFactor), 6);
+                256 + (int)Math.Round(256 * OverlapFactor), 256 + (int)Math.Round(256 * OverlapFactor), Border);
         }
 
         /// <inheritdoc/>
@@ -284,6 +285,8 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         public double Factor { get; set; }
         /// <inheritdoc/>
         public double OverlapFactor { get; set; }
+
+        public int Border { get; set; }
         #endregion
     }
 }

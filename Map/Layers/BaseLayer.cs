@@ -30,13 +30,15 @@ namespace Ptv.XServer.Controls.Map.Layers
     {
         #region private variables
         /// <summary> Opacity of the layer. </summary>
-        private double opacity;
+        private double opacity = 1.0;
         /// <summary> The priority (base zIndex) of the layer which defines if the layer is painted in front of or behind other layers. </summary>
         private int priority;
         /// <summary> Caption of the layer. </summary>
         private string caption;
         /// <summary> List of canvases which have been added to a map. </summary>
         private readonly List<MapCanvas> canvasInstances = new List<MapCanvas>();
+
+        private string copyright;
         #endregion
 
         #region constructor
@@ -45,7 +47,6 @@ namespace Ptv.XServer.Controls.Map.Layers
         public BaseLayer(string name)
         {
             Name = name;
-            Opacity = 1;
         }
 
         /// <summary> Initializes the base layer factory. A default category for the created canvases is set as well as a
@@ -61,7 +62,17 @@ namespace Ptv.XServer.Controls.Map.Layers
 
         #region public methods
         /// <summary> Gets or sets the copyright text of the layer. </summary>
-        public string Copyright { get; set; }
+        public string Copyright
+        {
+            get { return copyright; }
+            set
+            {
+                if (value == copyright) return;
+
+                copyright = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Copyright"));
+            }
+        }
 
         /// <summary> Canvas factory delegate. Takes a map as parameter, creates a canvas for this map and returns the
         /// newly created canvas. </summary>
@@ -143,8 +154,7 @@ namespace Ptv.XServer.Controls.Map.Layers
                 priority = value;
                 UpdateZindex();
 
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("Priority"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Priority"));
             }
         }
 
@@ -170,8 +180,7 @@ namespace Ptv.XServer.Controls.Map.Layers
                 opacity = value;
                 canvasInstances.ForEach(canvas => canvas.Opacity = opacity);
 
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("Opacity"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Opacity"));
             }
         }
         #endregion

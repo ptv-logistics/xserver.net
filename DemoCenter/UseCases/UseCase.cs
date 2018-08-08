@@ -6,6 +6,11 @@
 //--------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows;
 using Ptv.XServer.Controls.Map;
 using Ptv.XServer.Controls.Map.Tools;
 
@@ -79,7 +84,40 @@ namespace Ptv.XServer.Demo.UseCases
             /// </summary>
             static ManagedAuthentication()
             {
+                var args = ParseCommandLine();
+
+                if (args.ContainsKey("xurl"))
+                    Properties.Settings.Default.XUrl = args["xurl"];
+
+                if (args.ContainsKey("xtoken"))
+                    Properties.Settings.Default.XToken = args["xtoken"];
+
                 Set(Properties.Settings.Default.XUrl, Properties.Settings.Default.XToken);
+            }
+
+            /// <summary>
+            /// Parses the command line into a dictionary.
+            /// </summary>
+            /// <returns>Parsed command line.</returns>
+            private static Dictionary<string, string> ParseCommandLine()
+            {
+                var argsDict = new Dictionary<string, string>();
+
+                var args = Environment.GetCommandLineArgs()
+                    .Select(arg => new { arg = arg, match = Regex.Match(arg, @"^[/-]([^:]+)(?::(.+))?$") })
+                    .ToArray();
+
+                for (var i = 0; i < args.Length; ++i)
+                    if (args[i].match.Success) argsDict.Add(
+                        args[i].match.Groups[1].Value.ToLowerInvariant(),
+                        args[i].match.Groups[2].Success
+                            ? args[i].match.Groups[2].Value
+                            : (i + 1) < args.Length && !args[i + 1].match.Success
+                                ? args[++i].arg
+                                : "true"
+                    );
+
+                return argsDict;
             }
 
             /// <summary>

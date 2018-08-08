@@ -82,7 +82,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <param name="copyrightText"> The new copyight text</param>
         public static void UpdateXMapCoprightText(this LayerCollection layers, string copyrightText)
         {
-            if(layers[BackgroundLayerName] != null)
+            if (layers[BackgroundLayerName] != null)
                 (layers[BackgroundLayerName] as TiledLayer).Copyright = copyrightText;
             if (layers[LabelsLayerName] != null)
                 (layers[LabelsLayerName] as UntiledLayer).Copyright = copyrightText;
@@ -174,7 +174,7 @@ namespace Ptv.XServer.Controls.Map.Layers
 
             idx = layers.IndexOf(layers[LabelsLayerName]);
             LabelLayerPredecessor = (idx > 0) ? layers[idx - 1].Name : null;
-            
+
             layers.Remove(layers[BackgroundLayerName]);
             layers.Remove(layers[LabelsLayerName]);
         }
