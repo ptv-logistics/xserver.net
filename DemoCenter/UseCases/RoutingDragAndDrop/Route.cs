@@ -231,13 +231,7 @@ namespace Ptv.XServer.Controls.Routing
         /// <summary>
         /// Indicates if a route can be calculated - that is, if start and end of the route is defined.
         /// </summary>
-        private bool CanCalculate
-        {
-            get
-            {
-                return Start != null && End != null;
-            }
-        }
+        private bool CanCalculate => Start != null && End != null;
 
         /// <summary>
         /// Formats a tool tip for a route.
@@ -248,7 +242,7 @@ namespace Ptv.XServer.Controls.Routing
         /// <returns></returns>
         public static String FormatRouteToolTip(String from, String to, Demo.XrouteService.RouteInfo info)
         {
-            return String.Format("{0} > {1}: {2:0.00}km, {3}", from, to, (double)info.distance / 1000.0, new TimeSpan(0, 0, info.time));
+            return $"{from} > {to}: {(double) info.distance / 1000.0:0.00}km, {new TimeSpan(0, 0, info.time)}";
         }
 
         /// <summary>
@@ -295,29 +289,17 @@ namespace Ptv.XServer.Controls.Routing
         /// Checks if the route has a polyline shape - that is, if the route calculation 
         /// successfully finished and there are no pending updates.
         /// </summary>
-        public bool HasRoutePolyline
-        {
-            get
-            {
-                return updateRef == 0 && calculationSucceeded && Points.GetEnumerator().MoveNext();
-            }
-        }
+        public bool HasRoutePolyline => updateRef == 0 && calculationSucceeded && Points.GetEnumerator().MoveNext();
 
         /// <summary>
         /// Reads the start way point.
         /// </summary>
-        public Stop Start
-        {
-            get { return layer.GetStart(this); }
-        }
+        public Stop Start => layer.GetStart(this);
 
         /// <summary>
         /// Reads the end way point.
         /// </summary>
-        public Stop End
-        {
-            get { return layer.GetEnd(this); }
-        }
+        public Stop End => layer.GetEnd(this);
 
         /// <summary>
         /// Called when an update begins.
@@ -499,8 +481,7 @@ namespace Ptv.XServer.Controls.Routing
             lock (routeClientLock)
             {
                 // abort any previous request that might be active
-                if (xroute != null)
-                    xroute.Abort();
+                xroute?.Abort();
 
                 // create xRoute web service client
                 xroute = XServerClientFactory.CreateXRouteClient(Demo.Properties.Settings.Default.XUrl);
@@ -514,7 +495,7 @@ namespace Ptv.XServer.Controls.Routing
                 xroute.Endpoint.Binding.ReceiveTimeout = TimeSpan.FromMilliseconds(10000);
 
                 // finally trigger an asynchronous route calculation with the specified request data
-                xroute.BegincalculateRoute(data.RequestWaypoints, null, null,
+                xroute.BegincalculateRoute(data?.RequestWaypoints, null, null,
                     new Demo.XrouteService.ResultListOptions { polygon = true }, new Demo.XrouteService.CallerContext
                     {
                         wrappedProperties = new[] {
@@ -586,7 +567,7 @@ namespace Ptv.XServer.Controls.Routing
                                 if ((i == 0) || (i == routeSnapshot.Indices.Length - 1))
                                 {
                                     if (req.OriginalWayPoints[i] is Stop)
-                                        (req.OriginalWayPoints[i] as Stop).LinkPoint = routeSnapshot.Points[Math.Min(routeSnapshot.Points.Count() - 1, routeSnapshot.Indices[i])];
+                                        ((Stop) req.OriginalWayPoints[i]).LinkPoint = routeSnapshot.Points[Math.Min(routeSnapshot.Points.Length - 1, routeSnapshot.Indices[i])];
                                 }
                                 else
                                     Via[i - 1].PolyIndex = routeSnapshot.Indices[i];
@@ -688,9 +669,7 @@ namespace Ptv.XServer.Controls.Routing
             return via;
         }
 
-        /// <summary>
-        /// Disposes the route - removes it along with the via way points from the map.
-        /// </summary>
+        /// <summary> Disposes the route - removes it along with the via way points from the map. </summary>
         public void Dispose()
         {
             finalPolyline.Reset();
@@ -699,25 +678,17 @@ namespace Ptv.XServer.Controls.Routing
             Via.ForEach(via => via.Dispose());
         }
 
-        /// <summary>
-        /// Reads the points of the latest route available.
-        /// </summary>
-        public IEnumerable<Point> Points { get { return finalPolyline.Points ?? new PointCollection(); } }
+        /// <summary>Reads the points of the latest route available. </summary>
+        public IEnumerable<Point> Points => finalPolyline.Points ?? new PointCollection();
 
-        /// <summary>
-        /// Reads the polyline's tool tip.
-        /// </summary>
-        public String ToolTip { get { return finalPolyline.ToolTip; } }
+        /// <summary> Reads the polyline's tool tip. </summary>
+        public String ToolTip => finalPolyline.ToolTip;
 
-        /// <summary>
-        /// Reads the route information of the latest route available.
-        /// </summary>
-        public Demo.XrouteService.RouteInfo RouteInfo { get { return snapshot.Info; } }
+        /// <summary> Reads the route information of the latest route available. </summary>
+        public Demo.XrouteService.RouteInfo RouteInfo => snapshot.Info;
     }
 
-    /// <summary>
-    /// Encapsulates a route polyline. 
-    /// </summary>
+    /// <summary> Encapsulates a route polyline. </summary>
     /// <remarks>
     /// This class is mainly used to encapsulate a basic MapPolyline and to 
     /// provide some automation for adding / removing the polyline to / from a 
@@ -725,9 +696,7 @@ namespace Ptv.XServer.Controls.Routing
     /// </remarks>
     public class RoutePolylineWithDragAndDrop : RoutePolyline
     {
-        /// <summary>
-        /// The route the polyline belongs to.
-        /// </summary>
+        /// <summary> The route the polyline belongs to. </summary>
         private readonly Route route;
 
         /// <summary>
@@ -779,7 +748,7 @@ namespace Ptv.XServer.Controls.Routing
 
             Points = points;
             ToolTip = toolTip;
-            Color = (style == null) ? Colors.Black : style.Color;
+            Color = style?.Color ?? Colors.Black;
 
             if ((route == null) || PointsExists()) return;
 
@@ -1007,7 +976,7 @@ namespace Ptv.XServer.Controls.Routing
             if (snapshot.Valid(wayPoints.Length + 2) && (!updateHash.HasValue || updateHash.Value == Hash))
             {
                 // get the way points of the route portion to be updated
-                RequestWaypoints = Waypoints.Take(to + 1).Skip(@from).ToArray();
+                RequestWaypoints = Waypoints.Take(to + 1).Skip(from).ToArray();
 
                 // beginning and end must be a stop - remove any via type set
                 RequestWaypoints.First().viaType = null;
@@ -1015,7 +984,7 @@ namespace Ptv.XServer.Controls.Routing
 
                 // get the parts of the route that remain stable
                 Right = snapshot.Right(to);
-                Left = snapshot.Left(@from);
+                Left = snapshot.Left(from);
             }
         }
 
@@ -1059,13 +1028,7 @@ namespace Ptv.XServer.Controls.Routing
         /// </summary>
         public RouteSnapshot Right { get; set; }
 
-        /// <summary>
-        /// Determines if this data object is valid. 
-        /// It is if there are enough way points to calculate a route.
-        /// </summary>
-        public bool Valid
-        {
-            get { return RequestWaypoints != null && RequestWaypoints.Length > 1; }
-        }
+        /// <summary> Determines if this data object is valid.  It is if there are enough way points to calculate a route. </summary>
+        public bool Valid => RequestWaypoints != null && RequestWaypoints.Length > 1;
     }
 }

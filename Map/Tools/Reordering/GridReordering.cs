@@ -41,18 +41,10 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
     {
         #region public variables
         /// <summary> Gets Documentation in progress... </summary>
-        public int SourceRow
-        {
-            get;
-            private set;
-        }
+        public int SourceRow { get; }
 
         /// <summary> Gets Documentation in progress... </summary>
-        public int TargetRow
-        {
-            get;
-            private set;
-        }
+        public int TargetRow { get; }
         #endregion
 
         #region constructor
@@ -120,7 +112,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <summary> This marks the target index when element is dropped. Index is updated while element is being dragged. </summary>
         private int? dropIdx;
         /// <summary> Preferred drag column. </summary>
-        private int? dragCol;
+        private readonly int? dragCol;
         /// <summary> Preview adorner. </summary>
         private PreviewAdorner adorner;
         /// <summary> The grid itself. </summary>
@@ -136,10 +128,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <summary> Default color of text elements. Needed to reset the color. </summary>
         private static Brush defaultColor;
         /// <summary> Gets the explicit drag column, if any. </summary>
-        private int? DragColumn
-        {
-            get { return dragCol ?? GetDragColumn(grid); }
-        }
+        private int? DragColumn => dragCol ?? GetDragColumn(grid);
+
         /// <summary> Gets the rectangles of the droppable regions, ordered by y-coordinate, ascending. </summary>
         private IEnumerable<Rect> ActualDropRegions
         {
@@ -245,10 +235,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <param name="handler"> Documentation in progress... </param>
         public static void AddRowMovedHandler(DependencyObject d, RoutedRowMovedEventHandler handler)
         {
-            var uie = d as UIElement;
-
-            if (uie != null)
-                uie.AddHandler(RowMovedEvent, handler);
+            (d as UIElement)?.AddHandler(RowMovedEvent, handler);
         }
 
         /// <summary> Remove event handler. </summary>
@@ -256,10 +243,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <param name="handler"> Documentation in progress... </param>
         public static void RemoveRowMovedHandler(DependencyObject d, RoutedRowMovedEventHandler handler)
         {
-            var uie = d as UIElement;
-
-            if (uie != null)
-                uie.RemoveHandler(RowMovedEvent, handler);
+            (d as UIElement)?.RemoveHandler(RowMovedEvent, handler);
         }
 
         /// <summary> Attached row moved event. </summary>
@@ -271,10 +255,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <param name="handler"> Documentation in progress... </param>
         public static void AddAllowMoveRowHandler(DependencyObject d, RoutedAllowMoveRowEventHandler handler)
         {
-            var uie = d as UIElement;
-
-            if (uie != null)
-                uie.AddHandler(AllowMoveRowEvent, handler);
+            (d as UIElement)?.AddHandler(AllowMoveRowEvent, handler);
         }
 
         /// <summary> Remove event handler. </summary>
@@ -282,10 +263,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <param name="handler"> Documentation in progress... </param>
         public static void RemoveAllowMoveRowHandler(DependencyObject d, RoutedAllowMoveRowEventHandler handler)
         {
-            var uie = d as UIElement;
-
-            if (uie != null)
-                uie.RemoveHandler(AllowMoveRowEvent, handler);
+            (d as UIElement)?.RemoveHandler(AllowMoveRowEvent, handler);
         }
 
         /// <summary> Determine if a row can be move to a certain destination. </summary>
@@ -307,8 +285,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         private void RaiseRowMoved(int sourceRow, int targetRow)
         {
             // call event delegate
-            if (RowMoved != null)
-                RowMoved(this, new RowMovedEventArgs(grid, sourceRow, targetRow));
+            RowMoved?.Invoke(this, new RowMovedEventArgs(grid, sourceRow, targetRow));
 
             // fire attached routed event
             grid.RaiseEvent(new RoutedRowMovedEventArgs(RowMovedEvent, sourceRow, targetRow));
@@ -339,7 +316,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
             {
                 if (!(grid.Children[childPos] is TextBlock))
                     continue;
-                defaultColor = (grid.Children[childPos] as TextBlock).Foreground;
+                defaultColor = ((TextBlock) grid.Children[childPos]).Foreground;
                 break;
             }
         }
@@ -380,8 +357,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
                 if (!(grid.Children[childPos] is TextBlock))
                     continue;
 
-                (grid.Children[childPos] as TextBlock).MouseEnter += TextBlock_MouseEnter;
-                (grid.Children[childPos] as TextBlock).MouseLeave += TextBlock_MouseLeave;
+                ((TextBlock) grid.Children[childPos]).MouseEnter += TextBlock_MouseEnter;
+                ((TextBlock) grid.Children[childPos]).MouseLeave += TextBlock_MouseLeave;
             }
         }
 
@@ -393,8 +370,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
                 if (!(grid.Children[childPos] is TextBlock))
                     continue;
 
-                (grid.Children[childPos] as TextBlock).MouseEnter -= TextBlock_MouseEnter;
-                (grid.Children[childPos] as TextBlock).MouseLeave -= TextBlock_MouseLeave;
+                ((TextBlock) grid.Children[childPos]).MouseEnter -= TextBlock_MouseEnter;
+                ((TextBlock) grid.Children[childPos]).MouseLeave -= TextBlock_MouseLeave;
             }
         }
 
@@ -492,8 +469,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         {
             unwireTextBlockEvents();
 
-            // backup drop index now since the call to 
-            // UpdateTargetRegion below will modify the index
+            // backup drop index now since the call to UpdateTargetRegion below will modify the index
             int? backupDropIdx = dropIdx;
 
             // list index of dragged element 
@@ -702,7 +678,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <param name="e"> The event parameters. </param>
         private static void TextBlock_MouseEnter(object sender, MouseEventArgs e)
         {
-            (sender as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(224, 33, 41)); // PTV rot
+            if (sender != null)
+                (sender as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(224, 33, 41)); // PTV rot
         }
 
         /// <summary> Handler for leaving a text block with the mouse. </summary>
@@ -710,7 +687,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <param name="e"> The event parameters. </param>
         private static void TextBlock_MouseLeave(object sender, MouseEventArgs e)
         {
-            (sender as TextBlock).Foreground = defaultColor;
+            if (sender != null)
+                (sender as TextBlock).Foreground = defaultColor;
         }
 
         /// <summary>
@@ -762,7 +740,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
                 // finished drag&drop
                 var f = args.OriginalSource as FrameworkElement;
                 DoneDragDrop(f);
-                f.ReleaseMouseCapture();
+                f?.ReleaseMouseCapture();
             });
         }
         
@@ -788,7 +766,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
                     // start drag&drop if mouse moved at least 
                     // 3 pixels while left mouse button is pressed
                     // we need to capture the mouse
-                    if (!f.CaptureMouse()) return;
+                    if (f == null || !f.CaptureMouse()) return;
 
                     IsDragging = true;
                     createGridRows();

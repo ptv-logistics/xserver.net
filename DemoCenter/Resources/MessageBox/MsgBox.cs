@@ -5,8 +5,8 @@ namespace Ptv.XServer.Demo.Resources.MessageBox
 {
     public partial class MsgBox : Form
     {
-        private readonly String caption = "";
-        private readonly String message = "";
+        private readonly String caption;
+        private readonly String message;
 
         public MsgBox(String caption, String message)
         {

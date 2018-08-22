@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ptv.XServer.Controls.Map
 {
@@ -27,7 +24,8 @@ namespace Ptv.XServer.Controls.Map
         /// Indicated that the "Infinite Zoom" feature should be activated.
         /// This allows zoom factors beyond level 19, but must be supported by all layers.
         /// </summary>
-        public static bool InfiniteZoom = false;
+        [Obsolete("InfiniteZoom is deprecated.")]
+        public static bool InfiniteZoom = true;
     }
 
     /// <summary>

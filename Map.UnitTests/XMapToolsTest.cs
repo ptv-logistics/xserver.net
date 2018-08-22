@@ -41,15 +41,12 @@ namespace Ptv.XServer.Controls.Map.UnitTests
         public Byte[] BufferFromImage(System.Windows.Media.Imaging.BitmapImage imageSource)
         {
             var stream = imageSource.StreamSource;
-            Byte[] buffer = null;
             if (stream == null || stream.Length <= 0) return null;
 
             using (var binaryReader = new BinaryReader(stream))
             {
-                buffer = binaryReader.ReadBytes((Int32)stream.Length);
+                return binaryReader.ReadBytes((Int32)stream.Length);
             }
-
-            return buffer;
         }
 
         /// <summary>
@@ -91,9 +88,9 @@ namespace Ptv.XServer.Controls.Map.UnitTests
                 It.IsAny<CallerContext>())).Throws(new Exception(exceptionMessage));
 
             FieldInfo fi = typeof(XMapTools).GetField("Service", BindingFlags.NonPublic | BindingFlags.Static);
-            fi.SetValue(null, xMapMock.Object);
+            fi?.SetValue(null, xMapMock.Object);
             Assert.Throws(typeof(System.Web.Services.Protocols.SoapException), () => XMapTools.AreXMapLayersAvailable(null, null, notWorkingLayers, null, expectedCode), exceptionMessage);
-            fi.SetValue(null, ((xserver.IXMapWSBinding)xMapMock.Object));
+            fi?.SetValue(null, (xserver.IXMapWSBinding)xMapMock.Object);
             Assert.Throws(typeof(Exception), () => XMapTools.AreXMapLayersAvailable(null, null, otherNotWorkingLayers, null, expectedCode), exceptionMessage);
         }
 
@@ -110,7 +107,7 @@ namespace Ptv.XServer.Controls.Map.UnitTests
             const string profile = "truckattributes";
             var customLayers = new List<Layer>();
             var xMapMock = new Mock<IXMapWSBinding>();
-            var xImage = new xserver.Image();
+            var xImage = new Image();
             var xMap = new xserver.Map();
             var bitMapImage = ResourceHelper.LoadBitmapFromResource("Ptv.XServer.Controls.Map;component/Resources/LayerDefault.png");
             var calls = 0;
@@ -137,17 +134,17 @@ namespace Ptv.XServer.Controls.Map.UnitTests
                 It.IsAny<CallerContext>())).Returns(xMap).Callback(() => calls++);
 
             FieldInfo fi = typeof(XMapTools).GetField("Service", BindingFlags.NonPublic | BindingFlags.Static);
-            fi.SetValue(null, xMapMock.Object);
+            fi?.SetValue(null, xMapMock.Object);
             Assert.True(XMapTools.AreXMapLayersAvailable(null, null, workingLayers, null, expectedCode));
-            fi.SetValue(null, xMapMock.Object);
+            fi?.SetValue(null, xMapMock.Object);
             // assert that the next call with the same layers does not result in a service call
             Assert.True(XMapTools.AreXMapLayersAvailable(null, null, workingLayers, null, expectedCode));
-            fi.SetValue(null, xMapMock.Object);
+            fi?.SetValue(null, xMapMock.Object);
             Assert.AreEqual(1, calls);
             // assert that the next call with other layers results in a service call
-            fi.SetValue(null, xMapMock.Object);
+            fi?.SetValue(null, xMapMock.Object);
             Assert.True(XMapTools.AreXMapLayersAvailable(null, null, otherWorkingLayers, null, expectedCode));
-            fi.SetValue(null, xMapMock.Object);
+            fi?.SetValue(null, xMapMock.Object);
             Assert.AreEqual(2, calls);
 
         }
@@ -186,17 +183,17 @@ namespace Ptv.XServer.Controls.Map.UnitTests
                 It.IsAny<CallerContext>())).Callback(() => calls++).Throws(new System.Web.Services.Protocols.SoapException(exceptionMessage, new System.Xml.XmlQualifiedName(expectedCode)));
 
             FieldInfo fi = typeof(XMapTools).GetField("Service", BindingFlags.NonPublic | BindingFlags.Static);
-            fi.SetValue(null, xMapMock.Object);
+            fi?.SetValue(null, xMapMock.Object);
             Assert.False(XMapTools.AreXMapLayersAvailable(null, null, notWorkingLayers, null, expectedCode));
             // assert that the next call with the same layers does not result in a service call
-            fi.SetValue(null, xMapMock.Object);
+            fi?.SetValue(null, xMapMock.Object);
             Assert.False(XMapTools.AreXMapLayersAvailable(null, null, notWorkingLayers, null, expectedCode));
-            fi.SetValue(null, xMapMock.Object);
+            fi?.SetValue(null, xMapMock.Object);
             Assert.AreEqual(1, calls);
             // assert that the next call with other layers results in a service call
-            fi.SetValue(null, xMapMock.Object);
+            fi?.SetValue(null, xMapMock.Object);
             Assert.False(XMapTools.AreXMapLayersAvailable(null, null, otherNotWorkingLayers, null, expectedCode));
-            fi.SetValue(null, xMapMock.Object);
+            fi?.SetValue(null, xMapMock.Object);
             Assert.AreEqual(2, calls);
         }
     }

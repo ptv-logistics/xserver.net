@@ -4,7 +4,6 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Windows.Controls;
 
 namespace Ptv.XServer.Controls.Map
 {
@@ -40,8 +39,6 @@ namespace Ptv.XServer.Controls.Map
         private int maxZoom;
         /// <summary> Minimum zoom level. </summary>
         private int minZoom;
-        /// <summary> Flag to distinguish whether a minimum zoom change has been affected internally or externally. </summary>
-        private bool externalCall = true;
         #endregion
 
         #region public variables
@@ -90,14 +87,9 @@ namespace Ptv.XServer.Controls.Map
         /// <summary>
         /// Gets the origin offset value for Deep Zoom
         /// </summary>
-        public Point OriginOffset
-        {
-            get
-            {
-                return new Point(canvasOffset.X * LogicalSize / ReferenceSize / ZoomAdjust,
-                canvasOffset.Y * LogicalSize / ReferenceSize / ZoomAdjust);
-            }
-        }
+        public Point OriginOffset => new Point(
+            canvasOffset.X * LogicalSize / ReferenceSize / ZoomAdjust,
+            canvasOffset.Y * LogicalSize / ReferenceSize / ZoomAdjust);
 
         /// <summary> Gets or sets the minimal level of detail according to the standard tiling scheme. The current
         /// detail level (see <see cref="FinalZoom"/> property) is corrected, if it is lower than the new minimum value. </summary>
@@ -112,10 +104,7 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <summary> Gets the level of detail according to the standard tiling scheme (float value). </summary>
-        public double FinalZoom
-        {
-            get { return z; }
-        }
+        public double FinalZoom => z;
 
         /// <summary> Sets the level of detail according to the standard tiling scheme. </summary>
         /// <param name="value"> The new level. </param>
@@ -126,62 +115,34 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <summary> Gets the floating tile level while in animation mode. </summary>
-        public double CurrentZoom
-        {
-            get { return Math.Log(LogicalSize / CurrentScale, 2) - 8; }
-        }
+        public double CurrentZoom => Math.Log(LogicalSize / CurrentScale, 2) - 8;
 
         /// <summary> Gets a value indicating whether an animation is in progress. Returns true while the map performs
         /// a transition to a new map section. </summary>
-        public bool IsAnimating
-        {
-            get { return currentPanAnimationClock != null || currentZoomAnimationClock != null; }
-        }
+        public bool IsAnimating => currentPanAnimationClock != null || currentZoomAnimationClock != null;
 
         /// <summary> Gets the logical x-coordinate while the map is in animation mode. </summary>
-        public double CurrentX
-        {
-            get { return -(translateTransform.X + logicalWheelOffsetTransform.X + canvasOffset.X) * LogicalSize / ReferenceSize / ZoomAdjust - physicalWheelOffsetTransform.X * CurrentScale; }
-        }
+        public double CurrentX => -(translateTransform.X + logicalWheelOffsetTransform.X + canvasOffset.X) * LogicalSize / ReferenceSize / ZoomAdjust - physicalWheelOffsetTransform.X * CurrentScale;
 
         /// <summary> Gets the logical y-coordinate while the map is in animation mode. </summary>
-        public double CurrentY
-        {
-            get { return (translateTransform.Y + logicalWheelOffsetTransform.Y + canvasOffset.Y) * LogicalSize / ReferenceSize / ZoomAdjust + physicalWheelOffsetTransform.Y * CurrentScale; }
-        }
+        public double CurrentY => (translateTransform.Y + logicalWheelOffsetTransform.Y + canvasOffset.Y) * LogicalSize / ReferenceSize / ZoomAdjust + physicalWheelOffsetTransform.Y * CurrentScale;
 
-        /// <summary> Gets the x-coordinate after the map was in animation mode / the anticipated x-coordinate while the map is
-        /// in animation mode. </summary>
-        public double FinalX
-        {
-            get { return x - (logicalWheelOffsetTransform.X + canvasOffset.X) * LogicalSize / ReferenceSize / ZoomAdjust - physicalWheelOffsetTransform.X * FinalScale; }
-        }
+        /// <summary> Gets the x-coordinate after the map was in animation mode / the anticipated x-coordinate while the map is in animation mode. </summary>
+        public double FinalX => x - (logicalWheelOffsetTransform.X + canvasOffset.X) * LogicalSize / ReferenceSize / ZoomAdjust - physicalWheelOffsetTransform.X * FinalScale;
 
         /// <summary> Gets the y-coordinate after the map was in animation mode / the anticipated y-coordinate while the map is
         /// in animation mode. </summary>
-        public double FinalY
-        {
-            get { return y + (logicalWheelOffsetTransform.Y + canvasOffset.Y) * LogicalSize / ReferenceSize / ZoomAdjust + physicalWheelOffsetTransform.Y * FinalScale; }
-        }
+        public double FinalY => y + (logicalWheelOffsetTransform.Y + canvasOffset.Y) * LogicalSize / ReferenceSize / ZoomAdjust + physicalWheelOffsetTransform.Y * FinalScale;
 
         /// <summary> Gets the scale factor while the map is in animation mode. Defined in Logical units per pixel. </summary>
-        public double CurrentScale
-        {
-            get { return 1.0 / zoomTransform.ScaleX * LogicalSize / ReferenceSize / ZoomAdjust; }
-        }
+        public double CurrentScale => 1.0 / zoomTransform.ScaleX * LogicalSize / ReferenceSize / ZoomAdjust;
 
         /// <summary> Gets the scale factor after the map was in animation mode / the anticipated scale factor while the map is
         /// in animation mode. Defined in logical units per pixel. </summary>
-        public double FinalScale
-        {
-            get { return 1.0 / (Math.Pow(2, z + 8) / ReferenceSize / ZoomAdjust) * LogicalSize / ReferenceSize / ZoomAdjust; }
-        }
+        public double FinalScale => 1.0 / (Math.Pow(2, z + 8) / ReferenceSize / ZoomAdjust) * LogicalSize / ReferenceSize / ZoomAdjust;
 
         /// <summary> Gets the number of meters spanned by one pixel. </summary>
-        public double MetersPerPixel
-        {
-            get { return CurrentScale * Math.Cos((Math.Atan(Math.Exp(CurrentY / 6371000.0)) - (Math.PI / 4)) / 0.5); }
-        }
+        public double MetersPerPixel => CurrentScale * Math.Cos((Math.Atan(Math.Exp(CurrentY / 6371000.0)) - (Math.PI / 4)) / 0.5);
 
         /// <summary> Gets or sets the center of the map. </summary>
         public Point Center
@@ -248,15 +209,13 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Fires the ViewportBeginChanged event. </summary>
         private void FireViewportBeginChanged()
         {
-            if (ViewportBeginChanged != null)
-                ViewportBeginChanged(this, EventArgs.Empty);
+            ViewportBeginChanged?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary> Fires the ViewportWhileChanged event. </summary>
         private void FireViewportWhileChanged()
         {
-            if (ViewportWhileChanged != null)
-                ViewportWhileChanged(this, EventArgs.Empty);
+            ViewportWhileChanged?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary> Fires the ViewportEndChanged event. </summary>
@@ -313,7 +272,7 @@ namespace Ptv.XServer.Controls.Map
                 currentPanAnimationClock = pointAnimation.CreateClock();
                 runningPanClocks.Add(currentPanAnimationClock);
                 currentPanAnimationClock.Completed += panAnimation_Completed;
-                currentPanAnimationClock.Controller.Begin();
+                currentPanAnimationClock.Controller?.Begin();
                 ((IAnimatable)this).ApplyAnimationClock(CenterProperty, currentPanAnimationClock, HandoffBehavior.Compose);
             }
         }
@@ -361,7 +320,7 @@ namespace Ptv.XServer.Controls.Map
                 currentZoomAnimationClock = da.CreateClock();
                 runningZoomClocks.Add(currentZoomAnimationClock);
                 currentZoomAnimationClock.Completed += zoomAnimation_Completed;
-                currentZoomAnimationClock.Controller.Begin();
+                currentZoomAnimationClock.Controller?.Begin();
                 ((IAnimatable)this).ApplyAnimationClock(ScaleProperty, currentZoomAnimationClock, HandoffBehavior.Compose);
             }
         }
@@ -392,8 +351,8 @@ namespace Ptv.XServer.Controls.Map
             logicalWheelOffsetTransform.Y = 0;
             physicalWheelOffsetTransform.X = 0;
             physicalWheelOffsetTransform.Y = 0;
-            this.x = 0;
-            this.y = 0;
+            x = 0;
+            y = 0;
         }
 
         /// <summary> Resets the offset values in the map. </summary>
@@ -446,7 +405,7 @@ namespace Ptv.XServer.Controls.Map
         /// <param name="e"> Event parameters. </param>
         private void zoomAnimation_Completed(object sender, EventArgs e)
         {
-            var x = ZoomScale;
+            var zoomScale = ZoomScale;
             currentZoomAnimationClock.Completed -= zoomAnimation_Completed;
             currentZoomAnimationClock = null;
 
@@ -454,7 +413,7 @@ namespace Ptv.XServer.Controls.Map
             runningZoomClocks.Clear();
 
             //            BeginAnimation(ScaleProperty, null);
-            ZoomScale = x;
+            ZoomScale = zoomScale;
 
             if (runningPanClocks.Count == 0)
                 FireViewportEndChanged();
@@ -465,7 +424,7 @@ namespace Ptv.XServer.Controls.Map
         /// <param name="e"> Event parameters. </param>
         private void panAnimation_Completed(object sender, EventArgs e)
         {
-            var x = Center;
+            var center = Center;
             currentPanAnimationClock.Completed -= panAnimation_Completed;
             currentPanAnimationClock = null;
 
@@ -473,7 +432,7 @@ namespace Ptv.XServer.Controls.Map
             runningPanClocks.Clear();
 
             //            BeginAnimation(CenterProperty, null);
-            Center = x;
+            Center = center;
 
             if(runningZoomClocks.Count == 0)
                 FireViewportEndChanged();
@@ -551,12 +510,12 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <summary> Helper method which sets a new map region depending on the given parameters. </summary>
-        /// <param name="x"> X coordinate of the map center. </param>
-        /// <param name="y"> Y coordinate of the map center. </param>
+        /// <param name="xCenter"> X coordinate of the map center. </param>
+        /// <param name="yCenter"> Y coordinate of the map center. </param>
         /// <param name="zoom"> Zoom level to be displayed. </param>
         /// <param name="animatePan"> Flag showing if panning should be animated or not. </param>
         /// <param name="animateZoom"> Flag showing if zooming should be animated or not. </param>
-        private void SetXYZHelper(double x, double y, double zoom, bool animatePan, bool animateZoom)
+        private void SetXYZHelper(double xCenter, double yCenter, double zoom, bool animatePan, bool animateZoom)
         {
             if (zoomTransform == null)
                 return; // Needed in design mode
@@ -572,15 +531,15 @@ namespace Ptv.XServer.Controls.Map
             if (FitInWindow)
             {
                 var scale = 1.0/(Math.Pow(2, z + 8)/ReferenceSize/ZoomAdjust)*LogicalSize/ReferenceSize/ZoomAdjust;
-                var r = new MapRectangle(new Point(x, y), new Size(ActualWidth*scale, ActualHeight*scale));
+                var r = new MapRectangle(new Point(xCenter, yCenter), new Size(ActualWidth*scale, ActualHeight*scale));
                 if (r.West > -20015087 && r.East > 20015087)
-                    x = x - Math.Min(r.East - 20015087, r.West + 20015087);
+                    xCenter = xCenter - Math.Min(r.East - 20015087, r.West + 20015087);
                 else if (r.East < 20015087 && r.West < -20015087)
-                    x = x - Math.Max(r.East - 20015087, r.West + 20015087);
+                    xCenter = xCenter - Math.Max(r.East - 20015087, r.West + 20015087);
                 if (r.South > -10000000 && r.North > 20015087)
-                    y = y - Math.Min(r.North - 20015087, r.South + 10000000);
+                    yCenter = yCenter - Math.Min(r.North - 20015087, r.South + 10000000);
                 else if (r.North < 20015087 && r.South < -10000000)
-                    y = y - Math.Max(r.North - 20015087, r.South + 10000000);
+                    yCenter = yCenter - Math.Max(r.North - 20015087, r.South + 10000000);
             }
 
             if (animatePan && animateZoom)
@@ -592,16 +551,16 @@ namespace Ptv.XServer.Controls.Map
 
                 if (Math.Abs(zTo - zCurrent) > .000001)
                 {
-                    FlyTo(new Point(x, y), zoom);
+                    FlyTo(new Point(xCenter, yCenter), zoom);
                     return;
                 }
             }
 
-            bool doPan = (FinalX != x || FinalY != y);
+            bool doPan = (FinalX != xCenter || FinalY != yCenter);
             bool doZoom = (z != zoom);
 
-            this.x = x + canvasOffset.X / ZoomAdjust / ReferenceSize * LogicalSize;
-            this.y = y - canvasOffset.Y / ZoomAdjust / ReferenceSize * LogicalSize;
+            x = xCenter + canvasOffset.X / ZoomAdjust / ReferenceSize * LogicalSize;
+            y = yCenter - canvasOffset.Y / ZoomAdjust / ReferenceSize * LogicalSize;
             z = zoom;
 
             if (doPan)
@@ -654,18 +613,12 @@ namespace Ptv.XServer.Controls.Map
 
         #region public methods
         /// <summary> Gets the bounding box of the visible map section while the map is in animation mode. </summary>
-        public MapRectangle CurrentEnvelope
-        {
-            get { return (new MapRectangle(new Point(CurrentX, CurrentY), new Size(ActualWidth * CurrentScale, ActualHeight * CurrentScale))); }
-        }
+        public MapRectangle CurrentEnvelope => new MapRectangle(new Point(CurrentX, CurrentY), new Size(ActualWidth * CurrentScale, ActualHeight * CurrentScale));
 
 
         /// <summary> Gets the anticipated bounding box of the visible map section after the map was in animation mode / the
         /// current box while the map is in animation mode. </summary>
-        public MapRectangle FinalEnvelope
-        {
-            get { return (new MapRectangle(new Point(FinalX, FinalY), new Size(ActualWidth * FinalScale, ActualHeight * FinalScale))); }
-        }
+        public MapRectangle FinalEnvelope => new MapRectangle(new Point(FinalX, FinalY), new Size(ActualWidth * FinalScale, ActualHeight * FinalScale));
 
         /// <summary> Sets the visible map section to a bounding box, so the box is contained in the map section. </summary>
         /// <param name="rect"> The bounding box. </param>
@@ -685,24 +638,24 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <summary> Positions the map to a center and zoom factor. </summary>
-        /// <param name="x"> X-coordinate in logical units. </param>
-        /// <param name="y"> Y-coordinate in logical units. </param>
+        /// <param name="xLogicalUnit"> X-coordinate in logical units. </param>
+        /// <param name="yLogicalUnit"> Y-coordinate in logical units. </param>
         /// <param name="zoom"> The zoom factor according to the standard tiling/zooming scheme. </param>       
         /// <param name="animate"> Animates the transition. </param>
-        public void SetXYZ(double x, double y, double zoom, bool animate)
+        public void SetXYZ(double xLogicalUnit, double yLogicalUnit, double zoom, bool animate)
         {
-            SetXYZHelper(x, y, zoom, animate, animate);
+            SetXYZHelper(xLogicalUnit, yLogicalUnit, zoom, animate, animate);
         }
 
         /// <summary> Positions the map to a center and zoom factor. </summary>
-        /// <param name="x"> X-coordinate in logical units. </param>
-        /// <param name="y"> Y-coordinate in logical units. </param>
+        /// <param name="xLogicalUnit"> X-coordinate in logical units. </param>
+        /// <param name="yLogicalUnit"> Y-coordinate in logical units. </param>
         /// <param name="zoom"> The zoom factor according to the standard tiling/zooming scheme. </param>
         /// <param name="animatePan"> Animates the pan transition. </param>
         /// <param name="animateZoom"> Animates the zoom transition. </param>
-        public void SetXYZ(double x, double y, double zoom, bool animatePan, bool animateZoom)
+        public void SetXYZ(double xLogicalUnit, double yLogicalUnit, double zoom, bool animatePan, bool animateZoom)
         {
-            SetXYZHelper(x, y, zoom, animatePan, animateZoom);
+            SetXYZHelper(xLogicalUnit, yLogicalUnit, zoom, animatePan, animateZoom);
         }
 
         /// <summary> Zooms around a point. </summary>

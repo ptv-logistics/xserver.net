@@ -224,14 +224,14 @@ namespace Ptv.XServer.Controls.Routing
         /// </summary>
         public String Label
         {
-            get { return (Children[1] as TextBlock).Text; }
+            get { return (Children[1] as TextBlock)?.Text; }
 
-            set 
-            { 
+            set
+            {
                 if (value == null || value.Length != 1) 
-                    throw new ArgumentException("Label is invalid or exceeds maximum length");  
+                    throw new ArgumentException("Label is invalid or exceeds maximum length");
 
-                (Children[1] as TextBlock).Text = value; 
+                (Children[1] as TextBlock).Text = value;
             }
         }
 
@@ -269,15 +269,10 @@ namespace Ptv.XServer.Controls.Routing
         }
 
         /// <inheritdoc/>
-        public override Demo.XrouteService.WaypointDesc Waypoint
-        {
-            get { return Point.ToWaypoint(); }
-        }
+        public override Demo.XrouteService.WaypointDesc Waypoint => Point.ToWaypoint();
     }
 
-    /// <summary>
-    /// A via way point.
-    /// </summary>
+    /// <summary> A via way point. </summary>
     public class Via : WayPoint
     {
         /// <summary>
@@ -333,10 +328,7 @@ namespace Ptv.XServer.Controls.Routing
         public int PolyIndex { get; set; }
 
         /// <inheritdoc/>
-        public override Demo.XrouteService.WaypointDesc Waypoint
-        {
-            get { return Point.ToWaypoint(Demo.XrouteService.ViaTypeEnum.VIA); }
-        }
+        public override Demo.XrouteService.WaypointDesc Waypoint => Point.ToWaypoint(Demo.XrouteService.ViaTypeEnum.VIA);
     }
 
     /// <summary>
@@ -403,9 +395,7 @@ namespace Ptv.XServer.Controls.Routing
         /// </summary>
         public static void Hide()
         {
-            if (instance != null)
-                instance.Dispose();
-
+            instance?.Dispose();
             instance = null;
         }
     }

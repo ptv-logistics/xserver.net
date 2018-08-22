@@ -17,7 +17,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <summary> The grid. </summary>
         private readonly Grid grid;
         /// <summary> UI elements of the row. </summary>
-        private readonly List<UIElement> elements = new List<UIElement>();
+        private readonly List<UIElement> elements;
         /// <summary> Initial opacities of the UI elements. </summary>
         private readonly List<double> opacities = new List<double>();
         /// <summary> Index of the reference element in the elements list. -1 if there is no reference element. </summary>
@@ -27,10 +27,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <summary> Lock for updating currentOpacityAnimations. </summary>
         private static readonly object currentOpacityAnimationsLock = Guid.NewGuid();
         /// <summary> Gets the reference element of this row. Returns null if there is no explicit reference element. </summary>
-        private FrameworkElement ReferenceElement
-        {
-            get { return (referenceElementIndex == -1) ? null : elements[referenceElementIndex] as FrameworkElement; }
-        }
+        private FrameworkElement ReferenceElement => referenceElementIndex == -1 ? null : elements[referenceElementIndex] as FrameworkElement;
+
         #endregion
 
         #region public variables
@@ -76,13 +74,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         }
 
         /// <summary> Gets the corresponding row definition. </summary>
-        public RowDefinition RowDefinition
-        {
-            get
-            {
-                return grid.RowDefinitions[Row];
-            }
-        }
+        public RowDefinition RowDefinition => grid.RowDefinitions[Row];
 
         /// <summary> Gets or sets the grid row that this instance represents. </summary>
         public int Row

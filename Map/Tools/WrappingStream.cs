@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ptv.XServer.Controls.Map.Tools
 {
@@ -21,7 +18,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         {
             // check parameters
             if (streamBase == null)
-                throw new ArgumentNullException("streamBase");
+                throw new ArgumentNullException(nameof(streamBase));
 
             m_streamBase = streamBase;
         }
@@ -30,28 +27,19 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// Gets a value indicating whether the current stream supports reading.
         /// </summary>
         /// <returns><c>true</c> if the stream supports reading; otherwise, <c>false</c>.</returns>
-        public override bool CanRead
-        {
-            get { return m_streamBase == null ? false : m_streamBase.CanRead; }
-        }
+        public override bool CanRead => m_streamBase?.CanRead ?? false;
 
         /// <summary>
         /// Gets a value indicating whether the current stream supports seeking.
         /// </summary>
         /// <returns><c>true</c> if the stream supports seeking; otherwise, <c>false</c>.</returns>
-        public override bool CanSeek
-        {
-            get { return m_streamBase == null ? false : m_streamBase.CanSeek; }
-        }
+        public override bool CanSeek => m_streamBase?.CanSeek ?? false;
 
         /// <summary>
         /// Gets a value indicating whether the current stream supports writing.
         /// </summary>
         /// <returns><c>true</c> if the stream supports writing; otherwise, <c>false</c>.</returns>
-        public override bool CanWrite
-        {
-            get { return m_streamBase == null ? false : m_streamBase.CanWrite; }
-        }
+        public override bool CanWrite => m_streamBase?.CanWrite ?? false;
 
         /// <summary>
         /// Gets the length in bytes of the stream.
@@ -179,10 +167,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// Gets the wrapped stream.
         /// </summary>
         /// <value>The wrapped stream.</value>
-        protected Stream WrappedStream
-        {
-            get { return m_streamBase; }
-        }
+        protected Stream WrappedStream => m_streamBase;
 
         /// <summary>
         /// Releases the unmanaged resources used by the <see cref="WrappingStream"/> and optionally releases the managed resources.

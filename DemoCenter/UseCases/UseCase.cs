@@ -7,10 +7,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows;
 using Ptv.XServer.Controls.Map;
 using Ptv.XServer.Controls.Map.Tools;
 
@@ -104,7 +102,7 @@ namespace Ptv.XServer.Demo.UseCases
                 var argsDict = new Dictionary<string, string>();
 
                 var args = Environment.GetCommandLineArgs()
-                    .Select(arg => new { arg = arg, match = Regex.Match(arg, @"^[/-]([^:]+)(?::(.+))?$") })
+                    .Select(arg => new {arg, match = Regex.Match(arg, @"^[/-]([^:]+)(?::(.+))?$") })
                     .ToArray();
 
                 for (var i = 0; i < args.Length; ++i)

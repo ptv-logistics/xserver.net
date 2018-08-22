@@ -29,7 +29,7 @@ namespace Ptv.XServer.Demo.Geocoding
         private void LocateButton_Click(object sender, RoutedEventArgs e)
         {
             var source = FindResource("MultiFieldDataSource") as MultiFieldData;
-            (FindResource("Geocoder") as GeocoderDemo).LocateMultiField(source);
+            (FindResource("Geocoder") as GeocoderDemo)?.LocateMultiField(source);
         }
 
         /// <summary> Event handler for a change of the control visibility property. Adds or removes the geocoding
@@ -43,7 +43,7 @@ namespace Ptv.XServer.Demo.Geocoding
             // subsequent null checks keep the designer working
             if ((geocoder == null) || !(sender is UserControl)) return;
 
-            switch ((sender as UserControl).Visibility)
+            switch (((UserControl) sender).Visibility)
             {
                 case Visibility.Collapsed:
                 {

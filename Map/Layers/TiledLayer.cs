@@ -148,12 +148,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         /// <inheritdoc/>  
         public override void Dispose()
         {
-            if (worker != null)
-            {
-                worker.CancelAsync();
-                worker.DoWork -= Worker_DoWork;
-            }
-
+            StopBackgroundWorker();
             threadPool.Stop();
 
             base.Dispose();
@@ -211,14 +206,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         /// <summary> Start worker thread for retrieving the tiles from the tile provider. </summary>
         private void GetTiles()
         {
-            if (worker != null)
-            {
-                worker.CancelAsync();
-                worker.DoWork -= Worker_DoWork;
-                worker = null;
-            }
+            StopBackgroundWorker();
 
-            var mapParam = new MapParam(MapView.ActualWidth, MapView.ActualHeight, MapView.FinalX, MapView.FinalY, GetTileZoom(), MapView.FinalZoom);
+            var mapParam = new MapParam(MapView, GetTileZoom());
 
             currentlyVisibleTiles = new HashSet<TileParam>(GetVisibleTiles(mapParam));
             currentlyVisibleTiles.ExceptWith(new HashSet<TileParam>(shownImages.Keys));
@@ -229,8 +219,6 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 worker.DoWork += Worker_DoWork;
                 worker.WorkerSupportsCancellation = true;
                 worker.RunWorkerAsync(currentlyVisibleTiles);
-
-                //           RemoveRestOfTiles();
             }
             else
             {
@@ -238,17 +226,24 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 {
                     byte[] buffer;
                     GetImage(tile, out buffer);
-                    DisplayImage(buffer, tile, !MapView.Printing, true);
+                    DisplayImage(buffer, tile, false, true);
                     RemoveRestOfTiles();
                 }
             }
         }
 
+        private void StopBackgroundWorker()
+        {
+            if (worker == null) return;
+            
+            worker.CancelAsync();
+            worker.DoWork -= Worker_DoWork;
+            worker = null;
+        }
 
-        /// <summary> Just as the name says: Remove tiles with a different zoom. </summary>
         private void RemoveTilesWithDifferentZoom()
         {
-            var visibleTiles = GetVisibleTiles(new MapParam(MapView.ActualWidth, MapView.ActualHeight, MapView.FinalX, MapView.FinalY, GetTileZoom(), MapView.FinalZoom))
+            var visibleTiles = GetVisibleTiles(new MapParam(MapView, GetTileZoom()))
                     .ToDictionary<TileParam, TileParam, object>(tile => tile, tile => null);
 
             var tmpList = new List<TileParam>(shownImages.Keys.Where(imageKey => !visibleTiles.ContainsKey(imageKey)));
@@ -272,6 +267,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 return;
             }
 
+            // TODO: Stimmt dieser Kommentar???
             // remove all images at deeper level that contains the current level
             var tileZoom = GetTileZoom();
             var tmpList = new List<TileParam>();
@@ -280,8 +276,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 if (imageKey.Zoom <= tileZoom) continue;
                 int dx = imageKey.TileX / (imageKey.Zoom - tileZoom + 1);
                 int dy = imageKey.TileY / (imageKey.Zoom - tileZoom + 1);
-                var tk = new TileParam(dx, dy, tileZoom, tiledProvider.CacheId);
-                if (shownImages.ContainsKey(tk) && (Math.Abs(shownImages[tk].Opacity - 1) < 0.00001))
+                if (ContainsShownImagesTransparentImage(new TileParam(dx, dy, tileZoom, tiledProvider.CacheId)))
                 {
                     tmpList.Add(imageKey);
                 }
@@ -292,7 +287,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             }
         }
 
-        /// <summary> Remove all tiles. </summary>
+        private bool ContainsShownImagesTransparentImage(TileParam tileParam) => shownImages.ContainsKey(tileParam) && IsImageTransparent(shownImages[tileParam]);
+        private bool IsImageTransparent(Image image) => Math.Abs(image.Opacity - 1) < 0.00001;
+
         private void RemoveAllTiles()
         {
             foreach (var key in shownImages.Keys.ToList())
@@ -301,12 +298,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             }
         }
 
-        /// <summary> Remove rest of tiles. </summary>
         private void RemoveRestOfTiles()
         {
-            var visibleTileKeys = GetVisibleTiles(new MapParam(MapView.ActualWidth, MapView.ActualHeight, MapView.FinalX, MapView.FinalY, GetTileZoom(), MapView.FinalZoom)).ToDictionary<TileParam, TileParam, object>(imageKey => imageKey, imageKey => null);
+            var visibleTileKeys = GetVisibleTiles(new MapParam(MapView, GetTileZoom())).ToDictionary<TileParam, TileParam, object>(imageKey => imageKey, imageKey => null);
 
-            if (visibleTileKeys.Keys.Any(key => !shownImages.ContainsKey(key) || Math.Abs(shownImages[key].Opacity - 1.0) > 0.00001))
+            if (visibleTileKeys.Keys.Any(key => !ContainsShownImagesTransparentImage(key)))
             {
                 return;
             }
@@ -324,8 +320,6 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             }
         }
 
-        /// <summary> Remove image specified by a key. </summary>
-        /// <param name="key"> String containing the key of the image to remove. </param>
         private void RemoveImage(TileParam key)
         {
             var image = shownImages[key];
@@ -335,9 +329,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
 
         private HashSet<TileParam> currentlyVisibleTiles;
 
-        /// <summary>
-        /// Adopt the opacity of tiles whiled the map sections is changing.
-        /// </summary>
+        /// <summary> Adopt the opacity of tiles whiled the map section is changing. </summary>
         private void WhileMapSectionChange()
         {
 
@@ -360,17 +352,16 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         /// <param name="updateMode"> The update mode. This mode tells which kind of change is to be processed by the update call. </param>
         private void OnMapSectionStartChange(UpdateMode updateMode)
         {
-            if (updateMode != UpdateMode.BeginTransition || TransitionUpdates)
-                if (updateMode != UpdateMode.EndTransition || !TransitionUpdates)
+            if (((updateMode != UpdateMode.BeginTransition) && (updateMode != UpdateMode.EndTransition)) || TransitionUpdates)
+            {
+                if (MapView.FinalZoom < tiledProvider.MinZoom - 1)
                 {
-                    if (MapView.FinalZoom < tiledProvider.MinZoom - 1)
-                    {
-                        RemoveAllTiles();
-                        return;
-                    }
-
-                    GetTiles();
+                    RemoveAllTiles();
+                    return;
                 }
+
+                GetTiles();
+            }
         }
 
         /// <summary>
@@ -382,20 +373,20 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
 
             if (GlobalOptions.InfiniteZoom)
             {
-                double factor = (tiledProvider is ITilingOptions) ? ((ITilingOptions)tiledProvider).Factor : 1;
+                double factor = (tiledProvider as ITilingOptions)?.Factor ?? 1;
 
                 foreach (var i in shownImages)
                 {
-                    var image = i.Value;
                     var key = i.Key;
+                    var image = i.Value;
 
                     double size = MapView.ReferenceSize / factor / (1 << key.Zoom);
 
                     var rx = MapView.OriginOffset.X / MapView.LogicalSize * MapView.ReferenceSize;
                     var ry = MapView.OriginOffset.Y / MapView.LogicalSize * MapView.ReferenceSize;
 
-                    SetLeft(image, rx + key.TileX * size - ((image.Width - size) / 2) - (MapView.ReferenceSize / factor / 2));
-                    SetTop(image, ry + key.TileY * size - ((image.Height - size) / 2) - (MapView.ReferenceSize / factor / 2));
+                    SetLeft(image, rx + key.TileX * size - ((image.Width - size) / 2) - MapView.ReferenceSize / factor / 2);
+                    SetTop(image, ry + key.TileY * size - ((image.Height - size) / 2) - MapView.ReferenceSize / factor / 2);
                 }
             }
         }
@@ -407,18 +398,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         private int GetTileZoom()
         {
             var zoom = (int)Math.Round(MapView.FinalZoom - .25, MidpointRounding.AwayFromZero);
-
-            if (zoom > tiledProvider.MaxZoom)
-            {
-                return tiledProvider.MaxZoom;
-            }
-
-            if (zoom < tiledProvider.MinZoom)
-            {
-                return tiledProvider.MinZoom;
-            }
-
-            return zoom;
+            return Math.Min(tiledProvider.MaxZoom, Math.Max(tiledProvider.MinZoom, zoom));
         }
 
         /// <summary>
@@ -433,14 +413,14 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             int numTiles = 1 << mapParam.TileZoom; // number of tiles for a zoom level    
             double tileDif = mapParam.TileZoom - mapParam.MapZoom;
             double dileFact = Math.Pow(2, tileDif);
-            double factor = (tiledProvider is ITilingOptions) ? ((ITilingOptions)tiledProvider).Factor : 1;
+            double factor = (tiledProvider as ITilingOptions)?.Factor ?? 1;
             double logicalSize = MapView.LogicalSize / factor;
 
             // calculate the left upper tiles
-            var p0x = (int)(((mapParam.MapX + (logicalSize / 2)) * (numTiles / logicalSize)) - (dileFact * mapParam.WpfWidth / 512));
-            var p0y = (int)((((logicalSize / 2) - mapParam.MapY) * (numTiles / logicalSize)) - (dileFact * mapParam.WpfHeight / 512));
-            var p1x = (int)(((mapParam.MapX + (logicalSize / 2)) * (numTiles / logicalSize)) + (dileFact * mapParam.WpfWidth / 512));
-            var p1y = (int)((((logicalSize / 2) - mapParam.MapY) * (numTiles / logicalSize)) + (dileFact * mapParam.WpfHeight / 512));
+            var p0x = (int)((mapParam.MapX + (logicalSize / 2)) * (numTiles / logicalSize) - dileFact * mapParam.WpfWidth / 512);
+            var p0y = (int)(((logicalSize / 2) - mapParam.MapY) * (numTiles / logicalSize) - dileFact * mapParam.WpfHeight / 512);
+            var p1x = (int)((mapParam.MapX + (logicalSize / 2)) * (numTiles / logicalSize) + dileFact * mapParam.WpfWidth / 512);
+            var p1y = (int)(((logicalSize / 2) - mapParam.MapY) * (numTiles / logicalSize) + dileFact * mapParam.WpfHeight / 512);
 
             int numTilesX = p1x - p0x + 1;
             int numTilesY = p1y - p0y + 1;
@@ -449,18 +429,16 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             for (int k = 0; k < numTilesX; k++)
             {
                 int i = (numTilesX / 2) + ((k % 2 == 0) ? (k / 2) : (-k / 2) - 1);
+                int tx = p0x + i;
+                if (tx < 0 || tx >= numTiles)
+                    continue;
 
                 for (int l = 0; l < numTilesY; l++)
                 {
                     int j = (numTilesY / 2) + ((l % 2 == 0) ? (l / 2) : (-l / 2) - 1);
-
-                    int tx = p0x + i;
                     int ty = p0y + j;
-
-                    if (tx < 0 || ty < 0 || tx >= numTiles || ty >= numTiles)
-                    {
+                    if (ty < 0 || ty >= numTiles)
                         continue;
-                    }
 
                     result.Add(new TileParam(tx, ty, mapParam.TileZoom, tiledProvider.CacheId));
                 }
@@ -511,20 +489,19 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         {
             try
             {
-                var imageKey = tile;
-
                 if (!(force || currentlyVisibleTiles.Contains(tile)))
                 {
                     return;
                 }
 
+                var imageKey = tile;
                 if (shownImages.ContainsKey(imageKey))
                 {
                     return;
                 }
 
-                double factor = (tiledProvider is ITilingOptions) ? ((ITilingOptions)tiledProvider).Factor : 1;
-                double overlapFactor = (tiledProvider is ITilingOptions) ? ((ITilingOptions)tiledProvider).OverlapFactor : 0;
+                double factor = (tiledProvider as ITilingOptions)?.Factor ?? 1;
+                double overlapFactor = (tiledProvider as ITilingOptions)?.OverlapFactor ?? 0;
 
                 var image = new Image();
                 double size = MapView.ReferenceSize / factor / (1 << tile.Zoom);
@@ -544,8 +521,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 var rx = MapView.OriginOffset.X / MapView.LogicalSize * MapView.ReferenceSize;
                 var ry = MapView.OriginOffset.Y / MapView.LogicalSize * MapView.ReferenceSize;
 
-                Canvas.SetLeft(image, rx + tile.TileX * size - ((image.Width - size) / 2) - (MapView.ReferenceSize / factor / 2));
-                Canvas.SetTop(image, ry + tile.TileY * size - ((image.Height - size) / 2) - (MapView.ReferenceSize / factor / 2));
+                SetLeft(image, rx + tile.TileX * size - ((image.Width - size) / 2) - (MapView.ReferenceSize / factor / 2));
+                SetTop(image, ry + tile.TileY * size - ((image.Height - size) / 2) - (MapView.ReferenceSize / factor / 2));
 
                 using (var stream = new MemoryStream(buffer))
                 using (var wrapper = new WrappingStream(stream))
@@ -670,27 +647,17 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         /// <summary> Class containing all import parameters concerning the WPF-positioning of a map object. </summary>
         private class MapParam
         {
-            #region constructor
-            /// <summary> Initializes a new instance of the <see cref="MapParam"/> class. Constructor of the container,
-            /// providing important WPF-positioning properties. </summary>
-            /// <param name="wpfWidth"> Width in WPF units. </param>
-            /// <param name="wpfHeight"> Height in WPF units. </param>
-            /// <param name="mapX"> X-coordinate in WPF units. </param>
-            /// <param name="mapY"> Y-coordinate in WPF units. </param>
-            /// <param name="tileZoom"> Zoom level in the map. </param>
-            /// <param name="mapZoom"> Zoom level for tiles. </param>
-            public MapParam(double wpfWidth, double wpfHeight, double mapX, double mapY, int tileZoom, double mapZoom)
+            public MapParam(MapView mapView, int tileZoom)
             {
-                WpfWidth = wpfWidth;
-                WpfHeight = wpfHeight;
+                WpfWidth = mapView.ActualWidth;
+                WpfHeight = mapView.ActualHeight;
 
-                MapX = mapX;
-                MapY = mapY;
+                MapX = mapView.FinalX;
+                MapY = mapView.FinalY;
 
                 TileZoom = tileZoom;
-                MapZoom = mapZoom;
+                MapZoom = mapView.FinalZoom;
             }
-            #endregion
 
             #region public properties
             /// <summary> Gets or sets the width in WPF units.</summary>
@@ -751,7 +718,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             /// <inheritdoc/>
             public override string ToString()
             {
-                return string.Format("Tx{0}x{1}x{2}x{3}", Zoom, TileX, TileY, CacheKey);
+                return $"Tx{Zoom}x{TileX}x{TileY}x{CacheKey}";
             }
 
             #endregion
@@ -759,9 +726,6 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
 
             public override bool Equals(Object obj)
             {
-                // If parameter is null return false.
-                if (obj == null) return false;
-
                 // If parameter cannot be cast to Point return false.
                 var p = obj as TileParam;
                 if (p == null) return false;

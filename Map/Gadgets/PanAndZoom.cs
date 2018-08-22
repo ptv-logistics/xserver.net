@@ -4,8 +4,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Ptv.XServer.Controls.Map;
-using Ptv.XServer.Controls.Map.Gadgets;
 using Ptv.XServer.Controls.Map.Tools;
 
 
@@ -295,7 +293,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                     RadiusY = 8
                 };
 
-                Canvas.SetZIndex(dragRectangle, 266);
+                Panel.SetZIndex(dragRectangle, 266);
                 Canvas.SetLeft(dragRectangle, ScreenStartPoint.X);
                 Canvas.SetTop(dragRectangle, ScreenStartPoint.Y);
                 mapView.ForePaneCanvas.Children.Add(dragRectangle);

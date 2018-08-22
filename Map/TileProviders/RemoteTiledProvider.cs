@@ -66,7 +66,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         }
 
         /// <inheritdoc/>
-        public string CacheId { get { return RequestBuilderDelegate(0, 0, 0); } }
+        public string CacheId => RequestBuilderDelegate(0, 0, 0);
 
         /// <inheritdoc/>
         public int MinZoom {get; set; }

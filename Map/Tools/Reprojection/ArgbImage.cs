@@ -99,7 +99,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// image into a 32bpp ARGB bitmap.</remarks>
         public static ArgbImage FromImage(Image image, InterpolationMode mode = InterpolationMode.Bicubic)
         {
-            if ((image is Bitmap) && ((image as Bitmap).PixelFormat == PixelFormat.Format32bppArgb))
+            if ((image is Bitmap) && (((Bitmap) image).PixelFormat == PixelFormat.Format32bppArgb))
                 return FromImage(image as Bitmap);
 
             var bitmap = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppArgb);
@@ -552,9 +552,9 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 
 
         /// <summary> Determines the width of the image. </summary>
-        public int Width { get; private set; }
+        public int Width { get; }
 
         /// <summary> Determines the height of the image. </summary>
-        public int Height { get; private set; }
+        public int Height { get; }
     }
 }

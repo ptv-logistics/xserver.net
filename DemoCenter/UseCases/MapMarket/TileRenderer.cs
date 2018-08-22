@@ -109,22 +109,14 @@ namespace Ptv.XServer.Demo.MapMarket
         }
 
         /// <summary> Gets the unique name for the WpfMap tile cache. </summary>
-        public string CacheId
-        {
-            get { return "MapMarketTileServer"; }
-        }
+        public string CacheId => "MapMarketTileServer";
 
         /// <summary> Gets the minimum level for the layer. </summary>
-        public int MinZoom
-        {
-            get { return 0; }
-        }
+        public int MinZoom => 0;
 
         /// <summary> Gets the maximum level for the layer. </summary>
-        public int MaxZoom
-        {
-            get { return 19; }
-        }
+        public int MaxZoom => 19;
+
         #endregion
     }
 }

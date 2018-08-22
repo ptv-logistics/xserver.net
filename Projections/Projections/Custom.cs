@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Reflection;
 
 namespace Ptv.Components.Projections.Custom
@@ -49,7 +47,7 @@ namespace Ptv.Components.Projections.Custom
         /// <param name="innerTransformation">The inner <see cref="CustomTransformation"/> instance, non-null for nested transformations.</param>
         public CustomTransformation(CustomTransformation innerTransformation = null)
         {
-            this.InnerTransformation = innerTransformation;
+            InnerTransformation = innerTransformation;
         }
 
         /// <summary>
@@ -60,8 +58,7 @@ namespace Ptv.Components.Projections.Custom
         /// <param name="y">Value containing the y-coordinate (in and out).</param>
         public virtual void Pre(ref double x, ref double y)
         {
-            if (InnerTransformation != null)
-                InnerTransformation.Pre(ref x, ref y);
+            InnerTransformation?.Pre(ref x, ref y);
         }
 
         /// <summary>
@@ -73,8 +70,7 @@ namespace Ptv.Components.Projections.Custom
         /// <param name="y">Value containing the y-coordinate (in and out).</param>
         public virtual void Post(ref double x, ref double y)
         {
-            if (InnerTransformation != null)
-                InnerTransformation.Post(ref x, ref y);
+            InnerTransformation?.Post(ref x, ref y);
         }
 
         /// <summary>
@@ -82,20 +78,10 @@ namespace Ptv.Components.Projections.Custom
         /// </summary>
         /// <remarks>The default implementation just calls the inner 
         /// <see cref="CustomTransformation"/>, if valid.</remarks>
-        public virtual bool Transforms
-        {
-            get
-            {
-                return InnerTransformation != null ? InnerTransformation.Transforms : false;
-            }
-        }
+        public virtual bool Transforms => InnerTransformation?.Transforms ?? false;
 
-        /// <summary>
-        /// Gets or sets the innermost <see cref="CustomTransformation"/> instance. 
-        /// </summary>
-        /// <remarks>
-        /// Using this property it is possible to nest custom transformations.
-        /// </remarks>
+        /// <summary> Gets or sets the innermost <see cref="CustomTransformation"/> instance.  </summary>
+        /// <remarks> Using this property it is possible to nest custom transformations. </remarks>
         public CustomTransformation InnerMost
         {
             set
@@ -204,7 +190,7 @@ namespace Ptv.Components.Projections.Custom
                 ConstructorInfo c = Type.GetType(args.Pop()).GetConstructor(BindingFlags.Instance | BindingFlags.Public | 
                     BindingFlags.NonPublic, null, new Type[] { typeof(Stack<String>) }, null );
 
-                CustomTransformation instance = (CustomTransformation)c.Invoke(new object[] { args });
+                var instance = (CustomTransformation) c.Invoke(new object[] { args });
                 
                 if (ct == null)
                     ct = instance;
@@ -234,7 +220,7 @@ namespace Ptv.Components.Projections.Custom
         /// <summary>
         /// Scale and shift values.
         /// </summary>
-        private double shx = 0, shy = 0, scx = 1, scy = 1;
+        private readonly double shx = 0, shy = 0, scx = 1, scy = 1;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShiftScaleTransformation"/> class.
@@ -319,20 +305,12 @@ namespace Ptv.Components.Projections.Custom
             y = y / scy - shy;
         }
 
-        /// <summary>
-        /// Checks if any parameters are set in a way that makes pre- or post-transformation necessary.
-        /// </summary>
+        /// <summary> Checks if any parameters are set in a way that makes pre- or post-transformation necessary. </summary>
         /// <remarks>
         /// For the <c>ShiftScaleTransform</c> the transformation is unnecessary if the shift values are 
         /// set to 0 and the scale factors are set to 1.
         /// </remarks>
-        public override bool Transforms
-        {
-            get
-            {
-                return Math.Abs(shx) > 1e-4 || Math.Abs(shy) > 1e-4 || Math.Abs(scx - 1) > 1e-4 || Math.Abs(scy - 1) > 1e-4 || base.Transforms;
-            }
-        }
+        public override bool Transforms => Math.Abs(shx) > 1e-4 || Math.Abs(shy) > 1e-4 || Math.Abs(scx - 1) > 1e-4 || Math.Abs(scy - 1) > 1e-4 || base.Transforms;
 
         /// <summary>
         /// Returns a string describing the custom transformation chain.
@@ -353,7 +331,7 @@ namespace Ptv.Components.Projections.Custom
         /// <returns>The <see cref="ShiftScaleTransformation"/>'s clone.</returns>
         public override CustomTransformation Clone()
         {
-            return new ShiftScaleTransformation(shx, shy, scx, scy, InnerTransformation != null ? InnerTransformation.Clone() : null);
+            return new ShiftScaleTransformation(shx, shy, scx, scy, InnerTransformation?.Clone());
         }
     }
 
@@ -443,13 +421,7 @@ namespace Ptv.Components.Projections.Custom
         /// <remarks>
         /// For <c>GeoMinSekTransform</c> the transformation is necessary in an case.
         /// </remarks>
-        public override bool Transforms
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool Transforms => true;
 
         /// <summary>
         /// Returns a deep copy of the <see cref="GeoMinSekTransformation"/> object.
@@ -457,7 +429,7 @@ namespace Ptv.Components.Projections.Custom
         /// <returns>The <see cref="GeoMinSekTransformation"/>'s clone.</returns>
         public override CustomTransformation Clone()
         {
-            return new GeoMinSekTransformation(InnerTransformation != null ? InnerTransformation.Clone() : null);
+            return new GeoMinSekTransformation(InnerTransformation?.Clone());
         }
     }
 }

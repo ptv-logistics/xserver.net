@@ -27,7 +27,7 @@ namespace Ptv.XServer.Controls.Map.Canvases
         #region properties
         /// <summary> Gets the parent map instance. </summary>
         /// <value> The parent map. </value>
-        public MapView MapView { get; private set; }
+        public MapView MapView { get; }
 
         /// <summary> Gets or sets the <see cref="CanvasCategory"/> of the canvas. The canvas category defines the z
         /// order of the canvas in the map.</summary>
@@ -40,10 +40,7 @@ namespace Ptv.XServer.Controls.Map.Canvases
         /// changed events are disconnected. </summary>
         public virtual void Dispose()
         {
-            if (Parent is Canvas)
-            {
-                ((Canvas)Parent).Children.Remove(this);
-            }
+            (Parent as Canvas)?.Children.Remove(this);
 
             ViewportBeginChangedWeakEventManager.RemoveListener(MapView, this);
             ViewportWhileChangedWeakEventManager.RemoveListener(MapView, this);
@@ -292,10 +289,9 @@ namespace Ptv.XServer.Controls.Map.Canvases
         /// <inheritdoc/>  
         protected override Point PtvMercatorToCanvas(Point mercatorPoint)
         {
-            return (RenderTransform == canvasTransform) ? 
-                new Point(mercatorPoint.X, -mercatorPoint.Y) :
-                RenderTransform.Transform(canvasTransform.Inverse.Transform(
-                    new Point(mercatorPoint.X, -mercatorPoint.Y)));
+            return (RenderTransform == canvasTransform) 
+                ? new Point(mercatorPoint.X, -mercatorPoint.Y) 
+                : RenderTransform.Transform(canvasTransform.Inverse.Transform(new Point(mercatorPoint.X, -mercatorPoint.Y)));
         }
 
         protected override void BeforeUpdate(UpdateMode updateMode)

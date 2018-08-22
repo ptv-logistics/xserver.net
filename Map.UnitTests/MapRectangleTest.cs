@@ -183,6 +183,7 @@
         [Test, IntegrationCategory, Description("Tests the Contains-methods.")]
         public void TestProperties()
         {
+            // ReSharper disable once UseObjectOrCollectionInitializer
             var rect = new MapRectangle();
 
             rect.West = -1000.0;

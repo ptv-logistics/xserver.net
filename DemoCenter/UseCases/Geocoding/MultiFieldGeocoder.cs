@@ -76,12 +76,12 @@ namespace Ptv.XServer.Demo.Geocoding
             #region doc:evaluate response
             try
             {
-                findAddressResponse response = (result.AsyncState as XLocateWS).EndfindAddress(result);
+                findAddressResponse response = (result.AsyncState as XLocateWS)?.EndfindAddress(result);
 
-                Addresses = response.result.wrappedResultList.ToList();
+                Addresses = response?.result.wrappedResultList.ToList();
                 Application.Current.Dispatcher.BeginInvoke(new Action(UdpatePins));
 
-                if (response.result.errorCode < 0)
+                if (response != null && response.result.errorCode < 0)
                     errorDelegate.Invoke(response.result.errorDescription);
                 else
                     successDelegate.Invoke(this);

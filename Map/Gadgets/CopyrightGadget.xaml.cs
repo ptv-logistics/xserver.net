@@ -120,9 +120,6 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                 .Where(layer => !string.IsNullOrEmpty(layer.Copyright))
                 .SelectMany(layer => layer.Copyright.Split('|')));
 
-            // Removal to be discussed
-            // copyrightTexts.Sort();
-
             TextStack.Children.Add(new TextBlock
             {
                 Padding = new Thickness(4, 1, 4, 1),
@@ -130,15 +127,6 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                 FontSize = 10,
                 TextAlignment = copyrightTexts.Count > 1 ? TextAlignment.Left : TextAlignment.Center
             });
-
-
-            //copyrightTexts.ForEach(null, text => TextStack.Children.Add(new TextBlock
-            //{
-            //    Padding = new Thickness(4, 1, 4, 1),
-            //    Text = text,
-            //    FontSize = 10,
-            //    TextAlignment = copyrightTexts.Count > 1 ? TextAlignment.Left : TextAlignment.Center
-            //}));
         }
         #endregion
     }

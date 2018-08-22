@@ -189,7 +189,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             var result = new StringBuilder();
 
             foreach (var attr in Attributes)
-                result.AppendWithSeparator(attr.Key + " = " + attr.Value, System.Environment.NewLine);
+                result.AppendWithSeparator(attr.Key + " = " + attr.Value, Environment.NewLine);
 
             return result.ToString();
         }

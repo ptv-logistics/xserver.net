@@ -36,7 +36,7 @@ namespace Ptv.XServer.Demo.Geocoding
         public DataContainer<AddressResponse> AddressResponse { get; set; }
 
         /// <summary> Gets or sets the map. </summary>
-        new public MapView MapView { get; set; }
+        public new MapView MapView { get; set; }
         
         /// <summary> Gets or sets the color of the pins. </summary>
         public Color PinColor { get; set; }
@@ -73,7 +73,7 @@ namespace Ptv.XServer.Demo.Geocoding
         {
             Children.Clear();
 
-            if (AddressResponse == null || AddressResponse.Data == null)
+            if (AddressResponse?.Data == null)
                 return;
 
             // Add a pin to the map for each result.
@@ -94,7 +94,7 @@ namespace Ptv.XServer.Demo.Geocoding
                     RenderTransform = adjustTransform
 
                 };
-                ToolTipService.SetToolTip(pin, string.Format("{0} {1} {2} {3} {4}", address.postCode, address.city, address.city2, address.street, address.houseNumber));
+                ToolTipService.SetToolTip(pin, $"{address.postCode} {address.city} {address.city2} {address.street} {address.houseNumber}");
                 SetLeft(pin, mapPoint.X - pin.Width);
                 SetTop(pin, mapPoint.Y - pin.Height);
                 Children.Add(pin);

@@ -9,6 +9,7 @@ using Ptv.XServer.Controls.Map.Tools;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using Point = System.Windows.Point;
 using Ptv.XServer.Controls.Map.Gadgets;
+using Ptv.XServer.Controls.Map.Layers.Xmap2;
 
 namespace Ptv.XServer.Controls.Map
 {
@@ -153,18 +154,13 @@ namespace Ptv.XServer.Controls.Map
         /// Gets the wrapped Wpf map instance. This can be used to get to the inner Wpf elements, e.g. to support 
         /// mouse events on Wpf level.
         /// </summary>
-        public WpfMap WrappedMap
-        {
-            get { return wpfMap; }
-        }
+        public WpfMap WrappedMap => wpfMap;
+
         #endregion
 
         #region IMap Members
         /// <inheritdoc/>
-        public LayerCollection Layers
-        {
-            get { return wpfMap.Layers; }
-        }
+        public LayerCollection Layers => wpfMap.Layers;
 
         /// <inheritdoc/>
         public string XMapUrl
@@ -203,10 +199,7 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <inheritdoc/>  
-        public bool IsAnimating
-        {
-            get { return wpfMap.IsAnimating; }
-        }
+        public bool IsAnimating => wpfMap.IsAnimating;
 
         /// <inheritdoc/>  
         public int MaxZoom
@@ -223,10 +216,7 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <inheritdoc/>  
-        public double MetersPerPixel
-        {
-            get { return wpfMap.MetersPerPixel; }
-        }
+        public double MetersPerPixel => wpfMap.MetersPerPixel;
 
         /// <inheritdoc/>
         public void SetMapLocation(Point point, double zoom)
@@ -369,10 +359,7 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <inheritdoc/>  
-        public new double Scale
-        {
-            get { return wpfMap.Scale; }
-        }
+        public new double Scale => wpfMap.Scale;
 
         /// <inheritdoc/>  
         public Point Center
@@ -382,22 +369,13 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <inheritdoc/>  
-        public double CurrentZoomLevel
-        {
-            get { return wpfMap.CurrentZoomLevel; }
-        }
+        public double CurrentZoomLevel => wpfMap.CurrentZoomLevel;
 
         /// <inheritdoc/>  
-        public double CurrentScale
-        {
-            get { return wpfMap.CurrentScale; }
-        }
+        public double CurrentScale => wpfMap.CurrentScale;
 
         /// <inheritdoc/>  
-        public Point CurrentCenter
-        {
-            get { return wpfMap.CurrentCenter; }
-        }
+        public Point CurrentCenter => wpfMap.CurrentCenter;
 
         /// <inheritdoc/>  
         public void PrintMap(bool useScaling, string description)
@@ -406,12 +384,10 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <inheritdoc/>  
-        public ToolTipManagement ToolTipManagement
-        {
-            get { return wpfMap.ToolTipManagement; }
-        }
+        public ToolTipManagement ToolTipManagement => wpfMap.ToolTipManagement;
 
-
+        /// <inheritdoc/>  
+        public LayerFactory Xmap2LayerFactory => wpfMap.Xmap2LayerFactory;
         #endregion
 
         #region fix for http://support.microsoft.com/kb/955753
@@ -419,13 +395,11 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> The constant value for the child window handle. </summary>
         private const uint GW_CHILD = 5;
 
-        /// <inheritdoc/>
         [DllImport("user32.dll")]
-        private extern static IntPtr GetWindow(IntPtr hWnd, uint uCmd);
+        private static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
 
-        /// <inheritdoc/>
         [DllImport("user32.dll")]
-        private extern static bool EnableWindow(IntPtr hWnd, bool bEnable);
+        private static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
 
         /// <summary> Synchronizes the enabled state for all child windows. </summary>
         private void SynchChildEnableState()
@@ -446,16 +420,10 @@ namespace Ptv.XServer.Controls.Map
         /// <param name="e"> The event args of the changed event. </param>
         protected override void OnEnabledChanged(EventArgs e)
         {
-            try
-            {
-                SynchChildEnableState();
-            }
+            try { SynchChildEnableState(); }
             catch { }
 
-            try
-            {
-                base.OnEnabledChanged(e);
-            }
+            try { base.OnEnabledChanged(e); }
             catch { }
         }
         #endregion

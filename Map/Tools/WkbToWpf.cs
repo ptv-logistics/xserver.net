@@ -41,7 +41,7 @@ namespace Ptv.XServer.Controls.Map.Tools
                 var point = new Point(ReadDouble(reader, byteOrder), ReadDouble(reader, byteOrder));
 
                 // Add the coordinate.
-                coords[i] = (transform != null) ? transform(point) : point;
+                coords[i] = transform?.Invoke(point) ?? point;
             }
 
             return coords;

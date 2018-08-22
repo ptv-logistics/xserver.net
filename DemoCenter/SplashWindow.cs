@@ -176,10 +176,7 @@ namespace Ptv.XServer.Demo
 
             _splashWindow.Close();
 
-            if (mainWindow == null)
-                return;
-
-            mainWindow.Invoke(() =>
+            mainWindow?.Invoke(() =>
             {
                 mainWindow.Activate();
                 mainWindow.Focus();

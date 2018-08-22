@@ -18,10 +18,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
     {
         #region public variables
         /// <inheritdoc/>
-        public override Type TargetPropertyType
-        {
-            get { return typeof(GridLength); }
-        }
+        public override Type TargetPropertyType => typeof(GridLength);
 
         /// <summary> Gets or sets Documentation in progress... </summary>
         public GridLength From

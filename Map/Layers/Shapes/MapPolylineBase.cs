@@ -14,13 +14,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
 
         #region protected variables
         /// <inheritdoc/>
-        protected override Geometry DefiningGeometry
-        {
-            get
-            {
-                return Data;
-            }
-        }
+        protected override Geometry DefiningGeometry => Data;
+
         #endregion
 
         #region public variables
@@ -51,8 +46,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         private static void OnPointCollectionChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
         {
             var shape = obj as MapShape;
-            if ((shape.GeoTransform != null) && (shape.Parent is ShapeCanvas))
-                (obj as MapShape).UpdateShape((shape.Parent as ShapeCanvas).MapView, UpdateMode.Refresh, false);
+            if ((shape?.GeoTransform != null) && (shape.Parent is ShapeCanvas))
+                shape.UpdateShape(((ShapeCanvas) shape.Parent).MapView, UpdateMode.Refresh, false);
         }
 
         #region constructor
@@ -80,13 +75,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
 
         #region public methods
 
-        /// <inheritdoc/>
         protected void TransformShape(MapView mapView)
         {
             TransformedPoints.Clear();
 
-            for (int i = 0; i < Points.Count; i++)
-                TransformedPoints.Add(GeoTransform(Points[i]));
+            foreach (var point in Points)
+                TransformedPoints.Add(GeoTransform(point));
         }
 
         protected virtual void ClipShape(MapView mapView, UpdateMode mode, bool lazyUpdate)
@@ -196,7 +190,6 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
             base.UpdateShape(mapView, mode, lazyUpdate);
         }
 
-        /// <inheritdoc/>
         protected new Geometry BuildGeometry(ICollection<PointCollection> lines)
         {
             var geom = new StreamGeometry();

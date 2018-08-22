@@ -9,7 +9,7 @@
                  Margin="3">
   <Grid IsHitTestVisible="False">
     <Border CornerRadius="5" BorderThickness="2">
-      <TextBlock Loaded="CoordinatesText_Loaded" Padding="4,1,4,1" x:FieldModifier="public" x:Name="CoordinatesText" Grid.Row="1" Grid.Column="1" FontSize="10" TextAlignment="Center" />
+      <TextBlock Loaded="CoordinatesText_Loaded" Padding="4,1,4,1" x:FieldModifier="public" x:Name="CoordinatesText" FontSize="10" TextAlignment="Center" />
     </Border>
   </Grid>
 </local:MapGadget>

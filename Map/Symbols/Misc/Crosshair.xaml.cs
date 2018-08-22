@@ -1,7 +1,4 @@
-﻿using System.Windows.Controls;
-
-
-namespace Ptv.XServer.Controls.Map.Symbols
+﻿namespace Ptv.XServer.Controls.Map.Symbols
 {
     /// <summary> <para>Interaction logic for Crosshair.xaml.</para>
     /// <para>See the <conceptualLink target="fe3fa795-6deb-4f17-9d97-b94637ebdd49"/> and

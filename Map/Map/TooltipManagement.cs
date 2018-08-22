@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
+// ReSharper disable once CheckNamespace
 namespace Ptv.XServer.Controls.Map
 {
     /// <summary>
@@ -105,17 +105,15 @@ namespace Ptv.XServer.Controls.Map
         {
             var result = new StackPanel();
 
-            bool isFirst = true;
-            foreach (var toolTipEntry in toolTipEntries)
+            foreach (var item in toolTipEntries.Select((toolTipEntry, index) => new { index, toolTipEntry } ))
             {
-                var label = new Label { Margin = new Thickness(1), Content = toolTipEntry };
-                result.Children.Add(isFirst 
+                var label = new Label { Margin = new Thickness(1), Content = item.toolTipEntry };
+                result.Children.Add((item.index == 0) 
                     ? (UIElement) label 
                     : new Border {
                         BorderThickness = new Thickness(0, 1, 0, 0),
                         BorderBrush = new SolidColorBrush(Colors.White),
                         Child = label });
-                isFirst = false;
             }
 
             return result;

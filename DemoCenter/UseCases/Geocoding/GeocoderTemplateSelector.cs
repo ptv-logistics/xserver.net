@@ -18,7 +18,7 @@ namespace Ptv.XServer.Demo.Geocoding
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             Window wnd = Application.Current.MainWindow;
-            return (item is string) ? wnd.FindResource("WaitTemplate") as DataTemplate : wnd.FindResource("GeocoderSuggestionTemplate") as DataTemplate;
+            return wnd?.FindResource((item is string) ? "WaitTemplate" : "GeocoderSuggestionTemplate") as DataTemplate;
         }
     }
 }

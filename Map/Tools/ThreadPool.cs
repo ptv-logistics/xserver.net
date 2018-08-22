@@ -116,28 +116,28 @@ namespace DevelopMentor
                            int newThreadTrigger, int dynamicThreadDecayTime,
                            ThreadPriority threadPriority, int requestQueueLimit)
         {
-            logger.Writeline(TraceEventType.Information, string.Format("New thread pool {0} created:", poolName));
-            logger.Writeline(TraceEventType.Information, string.Format("  initial thread count:      {0}", initialThreadCount));
-            logger.Writeline(TraceEventType.Information, string.Format("  max thread count:          {0}", maxThreadCount));
-            logger.Writeline(TraceEventType.Information, string.Format("  new thread trigger:        {0} ms", newThreadTrigger));
-            logger.Writeline(TraceEventType.Information, string.Format("  dynamic thread decay time: {0} ms", dynamicThreadDecayTime));
-            logger.Writeline(TraceEventType.Information, string.Format("  request queue limit:       {0} entries", requestQueueLimit));
+            logger.Writeline(TraceEventType.Information, $"New thread pool {poolName} created:");
+            logger.Writeline(TraceEventType.Information, $"  initial thread count:      {initialThreadCount}");
+            logger.Writeline(TraceEventType.Information, $"  max thread count:          {maxThreadCount}");
+            logger.Writeline(TraceEventType.Information, $"  new thread trigger:        {newThreadTrigger} ms");
+            logger.Writeline(TraceEventType.Information, $"  dynamic thread decay time: {dynamicThreadDecayTime} ms");
+            logger.Writeline(TraceEventType.Information, $"  request queue limit:       {requestQueueLimit} entries");
 
             SafeWaitHandle = stopCompleteEvent.SafeWaitHandle;
 
             if (maxThreadCount < initialThreadCount)
             {
-                throw new ArgumentException("Maximum thread count must be >= initial thread count.", "maxThreadCount");
+                throw new ArgumentException("Maximum thread count must be >= initial thread count.", nameof(maxThreadCount));
             }
 
             if (dynamicThreadDecayTime <= 0)
             {
-                throw new ArgumentException("Dynamic thread decay time cannot be <= 0.", "dynamicThreadDecayTime");
+                throw new ArgumentException("Dynamic thread decay time cannot be <= 0.", nameof(dynamicThreadDecayTime));
             }
 
             if (newThreadTrigger <= 0)
             {
-                throw new ArgumentException("New thread trigger time cannot be <= 0.", "newThreadTrigger");
+                throw new ArgumentException("New thread trigger time cannot be <= 0.", nameof(newThreadTrigger));
             }
             
             this.initialThreadCount = initialThreadCount;
@@ -150,7 +150,7 @@ namespace DevelopMentor
             
             if (poolName == null)
             {
-                throw new ArgumentNullException("poolName", "Thread pool name cannot be null");
+                throw new ArgumentNullException(nameof(poolName), "Thread pool name cannot be null");
             }
             threadPoolName = poolName;
         }
@@ -189,7 +189,7 @@ namespace DevelopMentor
 
                 if (value <= 0)
                 {
-                    throw new ArgumentException("Dynamic thread decay time cannot be <= 0.", "value");
+                    throw new ArgumentException("Dynamic thread decay time cannot be <= 0.", nameof(value));
                 }
 
                 decayTime = value;
@@ -205,7 +205,7 @@ namespace DevelopMentor
             {
                 if (value <= 0)
                 {
-                    throw new ArgumentException("New thread trigger time cannot be <= 0.", "value");
+                    throw new ArgumentException("New thread trigger time cannot be <= 0.", nameof(value));
                 }
 
                 lock(this)
@@ -223,10 +223,7 @@ namespace DevelopMentor
         }
 
         /// <summary> Gets Documentation in progress... </summary>
-        public int AvailableThreads
-        {
-            get { return(maxThreadCount - currentThreadCount); }
-        }
+        public int AvailableThreads => maxThreadCount - currentThreadCount;
 
         /// <summary> Gets or sets Documentation in progress... </summary>
         public int MaxThreads
@@ -320,14 +317,11 @@ namespace DevelopMentor
 
                 for (int n = 0; n < initialThreadCount; n++)
                 {
-                    var thread = new ThreadWrapper(this, true, threadPriority, string.Format("{0} (static)", threadPoolName));
+                    var thread = new ThreadWrapper(this, true, threadPriority, $"{threadPoolName} (static)");
                     thread.Start();
                 }
 
-                if (Started != null)
-                {
-                    Started(); // TODO: reconsider firing this event while holding the lock...
-                }
+                Started?.Invoke(); // TODO: reconsider firing this event while holding the lock...
             }
         }
         #endregion
@@ -364,9 +358,8 @@ namespace DevelopMentor
 
             lock(this)
             {
-                logger.Writeline(TraceEventType.Information, string.Format("[{0}, {1}] Stopping pool (# threads = {2})",
-                                               Thread.CurrentThread.ManagedThreadId, Thread.CurrentThread.Name,
-                                               currentThreadCount));
+                logger.Writeline(TraceEventType.Information,
+                    $"[{Thread.CurrentThread.ManagedThreadId}, {Thread.CurrentThread.Name}] Stopping pool (# threads = {currentThreadCount})");
 
                 stopInProgress = true;
                 Monitor.PulseAll(this);
@@ -572,7 +565,7 @@ namespace DevelopMentor
             /// <returns> Documentation in progress... </returns>
             public static ThreadInfo Impersonate(ThreadInfo ti)
             {
-                if (ti == null) throw new ArgumentNullException("ti");
+                if (ti == null) throw new ArgumentNullException(nameof(ti));
 
                 ThreadInfo prevInfo = Capture(true, true, true, true);
                 Restore(ti);
@@ -616,14 +609,11 @@ namespace DevelopMentor
             /// <param name="ti"> Documentation in progress... </param>
             public static void Restore(ThreadInfo ti)
             {
-                if (ti == null) throw new ArgumentNullException("ti");
+                if (ti == null) throw new ArgumentNullException(nameof(ti));
 
                 // Restore call context.
                 //
-                if (miSetLogicalCallContext != null)
-                {
-                    miSetLogicalCallContext.Invoke(Thread.CurrentThread, new object[]{ti.callContext});
-                }
+                miSetLogicalCallContext?.Invoke(Thread.CurrentThread, new object[]{ti.callContext});
 
                 // Restore HttpContext with the moral equivalent of
                 // HttpContext.Current = ti.httpContext;
@@ -810,8 +800,8 @@ namespace DevelopMentor
             /// <summary> Documentation in progress... </summary>
             void ThreadProc()
             {
-                logger.Writeline(TraceEventType.Information, string.Format("[{0}, {1}] Worker thread started",
-                                                                 Thread.CurrentThread.ManagedThreadId, Thread.CurrentThread.Name));
+                logger.Writeline(TraceEventType.Information,
+                    $"[{Thread.CurrentThread.ManagedThreadId}, {Thread.CurrentThread.Name}] Worker thread started");
                 bool done = false;
 
                 while (!done)
@@ -869,9 +859,7 @@ namespace DevelopMentor
                                 // Note - the constructor for ThreadWrapper will update
                                 // pool.currentThreadCount.
                                 //
-                                newThread =
-                                    new ThreadWrapper(pool, false, priority,
-                                                       string.Format("{0} (dynamic)", pool.threadPoolName));
+                                newThread = new ThreadWrapper(pool, false, priority, $"{pool.threadPoolName} (dynamic)");
 
                                 // Since the current request we just dequeued is stale,
                                 // everything else behind it in the queue is also stale.
@@ -897,10 +885,7 @@ namespace DevelopMentor
                                 //
                                 Debug.Assert(pool.stopInProgress);
 
-                                if (pool.Stopped != null)
-                                {
-                                    pool.Stopped();
-                                }
+                                pool.Stopped?.Invoke();
 
                                 pool.stopCompleteEvent.Set();
                             }
@@ -929,8 +914,8 @@ namespace DevelopMentor
 
                     if (newThread != null)
                     {
-                        logger.Writeline(TraceEventType.Information, string.Format("[{0}, {1}] Adding dynamic thread to pool",
-                            Thread.CurrentThread.ManagedThreadId, Thread.CurrentThread.Name));
+                        logger.Writeline(TraceEventType.Information,
+                            $"[{Thread.CurrentThread.ManagedThreadId}, {Thread.CurrentThread.Name}] Adding dynamic thread to pool");
                         newThread.Start();
                     }
 
@@ -958,7 +943,7 @@ namespace DevelopMentor
                     }
                     catch(Exception e)
                     {
-                        logger.Writeline(TraceEventType.Information, string.Format("Exception thrown performing callback:\n{0}\n{1}", e.Message, e.StackTrace));
+                        logger.Writeline(TraceEventType.Information, $"Exception thrown performing callback:\n{e.Message}\n{e.StackTrace}");
                     }
                     finally
                     {
@@ -968,8 +953,7 @@ namespace DevelopMentor
                     }
                 }
 
-                Debug.WriteLine(string.Format("[{0}, {1}] Worker thread exiting pool",
-                                               Thread.CurrentThread.ManagedThreadId, Thread.CurrentThread.Name));
+                Debug.WriteLine($"[{Thread.CurrentThread.ManagedThreadId}, {Thread.CurrentThread.Name}] Worker thread exiting pool");
             }
             #endregion
         }

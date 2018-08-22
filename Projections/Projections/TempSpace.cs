@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 namespace System.IO
 {
@@ -16,7 +11,7 @@ namespace System.IO
         /// <summary>
         /// The tempBase variable.
         /// </summary>
-        private static string tempBase = null;
+        private static readonly string tempBase = null;
         
         /// <summary>
         /// Tries to delete a directory.

@@ -42,7 +42,7 @@ namespace Ptv.XServer.Demo.Geocoding
         /// <inheritdoc/>
         public override string ToString()
         {
-            return string.Format("{0} / {1} / {2} / {3} / {4}", Country, State, PostalCode, City, Street);
+            return $"{Country} / {State} / {PostalCode} / {City} / {Street}";
         }
     }
 }

@@ -71,11 +71,10 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             }
             else
             {
-                switch (this.Map.CoordinateDiplayFormat)
+                switch (Map.CoordinateDiplayFormat)
                 {
                     case CoordinateDiplayFormat.Decimal:
-
-                        CoordinatesText.Text = string.Format("{0:.000000}°, {1:.000000}°", wgsPoint.Y, wgsPoint.X);
+                        CoordinatesText.Text = $"{wgsPoint.Y:.000000}°, {wgsPoint.X:.000000}°";
                         break;
                     case CoordinateDiplayFormat.Degree:
                         CoordinatesText.Text = GeoTransform.LatLonToString(wgsPoint.Y, wgsPoint.X, true);

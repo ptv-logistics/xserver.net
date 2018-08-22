@@ -86,7 +86,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             foreach (ICollection<T> polyline in polylines)
             {
                 // enumerator for accessing points
-                IEnumerator<T> e = polyline == null ? null : polyline.GetEnumerator();
+                IEnumerator<T> e = polyline?.GetEnumerator();
 
                 // fetch first point
                 if (e == null || !e.MoveNext()) continue;
@@ -193,10 +193,8 @@ namespace Ptv.XServer.Controls.Map.Tools
             }
 
             /// <summary> Gets the resulting polylines, after appending several single lines using Append. </summary>
-            public ICollection<P> Polyline
-            {
-                get { return polylineList; }
-            }
+            public ICollection<P> Polyline => polylineList;
+
             #endregion
 
             #region private methods
@@ -213,7 +211,7 @@ namespace Ptv.XServer.Controls.Map.Tools
 
             /// <summary>
             /// Appends the given point to the current polyline, also updating the end point of the current polyline. 
-            /// Certain conditions apply before the point is added; see parameter description below.
+            /// Certain conditions apply before the point is added; see also parameter description.
             /// </summary>
             /// <param name="appendCheck"> Flag indicating if the given point is to be added without further 
             /// checks or if the given threshold is to be evaluated. </param>

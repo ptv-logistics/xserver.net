@@ -11,7 +11,7 @@ namespace Ptv.XServer.Controls.Map.Tools
     {
         #region private variables
         /// <summary> Internally hold dictionary. </summary>
-        private readonly Dictionary<TKey, TValue> dictionary = new Dictionary<TKey, TValue>();
+        private readonly Dictionary<TKey, TValue> dictionary;
         #endregion
 
         #region event
@@ -27,10 +27,10 @@ namespace Ptv.XServer.Controls.Map.Tools
         }
 
         /// <summary> Initializes a new instance of the <see cref="ObservableDictionary{TKey, TValue}"/> class. </summary>
-        /// <param name="dictionary"> The <see cref="System.Collections.Generic.IDictionary{TKey, TValue}"/> whose elements are copied to the new <see cref="System.Collections.Generic.Dictionary{TKey, TValue}"/>. </param>
-        public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
+        /// <param name="copyDictionary"> The <see cref="System.Collections.Generic.IDictionary{TKey, TValue}"/> whose elements are copied to the new <see cref="System.Collections.Generic.Dictionary{TKey, TValue}"/>. </param>
+        public ObservableDictionary(IDictionary<TKey, TValue> copyDictionary)
         {
-            this.dictionary = new Dictionary<TKey, TValue>(dictionary);
+            dictionary = new Dictionary<TKey, TValue>(copyDictionary);
         }
 
         /// <summary> Initializes a new instance of the <see cref="ObservableDictionary{TKey, TValue}"/> class. </summary>
@@ -49,12 +49,12 @@ namespace Ptv.XServer.Controls.Map.Tools
         }
 
         /// <summary> Initializes a new instance of the <see cref="ObservableDictionary{TKey, TValue}"/> class. </summary>
-        /// <param name="dictionary"> The <see cref="System.Collections.Generic.IDictionary{TKey, TValue}"/> whose elements are copied to the new <see cref="System.Collections.Generic.Dictionary{TKey, TValue}"/>. </param>
+        /// <param name="copyDictionary"> The <see cref="System.Collections.Generic.IDictionary{TKey, TValue}"/> whose elements are copied to the new <see cref="System.Collections.Generic.Dictionary{TKey, TValue}"/>. </param>
         /// <param name="comparer">The <see cref="System.Collections.Generic.IEqualityComparer{T}"/> implementation to use
         /// when comparing keys, or null to use the default <see cref="System.Collections.Generic.IEqualityComparer{T}"/> for the type of the key.</param>
-        public ObservableDictionary(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer)
+        public ObservableDictionary(IDictionary<TKey, TValue> copyDictionary, IEqualityComparer<TKey> comparer)
         {
-            this.dictionary = new Dictionary<TKey, TValue>(dictionary, comparer);
+            dictionary = new Dictionary<TKey, TValue>(copyDictionary, comparer);
         }
 
         /// <summary> Initializes a new instance of the <see cref="ObservableDictionary{TKey, TValue}"/> class. </summary>
@@ -74,8 +74,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public void Add(TKey key, TValue value)
         {
             dictionary.Add(key, value);
-            if (CollectionChanged == null) return;
-            CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new KeyValuePair<TKey, TValue>(key, value)));
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new KeyValuePair<TKey, TValue>(key, value)));
         }
 
         /// <summary> Removes a certain item from the dictionary. </summary>
@@ -103,9 +102,7 @@ namespace Ptv.XServer.Controls.Map.Tools
                 dictionary[key] = value;
                 var newItem = new KeyValuePair<TKey, TValue>(key, dictionary[key]);
 
-                if (CollectionChanged == null) return;
-
-                CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem));
+                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem));
             }
         }
 
@@ -114,9 +111,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public void Add(KeyValuePair<TKey, TValue> item)
         {
             (dictionary as IDictionary<TKey, TValue>).Add(item);
-            if (CollectionChanged == null) return;
-
-            CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
         }
 
         /// <summary> Clears the dictionary and removes all items. </summary>
@@ -149,15 +144,15 @@ namespace Ptv.XServer.Controls.Map.Tools
         public bool ContainsKey(TKey key) { return dictionary.ContainsKey(key); }
         /// <summary> Gets the collection of keys in the dictionary. See <see cref="System.Collections.Generic.Dictionary{TKey, TValue}.Keys"/>. </summary>
         /// <returns> Documentation in progress... </returns>
-        public ICollection<TKey> Keys { get { return dictionary.Keys; } }
-        /// <summary><see cref="System.Collections.Generic.Dictionary{TKey, TValue}.TryGetValue"/></summary>
+        public ICollection<TKey> Keys => dictionary.Keys;
+        /// <summary><see cref="Dictionary{TKey, TValue}.TryGetValue"/></summary>
         /// <param name="key"> Documentation in progress... </param>
         /// <param name="value"> Documentation in progress... </param>
         /// <returns> Documentation in progress... </returns>
         public bool TryGetValue(TKey key, out TValue value) { return dictionary.TryGetValue(key, out value); }
         /// <summary> Gets the collection of values in the dictionary. See <see cref="System.Collections.Generic.Dictionary{TKey, TValue}.Values"/>. </summary>
         /// <returns> Documentation in progress... </returns>
-        public ICollection<TValue> Values { get { return dictionary.Values; } }
+        public ICollection<TValue> Values => dictionary.Values;
         /// <summary><see cref="System.Collections.Generic.ICollection{T}.Contains"/></summary>
         /// <param name="item"> Documentation in progress... </param>
         /// <returns> Documentation in progress... </returns>
@@ -168,10 +163,10 @@ namespace Ptv.XServer.Controls.Map.Tools
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex) { (dictionary as IDictionary<TKey, TValue>).CopyTo(array, arrayIndex); }
         /// <summary> Gets the count of elements in the dictionary. See <see cref="System.Collections.Generic.Dictionary{TKey, TValue}.Count"/>. </summary>
         /// <returns> Documentation in progress... </returns>
-        public int Count { get { return dictionary.Count; } }
+        public int Count => dictionary.Count;
         /// <summary> Gets a value indicating whether the dictionary is observable. See <see cref="System.Collections.Generic.ICollection{T}.IsReadOnly"/>. </summary>
         /// <returns> Documentation in progress... </returns>
-        public bool IsReadOnly { get { return (dictionary as IDictionary<TKey, TValue>).IsReadOnly; } }
+        public bool IsReadOnly => (dictionary as IDictionary<TKey, TValue>).IsReadOnly;
         /// <summary><see cref="System.Collections.Generic.IEnumerable{T}.GetEnumerator"/></summary>
         /// <returns> Documentation in progress... </returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() { return (dictionary as IDictionary<TKey, TValue>).GetEnumerator(); }

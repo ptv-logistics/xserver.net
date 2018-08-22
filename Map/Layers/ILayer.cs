@@ -43,8 +43,13 @@ namespace Ptv.XServer.Controls.Map.Layers
         CanvasCategory[] CanvasCategories { get; }
     }
 
+    /// <summary> Retrieves information around a certain geographical point.</summary>
     public interface IToolTips
     {
+        /// <summary> Retrieves information around a certain geographical point.</summary>
+        /// <param name="center">Pixel coordinate of the point.</param>
+        /// <param name="maxPixelDistance">Maximal number of pixels to search for.</param>
+        /// <returns>A collection of strings describing the geographical objects.</returns>
         IEnumerable<string> Get(Point center, double maxPixelDistance);
     }
 }

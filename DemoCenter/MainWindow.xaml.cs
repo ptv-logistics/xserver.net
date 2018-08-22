@@ -33,14 +33,15 @@ using System.Globalization;
 using Ptv.XServer.Demo.UseCases;
 using System.Collections.Generic;
 using Ptv.XServer.Demo.Resources.MessageBox;
-using Ptv.XServer.Controls.Map.Tools;
 
 namespace Ptv.XServer.Demo
 {
     /// <summary> Interaction logic for MainWindow.xaml. </summary>
     public partial class MainWindow
     {
-        bool wait = true;
+        // ReSharper disable once FieldCanBeMadeReadOnly.Local
+        // ReSharper disable once MemberInitializerValueIgnored
+        private bool wait = true;
         
 #if(!DEBUG)
         /// <summary> Splash window which is shown at startup. </summary>
@@ -177,8 +178,6 @@ namespace Ptv.XServer.Demo
 
         private bool ConfigureWPFMap(Map map)
         {
-            Ptv.XServer.Controls.Map.GlobalOptions.InfiniteZoom = true;
-
             #region doc:Static Map Control
             // Initialize map control with xMap layers, especially the URL of the xServer. 
             // For layers provided on Azure xServers, an xToken has to be taken into consideration. This information is 
@@ -279,10 +278,10 @@ namespace Ptv.XServer.Demo
 
         private string getUrlFromComboBox()
         {
-            ComboBoxItem urlItem = XURLComboBox.SelectedItem as ComboBoxItem;
+            var urlItem = XURLComboBox.SelectedItem as ComboBoxItem;
             return ((urlItem == null) || string.IsNullOrEmpty(urlItem.Tag as string)) 
                 ? XURLComboBox.Text.Trim() 
-                : urlItem.Tag as string;
+                : (string) urlItem.Tag;
         }
 
         private string getXTokenFromTextBox()
@@ -430,8 +429,7 @@ namespace Ptv.XServer.Demo
             var theme = "Ptv.XServer.Demo.Resources.Themes.PTV" + UIThemeComboBox.SelectedValue + ".xaml";
             var assembly = System.Reflection.Assembly.GetAssembly(typeof(MainWindow));
             using (var themeFile = assembly.GetManifestResourceStream(theme))
-                if (wpfMap != null)
-                    wpfMap.SetThemeFromXaml(themeFile);
+                wpfMap?.SetThemeFromXaml(themeFile);
         }
         #endregion doc:switch theme
 
@@ -930,10 +928,10 @@ namespace Ptv.XServer.Demo
     }
 
     #region Instructions 
-    public class DemoCenterInstructions
+    internal class DemoCenterInstructions
     {
         public Action<string, bool> HandlerCallback;
-        public bool isActive = false;
+        public bool isActive;
         private readonly Grid location;
 
         public DemoCenterInstructions(Grid location)

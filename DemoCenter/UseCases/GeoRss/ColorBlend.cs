@@ -100,87 +100,34 @@ namespace Ptv.XServer.Demo.GeoRSS
         /// <summary> Gets a linear gradient scale with five colors showing a rainbow from red to blue. </summary>
         /// <remarks> Colors span the following with an interval of 0.25: { Color.Red, Color.Yellow, Color.Green,
         /// Color.Cyan, Color.Blue }. </remarks>
-        public static ColorBlend Rainbow5
-        {
-            get
-            {
-                return new ColorBlend(
-                    new[] { Colors.Red, Colors.Yellow, Colors.Green, Colors.Cyan, Colors.Blue },
-                    new[] { 0f, 0.25f, 0.5f, 0.75f, 1f });
-            }
-        }
+        public static ColorBlend Rainbow5 => new ColorBlend(
+            new[] { Colors.Red, Colors.Yellow, Colors.Green, Colors.Cyan, Colors.Blue },
+            new[] { 0f, 0.25f, 0.5f, 0.75f, 1f });
 
         /// <summary> Gets a linear gradient scale from black to white. </summary>
-        public static ColorBlend BlackToWhite
-        {
-            get
-            {
-                return new ColorBlend(new[] { Colors.Black, Colors.White }, new[] { 0f, 1f });
-            }
-        }
+        public static ColorBlend BlackToWhite => new ColorBlend(new[] { Colors.Black, Colors.White }, new[] { 0f, 1f });
 
         /// <summary> Gets a linear gradient scale from white to black. </summary>
-        public static ColorBlend WhiteToBlack
-        {
-            get
-            {
-                return new ColorBlend(new[] { Colors.White, Colors.Black }, new[] { 0f, 1f });
-            }
-        }
+        public static ColorBlend WhiteToBlack => new ColorBlend(new[] { Colors.White, Colors.Black }, new[] { 0f, 1f });
 
         /// <summary> Gets a linear gradient scale from red to green. </summary>
-        public static ColorBlend RedToGreen
-        {
-            get
-            {
-                return new ColorBlend(new[] { Colors.Red, Colors.Green }, new[] { 0f, 1f });
-            }
-        }
+        public static ColorBlend RedToGreen => new ColorBlend(new[] { Colors.Red, Colors.Green }, new[] { 0f, 1f });
 
         /// <summary> Gets a linear gradient scale from green to red. </summary>
-        public static ColorBlend GreenToRed
-        {
-            get
-            {
-                return new ColorBlend(new[] { Colors.Green, Colors.Red }, new[] { 0f, 1f });
-            }
-        }
+        public static ColorBlend GreenToRed => new ColorBlend(new[] { Colors.Green, Colors.Red }, new[] { 0f, 1f });
 
         /// <summary> Gets a linear gradient scale from blue to green. </summary>
-        public static ColorBlend BlueToGreen
-        {
-            get
-            {
-                return new ColorBlend(new[] { Colors.Blue, Colors.Green }, new[] { 0f, 1f });
-            }
-        }
+        public static ColorBlend BlueToGreen => new ColorBlend(new[] { Colors.Blue, Colors.Green }, new[] { 0f, 1f });
 
         /// <summary> Gets a linear gradient scale from green to blue. </summary>
-        public static ColorBlend GreenToBlue
-        {
-            get
-            {
-                return new ColorBlend(new[] { Colors.Green, Colors.Blue }, new[] { 0f, 1f });
-            }
-        }
+        public static ColorBlend GreenToBlue => new ColorBlend(new[] { Colors.Green, Colors.Blue }, new[] { 0f, 1f });
 
         /// <summary> Gets a linear gradient scale from red to blue. </summary>
-        public static ColorBlend RedToBlue
-        {
-            get
-            {
-                return new ColorBlend(new[] { Colors.Red, Colors.Blue }, new[] { 0f, 1f });
-            }
-        }
+        public static ColorBlend RedToBlue => new ColorBlend(new[] { Colors.Red, Colors.Blue }, new[] { 0f, 1f });
 
         /// <summary> Gets a linear gradient scale from blue to red. </summary>
-        public static ColorBlend BlueToRed
-        {
-            get
-            {
-                return new ColorBlend(new[] { Colors.Blue, Colors.Red }, new[] { 0f, 1f });
-            }
-        }
+        public static ColorBlend BlueToRed => new ColorBlend(new[] { Colors.Blue, Colors.Red }, new[] { 0f, 1f });
+
         #endregion
 
         #region helper methods

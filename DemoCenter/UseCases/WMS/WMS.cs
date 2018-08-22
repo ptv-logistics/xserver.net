@@ -5,8 +5,6 @@
 // should have been provided with this distribution.
 //--------------------------------------------------------------
 
-using System;
-using System.Net;
 using System.Windows;
 using Ptv.XServer.Controls.Map.Layers;
 using Ptv.XServer.Controls.Map.Tools;

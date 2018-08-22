@@ -136,10 +136,8 @@ namespace Ptv.Components.Projections
                             }
 
 
-                        StringBuilder output = new StringBuilder(String.Format("{0}: {1} ==> {2} in {3:0.00}µs",
-                            projectionInfo.Value.transformer.Name, testPoints[j], p,
-                            (double)(1000 * (DateTime.Now - then).TotalMilliseconds / m)
-                        ));
+                        StringBuilder output = new StringBuilder(
+                            $"{projectionInfo.Value.transformer.Name}: {testPoints[j]} ==> {p} in {(double) (1000 * (DateTime.Now - then).TotalMilliseconds / m):0.00}µs");
 
                         ConsoleColor fgColor = defaultFgColor;
 
@@ -148,7 +146,7 @@ namespace Ptv.Components.Projections
                         else
                         {
                             Delta delta = reference[refIdx] - p;
-                            output.Append(String.Format(", delta={0:0.00} (dx={1:0.00}, dy={2:0.00})", delta.d, delta.dx, delta.dy));
+                            output.Append($", delta={delta.d:0.00} (dx={delta.dx:0.00}, dy={delta.dy:0.00})");
 
                             if (delta.d > 1e-1)
                                 fgColor = ConsoleColor.Red;
@@ -215,13 +213,7 @@ namespace Ptv.Components.Projections
         public double dy;
         public double dx;
 
-        public double d
-        {
-            get
-            {
-                return Math.Sqrt(dx * dx + dy * dy);
-            }
-        }
+        public double d => Math.Sqrt(dx * dx + dy * dy);
     }
 
     public class TestPoint
@@ -231,7 +223,7 @@ namespace Ptv.Components.Projections
 
         public override string ToString()
         {
-            return String.Format("{0},{1:0.00},{2:0.00}", epsgCode, p.X, p.Y);
+            return $"{epsgCode},{p.X:0.00},{p.Y:0.00}";
         }
 
         public static Delta operator -(TestPoint p, TestPoint q)
@@ -298,10 +290,7 @@ namespace Ptv.Components.Projections
         }
 
 
-        public string Name
-        {
-            get { return "PROJ.4"; }
-        }
+        public string Name => "PROJ.4";
     }
 
     /*
@@ -403,45 +392,41 @@ namespace Ptv.Components.Projections
     }
     */
 
-    class TestBase
+    internal class TestBase
     {
-        Random random 
-            = new Random();
+        private readonly Random random = new Random();
 
-        ICoordinateTransformation directTransformation =
-            Direct.CoordinateTransformation.Get("cfGEOMINSEK", "EPSG:76131");
+        private readonly ICoordinateTransformation directTransformation = Direct.CoordinateTransformation.Get("cfGEOMINSEK", "EPSG:76131");
 
-        ICoordinateTransformation proj4Transformation =
-            Proj4.CoordinateTransformation.Get("cfGEOMINSEK", "EPSG:76131");
+        private readonly ICoordinateTransformation proj4Transformation = Proj4.CoordinateTransformation.Get("cfGEOMINSEK", "EPSG:76131");
 
-        static System.Windows.Point p = 
-            new System.Windows.Point(959361, 5332563);
+        private static readonly System.Windows.Point p = new System.Windows.Point(959361, 5332563);
 
         ICoordinateTransformation GetTransformation(bool bDirect)
         {
             return bDirect ? directTransformation : proj4Transformation;
         }
 
-        double[][] bulk_XY_1000 = new double[][] {
+        private readonly double[][] bulk_XY_1000 = new double[][] {
             GetX(GetPoints(1000)),
             GetY(GetPoints(1000)),
             new double[1000],
             new double[1000]
         };
 
-        System.Windows.Point[][] bulk_1000 = new System.Windows.Point[][] {
+        private readonly System.Windows.Point[][] bulk_1000 = new System.Windows.Point[][] {
             GetPoints(1000),
             new System.Windows.Point[1000]
         };
 
-        double[][] bulk_XY_100000 = new double[][] {
+        private readonly double[][] bulk_XY_100000 = new double[][] {
             GetX(GetPoints(100000)),
             GetY(GetPoints(100000)),
             new double[100000],
             new double[100000]
         };
 
-        System.Windows.Point[][] bulk_100000 = new System.Windows.Point[][] {
+        private readonly System.Windows.Point[][] bulk_100000 = new System.Windows.Point[][] {
             GetPoints(100000),
             new System.Windows.Point[100000]
         };
@@ -456,22 +441,22 @@ namespace Ptv.Components.Projections
             return a;
         }
 
-        static double[] GetX(System.Windows.Point[] p)
+        static double[] GetX(System.Windows.Point[] points)
         {
-            double[] d = new double[p.Length];
+            var d = new double[points.Length];
 
             for (int i = 0; i < d.Length; ++i)
-                d[i] = p[i].X;
+                d[i] = points[i].X;
 
             return d;
         }
 
-        static double[] GetY(System.Windows.Point[] p)
+        static double[] GetY(System.Windows.Point[] points)
         {
-            double[] d = new double[p.Length];
+            var d = new double[points.Length];
 
             for (int i = 0; i < d.Length; ++i)
-                d[i] = p[i].Y;
+                d[i] = points[i].Y;
 
             return d;
         }
@@ -534,15 +519,14 @@ namespace Ptv.Components.Projections
         [Test("Single-Direct", null, 500000, true)]
         public bool Single_Direct(TestAttribute ta, object setup, ref double x, ref double y)
         {
-            double? z;
-
             ICoordinateTransformation t = GetTransformation(true);
 
             for (int i = 0; i < ta.PerPoint; ++i)
             {
                 x = p.X;
                 y = p.Y;
-                
+
+                double? z;
                 t.Transform(x, y, null, out x, out y, out z);
             }
 
@@ -794,18 +778,18 @@ namespace Ptv.Components.Projections
 
         public TestAttribute(string testName, String setup, int perPoint, bool enabled)
         {
-            this.TestName = testName;
-            this.PerPoint = perPoint;
-            this.Setup = setup;
-            this.Enabled = enabled;
+            TestName = testName;
+            PerPoint = perPoint;
+            Setup = setup;
+            Enabled = enabled;
         }
     }
 
     public class HiResTimer
     {
-        private bool isPerfCounterSupported = false;
-        private Int64 frequency = 0;
-        private Int64 startValue = 0;
+        private readonly bool isPerfCounterSupported = false;
+        private readonly Int64 frequency = 0;
+        private readonly Int64 startValue = 0;
 
         [DllImport("kernel32")]
         private static extern int QueryPerformanceCounter(ref Int64 count);
@@ -823,13 +807,7 @@ namespace Ptv.Components.Projections
             startValue = Value;
         }
 
-        private Int64 Frequency
-        {
-            get
-            {
-                return frequency;
-            }
-        }
+        private Int64 Frequency => frequency;
 
         private Int64 Value
         {

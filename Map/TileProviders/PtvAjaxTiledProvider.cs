@@ -18,9 +18,9 @@ namespace Ptv.XServer.Controls.Map.TileProviders
     {
         #region private variables
         /// <summary> Url of the tile server. </summary>
-        private readonly string m_Url = string.Empty;
+        private readonly string m_Url;
         /// <summary> Documentation in progress... </summary>
-        private readonly string m_AdditionalParam = string.Empty;
+        private readonly string m_AdditionalParam;
         /// <summary> Minimum value for x coordinates. </summary>
         private const int minX = -20015087;
         /// <summary> Maximum value for x coordinates. </summary>
@@ -53,11 +53,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <returns> The uri of the image. </returns>
         public string GetImageUri(double left, double top, double right, double bottom, int width, int height)
         {
-            var url = string.Format("{0}/MapServlet?left={1}&right={2}&top={3}&bottom={4}&width={5}&height={6}&{7}",
-                m_Url, left, right, top, bottom,
-                width, height, m_AdditionalParam);
-
-            return url;
+            return $"{m_Url}/MapServlet?left={left}&right={right}&top={top}&bottom={bottom}&width={width}&height={height}&{m_AdditionalParam}";
         }
 
         /// <summary> The internal function for reading the image stream. </summary>
@@ -70,9 +66,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <returns> The map image as stream. </returns>
         public Stream GetImageStreamInternal(double left, double top, double right, double bottom, int width, int height)
         {
-            var url = string.Format("{0}/MapServlet?tok=t$o$k&left={1}&right={2}&top={3}&bottom={4}&width={5}&height={6}&{7}",
-                m_Url, left, right, top, bottom,
-                width, height, m_AdditionalParam);
+            var url = $"{m_Url}/MapServlet?tok=t$o$k&left={left}&right={right}&top={top}&bottom={bottom}&width={width}&height={height}&{m_AdditionalParam}";
 
             return ReadURL(url);
         }
@@ -160,19 +154,14 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         }
 
         /// <inheritdoc/>
-        public string CacheId { get { return "PTVAjax" + m_Url + m_AdditionalParam; } }
+        public string CacheId => "PTVAjax" + m_Url + m_AdditionalParam;
 
         /// <inheritdoc/>
-        public int MinZoom
-        {
-            get { return 1; }
-        }
+        public int MinZoom => 1;
 
         /// <inheritdoc/>
-        public int MaxZoom
-        {
-            get { return 19; }
-        }
+        public int MaxZoom => 19;
+
         #endregion
     }
 }

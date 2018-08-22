@@ -225,12 +225,13 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
 
         private bool GetAvailable(string themeId)
         {
-            try { return FeatureLayerXElement.XPathSelectElements("./FeatureLayer/Themes/Theme").Any(theme => theme.Attribute("id").Value == themeId); }
+            try { return FeatureLayerXElement.XPathSelectElements("./FeatureLayer/Themes/Theme").Any(theme => theme.Attribute("id")?.Value == themeId); }
             catch { return false; } // Something does not match the XML
         }
 
         /// <summary> Check if traffic incidents are configured. </summary>
-        public bool AvailableTrafficIncidents { get { return GetAvailable("PTV_TrafficIncidents"); } }
+        public bool AvailableTrafficIncidents => GetAvailable("PTV_TrafficIncidents");
+
         /// <summary> Enable flag of the traffic incidents. If this Feature Layer is not available, the setter returns always false. </summary>
         public bool UseTrafficIncidents
         {
@@ -239,7 +240,8 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
         }
 
         /// <summary> Check if truck attributes are installed at the xServer system. </summary>
-        public bool AvailableTruckAttributes { get { return GetAvailable("PTV_TruckAttributes"); } }
+        public bool AvailableTruckAttributes => GetAvailable("PTV_TruckAttributes");
+
         /// <summary> Enable flag of the truck attributes. If this Feature Layer is not available, the setter returns always false. </summary>
         public bool UseTruckAttributes
         {
@@ -248,7 +250,8 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
         }
 
         /// <summary> Check if the Feature Layer 'Preferred Routes' is installed at the xServer system. </summary>
-        public bool AvailablePreferredRoutes { get { return GetAvailable("PTV_PreferredRoutes"); } }
+        public bool AvailablePreferredRoutes => GetAvailable("PTV_PreferredRoutes");
+
         /// <summary> Enable flag of the preferred routes. If this Feature Layer is not available, the setter returns always false. </summary>
         public bool UsePreferredRoutes
         {
@@ -257,7 +260,8 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
         }
 
         /// <summary> Check if the restriction zones are installed at the xServer system. </summary>
-        public bool AvailableRestrictionZones { get { return GetAvailable("PTV_RestrictionZones"); } }
+        public bool AvailableRestrictionZones => GetAvailable("PTV_RestrictionZones");
+
         /// <summary> Enable flag of the restriction zones. If this Feature Layer is not available, the setter returns always false. </summary>
         public bool UseRestrictionZones
         {
@@ -266,7 +270,8 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
         }
 
         /// <summary> Check if the speed patterns are installed at the xServer system. </summary>
-        public bool AvailableSpeedPatterns { get { return GetAvailable("PTV_SpeedPatterns"); } }
+        public bool AvailableSpeedPatterns => GetAvailable("PTV_SpeedPatterns");
+
         /// <summary> Enable flag of the speed patterns. If this Feature Layer is not available, the setter returns always false. </summary>
         public bool UseSpeedPatterns
         {
@@ -541,7 +546,7 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
         private void SetWayPointPins(Scenario scenario)
 
         {
-            for (var i = 0; i < scenario.wayPoints.Count(); ++i)
+            for (var i = 0; i < scenario.wayPoints.Length; ++i)
             {
                 var pin = new Pin
                 {
@@ -577,7 +582,7 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
             try
             {
                 var now = DateTime.Now;
-                var nowString = String.Format("{0}-{1}-{2}T{3}:{4}:{5}+00:00", now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second);
+                var nowString = $"{now.Year}-{now.Month}-{now.Day}T{now.Hour}:{now.Minute}:{now.Second}+00:00";
 
                 var response = xRoute.calculateRoute(new calculateRouteRequest
                 {
@@ -626,7 +631,7 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
             new RoutePolyline(shapeLayer)
             {
                 Points = points,
-                ToolTip = string.Format("{0:0,0.0}km\n{1}", route.info.distance/1000.0, TimeSpan.FromSeconds(route.info.time)),
+                ToolTip = $"{route.info.distance / 1000.0:0,0.0}km\n{TimeSpan.FromSeconds(route.info.time)}",
                 Color = (route.dynamicInfo != null) ? Colors.Green : Colors.Gray,
                 Width = (route.dynamicInfo != null) ? 25 : 15
             };

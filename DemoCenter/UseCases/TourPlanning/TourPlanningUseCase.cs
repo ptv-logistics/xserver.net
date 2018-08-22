@@ -8,7 +8,6 @@
 using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
 using Ptv.XServer.Controls.Map.Layers.Shapes;
@@ -68,7 +67,7 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
         {
             SendProgressInfo("Initializing...");
 
-            var center = new System.Windows.Point(6.130833, 49.611389); // LUX
+            var center = new Point(6.130833, 49.611389); // LUX
             //var center = new System.Windows.Point(8.4, 49); // KA
             var radius = 7.5; // radius in km
 
@@ -78,8 +77,7 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
 
                 wpfMap.SetMapLocation(center, 10);
                 SetScenario(s);
-                if (Finished != null)
-                    Finished();
+                Finished?.Invoke();
                 SendProgressInfo("Ready");
                 Initialized();
             }
@@ -125,39 +123,34 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
             tourLayer.Shapes.Clear();
             foreach (var tour in scenario.Tours)
             {
-                var pc = new PointCollection(from tp in tour.TourPoints select new System.Windows.Point(tp.Longitude, tp.Latitude));
+                var pc = new PointCollection(from tp in tour.TourPoints select new Point(tp.Longitude, tp.Latitude));
                 SetPlainLine(pc, tourLayer, tour.Vehicle.Depot.Color, tour.Vehicle.Id);
                 SetAnimDash(pc, tourLayer);
             }
 
-            foreach (Cube cube in this.orderLayer.Shapes)
+            foreach (var frameworkElement in orderLayer.Shapes)
             {
+                var cube = (Cube) frameworkElement;
                 var order = (Order)cube.Tag;
-                if (order.Tour != null)
-                {
-                    cube.Color = order.Tour.Vehicle.Depot.Color;
-                }
-                else
-                {
-                    cube.Color = unplannedColor;
-                }
+                cube.Color = order.Tour?.Vehicle.Depot.Color ?? unplannedColor;
             }
 
-            if (Finished != null)
-                Finished();
+            Finished?.Invoke();
         }
 
         public void SetPlainLine(PointCollection pc, ShapeLayer layer, Color color, string toolTip)
         {
-            MapPolyline poly = new MapPolyline();
-            poly.Points = pc;
-            poly.MapStrokeThickness = 20;
-            poly.StrokeLineJoin = PenLineJoin.Round;
-            poly.StrokeStartLineCap = PenLineCap.Flat;
-            poly.StrokeEndLineCap = PenLineCap.Triangle;
-            poly.Stroke = new SolidColorBrush(color);
-            poly.ScaleFactor = .2;
-            poly.ToolTip = toolTip;
+            MapPolyline poly = new MapPolyline
+            {
+                Points = pc,
+                MapStrokeThickness = 20,
+                StrokeLineJoin = PenLineJoin.Round,
+                StrokeStartLineCap = PenLineCap.Flat,
+                StrokeEndLineCap = PenLineCap.Triangle,
+                Stroke = new SolidColorBrush(color),
+                ScaleFactor = .2,
+                ToolTip = toolTip
+            };
             poly.MouseEnter += (s, e) => poly.Stroke = new SolidColorBrush(Colors.Cyan);
             poly.MouseLeave += (s, e) => poly.Stroke = new SolidColorBrush(color);
             layer.Shapes.Add(poly);
@@ -165,18 +158,18 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
 
         public void SetAnimDash(PointCollection pc, ShapeLayer layer)
         {
-            MapPolyline animDashLine = new MapPolyline()
+            MapPolyline animDashLine = new MapPolyline
             {
                 MapStrokeThickness = 16,
                 Points = pc,
-                ScaleFactor = 0.2
+                ScaleFactor = 0.2,
+                Stroke = new SolidColorBrush(Color.FromArgb(128, 255, 255, 255)),
+                StrokeLineJoin = PenLineJoin.Round,
+                StrokeStartLineCap = PenLineCap.Flat,
+                StrokeEndLineCap = PenLineCap.Triangle,
+                StrokeDashCap = PenLineCap.Triangle
             };
 
-            animDashLine.Stroke = new SolidColorBrush(System.Windows.Media.Color.FromArgb(128, 255, 255, 255));
-            animDashLine.StrokeLineJoin = PenLineJoin.Round;
-            animDashLine.StrokeStartLineCap = PenLineCap.Flat;
-            animDashLine.StrokeEndLineCap = PenLineCap.Triangle;
-            animDashLine.StrokeDashCap = PenLineCap.Triangle;
             var dc = new DoubleCollection { 2, 2 };
             animDashLine.IsHitTestVisible = false;
             animDashLine.StrokeDashArray = dc;
@@ -185,7 +178,7 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
             {
                 From = 4,
                 To = 0,
-                FillBehavior = System.Windows.Media.Animation.FillBehavior.HoldEnd,
+                FillBehavior = FillBehavior.HoldEnd,
                 RepeatBehavior = RepeatBehavior.Forever
             };
 
@@ -198,9 +191,7 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
         }
         private void SendProgressInfo(string message, int percentage = 0)
         {
-            if (Progress == null)
-                return;
-            Progress(message, percentage);
+            Progress?.Invoke(message, percentage);
         }
 
         /// <summary>Callback delegate for getting informed about changes in the progress of the tour planning.</summary>

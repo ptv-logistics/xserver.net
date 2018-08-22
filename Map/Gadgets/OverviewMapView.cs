@@ -45,7 +45,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             var c = new Canvas();
             c.Children.Add(dragRectangle);
             c.RenderTransform = TransformFactory.CreateTransform(SpatialReference.PtvMercator);
-            Canvas.SetZIndex(c, 15000);
+            Panel.SetZIndex(c, 15000);
             GeoCanvas.Children.Add(c);
         }
         #endregion

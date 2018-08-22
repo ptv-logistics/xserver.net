@@ -186,79 +186,110 @@ namespace Ptv.XServer.Demo.UseCases.Shapes
             
             #region doc:sample anchor
             var pinRightBottom = CreateElement(Symbols.Pin, Colors.Green, Colors.Black) as Pin;
-            pinRightBottom.SetValue(ShapeCanvas.LocationProperty, new Point(location.X - 320, location.Y));
-            pinRightBottom.ToolTip = "Pin with anchor right bottom"; 
-            ShapeCanvas.SetAnchor(pinRightBottom, LocationAnchor.RightBottom);
-            Panel.SetZIndex(pinRightBottom, -1);
-            AddToLayer(pinRightBottom);
+            if (pinRightBottom != null)
+            {
+                pinRightBottom.SetValue(ShapeCanvas.LocationProperty, new Point(location.X - 320, location.Y));
+                pinRightBottom.ToolTip = "Pin with anchor right bottom";
+                ShapeCanvas.SetAnchor(pinRightBottom, LocationAnchor.RightBottom);
+                Panel.SetZIndex(pinRightBottom, -1);
+                AddToLayer(pinRightBottom);
+            }
 
             var ballRightBottom = CreateElement(Symbols.Ball, Colors.Red, Colors.Black) as Ball;
-            ballRightBottom.Width = 10;
-            ballRightBottom.Height = 10;
-            ballRightBottom.ToolTip = "Ball with same coordinates like pin";
-            ballRightBottom.SetValue(ShapeCanvas.LocationProperty, new Point(location.X - 320, location.Y));
-            Panel.SetZIndex(ballRightBottom, -1);
-            AddToLayer(ballRightBottom);
+            if (ballRightBottom != null)
+            {
+                ballRightBottom.Width = 10;
+                ballRightBottom.Height = 10;
+                ballRightBottom.ToolTip = "Ball with same coordinates like pin";
+                ballRightBottom.SetValue(ShapeCanvas.LocationProperty, new Point(location.X - 320, location.Y));
+                Panel.SetZIndex(ballRightBottom, -1);
+                AddToLayer(ballRightBottom);
+            }
 
             var pinCenter = CreateElement(Symbols.Pin, Colors.Green, Colors.Black) as Pin;
-            pinCenter.SetValue(ShapeCanvas.LocationProperty, new Point(location.X - 320, location.Y + 150));
-            pinCenter.ToolTip = "Pin with default anchor";
-            Panel.SetZIndex(pinCenter, -1);
-            AddToLayer(pinCenter);
+            if (pinCenter != null)
+            {
+                pinCenter.SetValue(ShapeCanvas.LocationProperty, new Point(location.X - 320, location.Y + 150));
+                pinCenter.ToolTip = "Pin with default anchor";
+                Panel.SetZIndex(pinCenter, -1);
+                AddToLayer(pinCenter);
+            }
 
             var ballCenter = CreateElement(Symbols.Ball, Colors.Red, Colors.Black) as Ball;
-            ballCenter.Width = 10;
-            ballCenter.Height = 10;
-            ballCenter.ToolTip = "Ball with same coordinates like pin"; 
-            ballCenter.SetValue(ShapeCanvas.LocationProperty, new Point(location.X - 320, location.Y + 150));
-            Panel.SetZIndex(ballCenter, -1);
-            AddToLayer(ballCenter);
+            if (ballCenter != null)
+            {
+                ballCenter.Width = 10;
+                ballCenter.Height = 10;
+                ballCenter.ToolTip = "Ball with same coordinates like pin";
+                ballCenter.SetValue(ShapeCanvas.LocationProperty, new Point(location.X - 320, location.Y + 150));
+                Panel.SetZIndex(ballCenter, -1);
+                AddToLayer(ballCenter);
+            }
+
             #endregion // doc:sample anchor
 
 
             #region doc:sample ScaleProperty
             var starStandard = CreateElement(Symbols.Star, Colors.Green, Colors.Black) as Star;
-            starStandard.SetValue(ShapeCanvas.LocationProperty, new Point(location.X - 100, location.Y + 960));
-            starStandard.Width = starStandard.Height = 40;
-            starStandard.ToolTip = "Star with size 40 and scale 1 (standard display)";
-            starStandard.SetValue(ShapeCanvas.ScaleProperty, 1.0);
-            Panel.SetZIndex(starStandard, -1);
-            AddToLayer(starStandard);
+            if (starStandard != null)
+            {
+                starStandard.SetValue(ShapeCanvas.LocationProperty, new Point(location.X - 100, location.Y + 960));
+                starStandard.Width = starStandard.Height = 40;
+                starStandard.ToolTip = "Star with size 40 and scale 1 (standard display)";
+                starStandard.SetValue(ShapeCanvas.ScaleProperty, 1.0);
+                Panel.SetZIndex(starStandard, -1);
+                AddToLayer(starStandard);
+            }
 
             var starBig = CreateElement(Symbols.Star, Colors.Green, Colors.Black) as Star;
-            starBig.SetValue(ShapeCanvas.LocationProperty, new Point(location.X, location.Y + 960));
-            starBig.Width = starBig.Height = 40;
-            starBig.ToolTip = "Star with size 40 and scale 3 (object bigger and border thicker)";
-            starBig.SetValue(ShapeCanvas.ScaleProperty, 3.0);
-            Panel.SetZIndex(starBig, -1);
-            AddToLayer(starBig);
+            if (starBig != null)
+            {
+                starBig.SetValue(ShapeCanvas.LocationProperty, new Point(location.X, location.Y + 960));
+                starBig.Width = starBig.Height = 40;
+                starBig.ToolTip = "Star with size 40 and scale 3 (object bigger and border thicker)";
+                starBig.SetValue(ShapeCanvas.ScaleProperty, 3.0);
+                Panel.SetZIndex(starBig, -1);
+                AddToLayer(starBig);
+            }
+
             #endregion // doc:sample ScaleProperty
 
             
             #region doc:sample ScaleFactor
             var starConstant = CreateElement(Symbols.Star, Colors.Red, Colors.Black) as Star;
-            starConstant.SetValue(ShapeCanvas.LocationProperty, new Point(location.X + 320, location.Y + 960));
-            starConstant.Width = starConstant.Height = 80;
-            starConstant.ToolTip = "Star with size 80 and scale factor 0 (constant object size, standard display)";
-            ShapeCanvas.SetScaleFactor(starConstant, 0);
-            Panel.SetZIndex(starConstant, -1);
-            AddToLayer(starConstant);
+            if (starConstant != null)
+            {
+                starConstant.SetValue(ShapeCanvas.LocationProperty, new Point(location.X + 320, location.Y + 960));
+                starConstant.Width = starConstant.Height = 80;
+                starConstant.ToolTip = "Star with size 80 and scale factor 0 (constant object size, standard display)";
+                ShapeCanvas.SetScaleFactor(starConstant, 0);
+                Panel.SetZIndex(starConstant, -1);
+                AddToLayer(starConstant);
+            }
 
             var starHalfEnlarged = CreateElement(Symbols.Star, Colors.Yellow, Colors.Black) as Star;
-            starHalfEnlarged.SetValue(ShapeCanvas.LocationProperty, new Point(location.X + 370, location.Y + 960));
-            starHalfEnlarged.Width = starHalfEnlarged.Height = 80;
-            starHalfEnlarged.ToolTip = "Star with size 80 and scale factor 0.5 (object is half enlarged if the map zooms)";
-            ShapeCanvas.SetScaleFactor(starHalfEnlarged, 0.5);
-            Panel.SetZIndex(starHalfEnlarged, -1);
-            AddToLayer(starHalfEnlarged);
+            if (starHalfEnlarged != null)
+            {
+                starHalfEnlarged.SetValue(ShapeCanvas.LocationProperty, new Point(location.X + 370, location.Y + 960));
+                starHalfEnlarged.Width = starHalfEnlarged.Height = 80;
+                starHalfEnlarged.ToolTip =
+                    "Star with size 80 and scale factor 0.5 (object is half enlarged if the map zooms)";
+                ShapeCanvas.SetScaleFactor(starHalfEnlarged, 0.5);
+                Panel.SetZIndex(starHalfEnlarged, -1);
+                AddToLayer(starHalfEnlarged);
+            }
 
             var starEnlarged = CreateElement(Symbols.Star, Colors.Green, Colors.Black) as Star;
-            starEnlarged.SetValue(ShapeCanvas.LocationProperty, new Point(location.X + 420, location.Y + 960));
-            starEnlarged.Width = starEnlarged.Height = 80;
-            starEnlarged.ToolTip = "Star with size 80 and scale factor 1 (object is enlarged if the map zooms)";
-            ShapeCanvas.SetScaleFactor(starEnlarged, 1);
-            Panel.SetZIndex(starEnlarged, -1);
-            AddToLayer(starEnlarged);
+            if (starEnlarged != null)
+            {
+                starEnlarged.SetValue(ShapeCanvas.LocationProperty, new Point(location.X + 420, location.Y + 960));
+                starEnlarged.Width = starEnlarged.Height = 80;
+                starEnlarged.ToolTip = "Star with size 80 and scale factor 1 (object is enlarged if the map zooms)";
+                ShapeCanvas.SetScaleFactor(starEnlarged, 1);
+                Panel.SetZIndex(starEnlarged, -1);
+                AddToLayer(starEnlarged);
+            }
+
             #endregion // doc:sample ScaleFactor
 
             // our demo data

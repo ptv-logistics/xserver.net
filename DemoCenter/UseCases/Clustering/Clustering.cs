@@ -11,7 +11,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Ptv.XServer.Controls.Map.Canvases;
 using Ptv.XServer.Controls.Map.Layers;
-using Ptv.XServer.Controls.Map.Tools;
 using Ptv.XServer.Demo.Clustering;
 
 namespace Ptv.XServer.Demo.UseCases.Clustering
@@ -31,7 +30,7 @@ namespace Ptv.XServer.Demo.UseCases.Clustering
         /// <summary>
         /// Adds a Clustering Layer to the specified WpfMap.
         /// </summary>
-        protected async override void Enable()
+        protected override async void Enable()
         {
             if (wpfMap.Layers.Contains(wpfMap.Layers["Clustering"]))
                 return;
@@ -42,7 +41,7 @@ namespace Ptv.XServer.Demo.UseCases.Clustering
 
             #region doc:add clustering layer
             // Start the longtime reading of geo data in a separate thread.
-            var clusters = await Task.Factory.StartNew<TileBasedPointClusterer<Post>>(LocalizedWikiDemo.ReadCSVFile);
+            var clusters = await Task.Factory.StartNew(LocalizedWikiDemo.ReadCSVFile);
 
             // Creates a clustering layer.
             var clusteringLayer = new BaseLayer("Clustering")

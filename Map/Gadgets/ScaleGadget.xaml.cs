@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 
+// ReSharper disable SpecifyACultureInStringConversionExplicitly
+
 
 namespace Ptv.XServer.Controls.Map.Gadgets
 {

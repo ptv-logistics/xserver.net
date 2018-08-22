@@ -58,7 +58,7 @@ namespace Ptv.XServer.Controls.Routing
             q = new Point();
 
             double len = 0;
-            var e = points != null ? points.GetEnumerator() : null;
+            var e = points?.GetEnumerator();
 
             if (e == null) return false;
 
@@ -106,7 +106,10 @@ namespace Ptv.XServer.Controls.Routing
         {
             var i = new System.Windows.Controls.MenuItem {Header = text};
 
-            i.Click += (o, a) => { if (action != null) action(); };
+            i.Click += (o, a) =>
+            {
+                action?.Invoke();
+            };
 
             m.Items.Add(i);
 

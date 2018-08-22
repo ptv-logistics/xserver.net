@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,8 +14,10 @@ using Ptv.XServer.Controls.Map.Gadgets;
 using Ptv.XServer.Controls.Map.Layers.Tiled;
 using Ptv.XServer.Controls.Map.Layers.Untiled;
 using Ptv.XServer.Controls.Map.TileProviders;
-using System.Collections.Generic;
+using Ptv.XServer.Controls.Map.Tools.Reprojection;
+using Ptv.XServer.Controls.Map.Layers.Xmap2;
 
+// ReSharper disable once CheckNamespace
 namespace Ptv.XServer.Controls.Map
 {
     /// <summary>
@@ -48,15 +51,41 @@ namespace Ptv.XServer.Controls.Map
                 // the evil hack to avoid induced GC.Collect(), see
                 // http://stackoverflow.com/questions/7331735/gc-is-forced-when-working-with-small-images-4k-pixel-data
                 if (GlobalOptions.MemoryPressureMode == MemoryPressureMode.Disable ||
-                    GlobalOptions.MemoryPressureMode == MemoryPressureMode.Automatic && System.IntPtr.Size == 8)
+                    GlobalOptions.MemoryPressureMode == MemoryPressureMode.Automatic && IntPtr.Size == 8)
                 {
                     typeof(BitmapImage).Assembly.GetType("MS.Internal.MemoryPressure")
                         .GetField("_totalMemory", BindingFlags.NonPublic | BindingFlags.Static)
-                        .SetValue(null, Int64.MinValue / 2);
+                        ?.SetValue(null, Int64.MinValue / 2);
                 }
             }
             catch { }
         }
+
+        #region constructor
+        /// <summary> Initializes a new instance of the <see cref="Map"/> class. By default, the map uses animation
+        /// and the scale is shown in km. </summary>
+        public Map()
+        {
+            Loaded += Map_Loaded;
+
+            DefaultThemeResources = new ResourceDictionary { Source = new Uri("Ptv.XServer.Controls.Map;component/Resources/Themes/PTVDefault.xaml", UriKind.Relative) };
+            UseDefaultTheme = true;
+            UseMiles = false;
+            InitializeToolTipManagement();
+        }
+
+        private void InitializeToolTipManagement()
+        {
+            ToolTipManagement = new ToolTipManagement(this)
+            {
+                IsHitTestOKFunc = currentPosition =>
+                    VisualTreeHelper.HitTest(this, currentPosition)?.VisualHit?.FindAncestor<MapGadget>() == null,
+                FillToolTipEntriesFunc = (position, maxPixelDistance) =>
+                    Layers.OfType<IToolTips>().SelectMany(layer => layer.Get(position, maxPixelDistance))
+            };
+        }
+        #endregion
+
 
         #region events
         /// <inheritdoc/>  
@@ -82,15 +111,12 @@ namespace Ptv.XServer.Controls.Map
         #endregion //events
 
         #region private variables
-        /// <summary> Credentials for xMapServer. </summary>
-        private string xmapCredentials = "";
-        /// <summary> Url pointing on the xMapServer in use. </summary>
-        private string xmapUrl = "";
+
         /// <summary> The style profile of the xMapServer base map. </summary>
         private string xmapStyle = "";
         /// <summary> The textblock which displays the hint for the missing xMap url. </summary>
         protected TextBlock copyrightHintText;
-        /// <summary> Documentation in progress... </summary>
+
         private string xMapCopyright;
         #endregion
 
@@ -108,30 +134,6 @@ namespace Ptv.XServer.Controls.Map
         public ResourceDictionary DefaultThemeResources { get; set; }
         #endregion
 
-        #region constructor
-        /// <summary> Initializes a new instance of the <see cref="Map"/> class. By default, the map uses animation
-        /// and the scale is shown in km. </summary>
-        public Map()
-        {
-            Loaded += Map_Loaded;
-
-            DefaultThemeResources = new ResourceDictionary { Source = new Uri("Ptv.XServer.Controls.Map;component/Resources/Themes/PTVDefault.xaml", UriKind.Relative) };
-            UseDefaultTheme = true;
-            UseMiles = false;
-
-            InitializeToolTipManagement();
-        }
-
-        private void InitializeToolTipManagement()
-        {
-            ToolTipManagement = new ToolTipManagement(this);
-            
-            // Check if the mouse is not over a MapGadget control. Maybe this lambda needs to be extended for additional control types.
-            ToolTipManagement.IsHitTestOKFunc = (Point currentPosition) => VisualTreeHelper.HitTest(this, currentPosition)?.VisualHit?.FindAncestor<MapGadget>() == null;
-            ToolTipManagement.FillToolTipEntriesFunc = (Point position, double maxPixelDistance) => Layers.OfType<IToolTips>().SelectMany(layer => layer.Get(position, maxPixelDistance));
-        }
-        #endregion
-
         #region event handling
         /// <summary> Event handler for a successful load of the map. Shows the map in a grid. </summary>
         /// <param name="sender"> Sender of the Loaded event. </param>
@@ -141,11 +143,8 @@ namespace Ptv.XServer.Controls.Map
             Loaded -= Map_Loaded;
 
             SetXMapUrlHint();
-
             ((Grid)Content).Children.Insert(0, mapView);
-
-            foreach (var view in MapElementExtensions.FindChildren<MapView>(this))
-                Layers.Register(view);
+            MapElementExtensions.FindChildren<MapView>(this).ForEach(null, view => Layers.Register(view));
         }
 
         private void SetXMapUrlHint()
@@ -168,6 +167,9 @@ namespace Ptv.XServer.Controls.Map
 
         /// <inheritdoc/>
         public ToolTipManagement ToolTipManagement { get; private set; }
+
+        /// <inheritdoc/>
+        public LayerFactory Xmap2LayerFactory { get; internal set; }
 
         /// <inheritdoc/>
         bool IToolTipManagement.IsEnabled
@@ -227,34 +229,7 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <inheritdoc/>  
-        public LayerCollection Layers { get; private set; } = new LayerCollection();
-
-        /// <inheritdoc/>  
-        public string XMapCredentials
-        {
-            get { return xmapCredentials; }
-            set
-            {
-                xmapCredentials = value;
-
-                InitializeMapLayers();
-            }
-        }
-
-        private void InitializeMapLayers()
-        {
-            Layers.RemoveXMapBaseLayers();
-
-            if (string.IsNullOrEmpty(xmapUrl)) return;
-
-            var xmapMetaInfo = new XMapMetaInfo(xmapUrl);
-            if (!string.IsNullOrEmpty(xmapCredentials) && xmapCredentials.Contains(":"))
-            {
-                var usrpwd = xmapCredentials.Split(':');
-                xmapMetaInfo.SetCredentials(usrpwd[0], usrpwd[1]);
-            }
-            Layers.InsertXMapBaseLayers(xmapMetaInfo);
-        }
+        public LayerCollection Layers { get; } = new LayerCollection();
 
         /// <inheritdoc/>  
         public string XMapUrl
@@ -262,11 +237,50 @@ namespace Ptv.XServer.Controls.Map
             get { return xmapUrl; }
             set
             {
+                if (xmapUrl == value) return;
+
+                xServerVersion = GetAllXserverVersions(value).FirstOrDefault(xServer => xServer.IsValidUrl());
+
                 xmapUrl = value;
+
                 InitializeMapLayers();
                 SetXMapUrlHint();
             }
         }
+
+        private string xmapUrl = "";
+
+        private static IEnumerable<IXServerVersion> GetAllXserverVersions(string url)
+        {
+            yield return new XServer1Version(url);
+            yield return new XServer2Version(url);
+        }
+
+        /// <inheritdoc/>  
+        public string XMapCredentials
+        {
+            get { return xmapCredentials; }
+            set
+            {
+                if (xmapCredentials == value) return;
+                xmapCredentials = value;
+
+                if (xServerVersion?.IsCloudBased() ?? false)
+                    InitializeMapLayers();
+            }
+        }
+
+        private string xmapCredentials = "";
+
+        private void InitializeMapLayers()
+        {
+            if (xServerVersion == null || (xServerVersion.IsCloudBased() && string.IsNullOrEmpty(xmapCredentials)))
+                return;
+
+            xServerVersion.InitializeMapLayers(this, xmapCredentials);
+        }
+
+        private IXServerVersion xServerVersion;
 
         /// <inheritdoc/>  
         public string XMapStyle
@@ -276,18 +290,17 @@ namespace Ptv.XServer.Controls.Map
             {
                 xmapStyle = value;
 
-                if (Layers["Background"] != null)
-                {
-                    ((Layers["Background"] as TiledLayer).TiledProvider as XMapTiledProvider).CustomProfile =
-                        xmapStyle != null ? xmapStyle + "-bg" : null;
-                    (Layers["Background"] as TiledLayer).Refresh();
-                }
-                if (Layers["Labels"] != null)
-                {
-                    ((Layers["Labels"] as UntiledLayer).UntiledProvider as XMapTiledProvider).CustomProfile =
-                        xmapStyle != null ? xmapStyle + "-fg" : null;
-                    (Layers["Labels"] as UntiledLayer).Refresh();
-                }
+                TiledLayer tiledLayer = Layers["Background"] as TiledLayer;
+                var xMapTiledProvider = tiledLayer?.TiledProvider as XMapTiledProvider;
+                if (xMapTiledProvider != null)
+                    xMapTiledProvider.CustomProfile = xmapStyle != null ? xmapStyle + "-bg" : null;
+                tiledLayer?.Refresh();
+
+                var untiledLayer = Layers["Labels"] as UntiledLayer;
+                xMapTiledProvider = untiledLayer?.UntiledProvider as XMapTiledProvider;
+                if (xMapTiledProvider != null)
+                    xMapTiledProvider.CustomProfile = xmapStyle != null ? xmapStyle + "-fg" : null;
+                untiledLayer?.Refresh();
             }
         }
 
@@ -318,10 +331,7 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <inheritdoc/>  
-        public bool IsAnimating
-        {
-            get { return mapView.IsAnimating; }
-        }
+        public bool IsAnimating => mapView.IsAnimating;
 
         /// <inheritdoc/>  
         public int MaxZoom
@@ -338,10 +348,7 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <inheritdoc/>  
-        public double MetersPerPixel
-        {
-            get { return mapView.MetersPerPixel; }
-        }
+        public double MetersPerPixel => mapView.MetersPerPixel;
 
         /// <summary><para> Sets the current theme from a XAML file provided by the stream. The XAML file must contain a
         /// ResourceDictionary on the top level. See the attached XAML files in the demo project. </para>
@@ -388,22 +395,27 @@ namespace Ptv.XServer.Controls.Map
 
             // Initialize variables.
             var capabilities = print.PrintQueue.GetPrintCapabilities(print.PrintTicket);
+            if (capabilities == null) return;
+
             Transform oldTransform = null;
 
-            if (useScaling)
+            if (useScaling && capabilities.PageImageableArea != null)
             {
                 // Set the transform object for scaling.
                 double scale = Math.Min(capabilities.PageImageableArea.ExtentWidth / mapView.ActualWidth,
-                                        capabilities.PageImageableArea.ExtentHeight / mapView.ActualHeight);
+                    capabilities.PageImageableArea.ExtentHeight / mapView.ActualHeight);
                 oldTransform = mapView.LayoutTransform;
                 mapView.LayoutTransform = new ScaleTransform(scale, scale);
             }
 
             // Set the size.
             var oldSize = new Size(mapView.ActualWidth, mapView.ActualHeight);
-            var sz = new Size(capabilities.PageImageableArea.ExtentWidth, capabilities.PageImageableArea.ExtentHeight);
-            mapView.Measure(sz);
-            mapView.Arrange(new Rect(new Point(capabilities.PageImageableArea.OriginWidth, capabilities.PageImageableArea.OriginHeight), sz));
+            if (capabilities.PageImageableArea != null)
+            {
+                var sz = new Size(capabilities.PageImageableArea.ExtentWidth, capabilities.PageImageableArea.ExtentHeight);
+                mapView.Measure(sz);
+                mapView.Arrange(new Rect(new Point(capabilities.PageImageableArea.OriginWidth, capabilities.PageImageableArea.OriginHeight), sz));
+            }
 
             // Print.
             mapView.Printing = true;
@@ -537,7 +549,7 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <inheritdoc/>  
-        public double Scale { get { return mapView.FinalScale; } }
+        public double Scale => mapView.FinalScale;
 
         /// <inheritdoc/>  
         public Point Center
@@ -551,13 +563,14 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <inheritdoc/>  
-        public double CurrentZoomLevel { get { return mapView.CurrentZoom; } }
+        public double CurrentZoomLevel => mapView.CurrentZoom;
 
         /// <inheritdoc/>  
-        public double CurrentScale { get { return mapView.CurrentScale; } }
+        public double CurrentScale => mapView.CurrentScale;
 
         /// <inheritdoc/>  
-        public Point CurrentCenter { get { return GeoTransform.PtvMercatorToWGS(new Point(mapView.CurrentX, mapView.CurrentY)); } }
+        public Point CurrentCenter => GeoTransform.PtvMercatorToWGS(new Point(mapView.CurrentX, mapView.CurrentY));
+
         #endregion
     }
 

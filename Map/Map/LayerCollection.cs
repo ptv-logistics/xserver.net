@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using Ptv.XServer.Controls.Map.Layers;
 using System.ComponentModel;
+using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 namespace Ptv.XServer.Controls.Map
 {
@@ -75,8 +76,7 @@ namespace Ptv.XServer.Controls.Map
         /// <param name="layer"> Layer object, for which the settings have to be shown. </param>
         public void ShowSettingsDialog(ILayer layer)
         {
-            if (LayerSettings != null)
-                LayerSettings.ShowSettingsDialog(layer);
+            LayerSettings?.ShowSettingsDialog(layer);
         }
 
         /// <summary> Connect a <see cref="MapView"/>-object to the called LayerCollection. In return, only visible
@@ -101,8 +101,7 @@ namespace Ptv.XServer.Controls.Map
             mapViews.Remove(mapView);
             if (!mapView.IsVisible) return;
 
-            foreach (ILayer layer in this.Where(IsVisible))
-                layer.RemoveFromMapView(mapView);
+            this.Where(IsVisible).ForEach(null, layer => layer.RemoveFromMapView(mapView));
         }
 
         /// <summary> Retrieves for a layer whether it is visible. </summary>
@@ -124,17 +123,11 @@ namespace Ptv.XServer.Controls.Map
                 return;
 
             visiblities[layer] = visible;
-
-            if (visible)
-            {
-                foreach (var mapView in mapViews.Where(mapView => mapView.IsVisible))
+            foreach (var mapView in mapViews.Where(mapView => mapView.IsVisible))
+                if (visible)
                     layer.AddToMapView(mapView);
-            }
-            else
-            {
-                foreach (var mapView in mapViews.Where(mapView => mapView.IsVisible))
+                else
                     layer.RemoveFromMapView(mapView);
-            }
 
             LayerVisibilityChanged?.Invoke(this, new LayerChangedEventArgs(layer));
         }
@@ -269,8 +262,8 @@ namespace Ptv.XServer.Controls.Map
         {
             if (e.PropertyName != "Priority" || !(sender is ILayer)) return;
 
-            var layer = sender as ILayer;
-            if(IndexOf(layer) != layer.Priority)
+            var layer = (ILayer) sender;
+            if (IndexOf(layer) != layer.Priority)
                 Move(IndexOf(layer), layer.Priority);
         }
 
@@ -280,17 +273,11 @@ namespace Ptv.XServer.Controls.Map
         private void mapView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var mapView = sender as MapView;
-
-            if ((bool)e.NewValue)
-            {
-                foreach (var layer in this.Where(IsVisible))
+            foreach (var layer in this.Where(IsVisible))
+                if ((bool)e.NewValue)
                     layer.AddToMapView(mapView);
-            }
-            else
-            {
-                foreach (var layer in this.Where(IsVisible))
+                else
                     layer.RemoveFromMapView(mapView);
-            }
         }
         #endregion
 
@@ -346,8 +333,7 @@ namespace Ptv.XServer.Controls.Map
             foreach (var layer in this)
             {
                 layer.PropertyChanged -= layer_PropertyChanged;
-                if (layer is IDisposable)
-                    (layer as IDisposable).Dispose();
+                (layer as IDisposable)?.Dispose();
             }
         }
         #endregion
@@ -371,9 +357,9 @@ namespace Ptv.XServer.Controls.Map
         public LayerChangedEventArgs(string layerName) { LayerName = layerName; }
 
         /// <summary>Name of the layer.</summary>
-        public virtual string LayerName { get; private set; }
+        public virtual string LayerName { get; }
 
         /// <summary>Layer which was changed one of its properties or is added to /removed from the collection list.</summary>
-        public virtual ILayer Layer { get; private set; }
+        public virtual ILayer Layer { get; }
     }
 }

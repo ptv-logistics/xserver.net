@@ -65,7 +65,7 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
                           }).ToList();
 
             // build depots
-            var palette = new Color[] { Colors.Blue, Colors.Green, Colors.Salmon };
+            var palette = new[] { Colors.Blue, Colors.Green, Colors.Salmon };
             int ci = 0;
             Func<Color> GetColor = () => palette[(ci++) % palette.Length];
 
@@ -80,7 +80,7 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
                                        select new Vehicle
                                        {
                                            Id = Guid.NewGuid().ToString(),
-                                           Capacity = System.Convert.ToInt32(TRUCK_MIN_CAPACITY + Math.Floor(rand.NextDouble() * (1 + TRUCK_MAX_CAPACITY - TRUCK_MIN_CAPACITY)))
+                                           Capacity = Convert.ToInt32(TRUCK_MIN_CAPACITY + Math.Floor(rand.NextDouble() * (1 + TRUCK_MAX_CAPACITY - TRUCK_MIN_CAPACITY)))
                                        }).ToList(),
                           }).ToList();
 
@@ -115,7 +115,7 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
 
             var xlocate = XServerClientFactory.CreateXLocateClient(Properties.Settings.Default.XUrl);
 
-            var result = xlocate.findLocations(locations.ToArray(), new[] {
+            var result = xlocate.findLocations(locations.ToArray(), new SearchOptionBase[] {
                 new ReverseSearchOption { param = ReverseSearchParameter.ENGINE_TARGETSIZE, value = "1" },
                 new ReverseSearchOption { param = ReverseSearchParameter.ENGINE_FILTERMODE, value = "1" }},
                 null, null,

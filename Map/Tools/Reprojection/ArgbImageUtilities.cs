@@ -109,13 +109,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <summary>
         /// Returns the Adler32 data checksum computed so far.
         /// </summary>
-        public long Value
-        {
-            get
-            {
-                return checksum;
-            }
-        }
+        public long Value => checksum;
 
         /// <summary>
         /// Creates a new instance of the Adler32 class.
@@ -163,7 +157,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         {
             if (buffer == null)
             {
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             }
 
             Update(buffer, 0, buffer.Length);
@@ -185,20 +179,20 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         {
             if (buffer == null)
             {
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             }
 
             if (offset < 0)
-                throw new ArgumentOutOfRangeException("offset", "cannot be negative");
+                throw new ArgumentOutOfRangeException(nameof(offset), "cannot be negative");
 
             if (count < 0)
-                throw new ArgumentOutOfRangeException("count", "cannot be negative");
+                throw new ArgumentOutOfRangeException(nameof(count), "cannot be negative");
 
             if (offset >= buffer.Length)
-                throw new ArgumentOutOfRangeException("offset", "not a valid index into buffer");
+                throw new ArgumentOutOfRangeException(nameof(offset), "not a valid index into buffer");
 
             if (offset + count > buffer.Length)
-                throw new ArgumentOutOfRangeException("count", "exceeds buffer size");
+                throw new ArgumentOutOfRangeException(nameof(count), "exceeds buffer size");
 
             //(By Per Bothner)
             uint s1 = checksum & 0xFFFF;
@@ -266,12 +260,9 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <returns></returns>
         public static ChecksumUpdateRegion ForCrc(MemoryStream stm, uint? crc = null)
         {
-            return new ChecksumUpdateRegion(stm, (buf, offset, len) =>
-            {
-                return crc.HasValue
-                    ? Crc.update_crc(crc.Value, buf, offset, len)
-                    : Crc.crc(buf, offset, len);
-            });
+            return new ChecksumUpdateRegion(stm, (buf, offset, len) => crc.HasValue
+                ? Crc.update_crc(crc.Value, buf, offset, len)
+                : Crc.crc(buf, offset, len));
         }
 
         /// <summary>
@@ -316,13 +307,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <summary>
         /// Turn the current checksum into a streamable byte array (network byte order).
         /// </summary>
-        public byte[] Bytes
-        {
-            get
-            {
-                return BitConverter.GetBytes(Value).ToBigEndian();
-            }
-        }
+        public byte[] Bytes => BitConverter.GetBytes(Value).ToBigEndian();
     }
 
 

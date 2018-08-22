@@ -109,7 +109,7 @@ namespace Ptv.XServer.Demo.MapMarket
             {
                 using (var dr = command.ExecuteReader())
                 {
-                    while (dr.Read())
+                    while (dr != null && dr.Read())
                     {
                         var geoItem = new GeoItem
                         {

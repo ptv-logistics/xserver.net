@@ -5,9 +5,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Collections;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 {
@@ -58,7 +55,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         }
 
         /// <summary> Accesses the options that are used for re-projection. </summary>
-        public ReprojectionOptions ReprojectionOptions { get; private set; }
+        public ReprojectionOptions ReprojectionOptions { get; }
         
         /// <summary> Re-projects an image given a mapping function that maps target to source pixels. </summary>
         /// <param name="stm">The stream containing the source image.</param>
@@ -205,7 +202,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                         VerticallyScaledReprojection(source, target, block, transformTargetToSource, scale.Height);
                 }
             }
-            catch (Components.Projections.TransformationException t)
+            catch (Components.Projections.TransformationException)
             {
                 // ignore transformation exceptions; the given block will simply remain empty.
                 //
@@ -344,9 +341,6 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             // total number of color components collected in a color block due to scaling
             var colorBlockSize = (uint)scaleY;
 
-            // storage for color components 
-            uint a, r, g, b;
-
             for (var x = block.X0; x <= block.X1; ++x, ++upper, ++lower)
             {
                 // setup interpolator for interpolating points on the line defined through upper and lower
@@ -355,7 +349,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 
                 for (var y = block.Y0; y <= block.Y1; ++y)
                 {
-                    // initialize color components
+                    // storage for color components 
+                    uint a, r, g, b;
                     a = r = g = b = colorBlockSize >> 2;
 
                     // collect color components of subpixels. 
@@ -405,9 +400,6 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             // total number of color components collected in a color block due to scaling
             var colorBlockSize = (uint)(scale.Width * scale.Height);
 
-            // storage for color components 
-            uint a, r, g, b;
-
             for (var x = block.X0; x <= block.X1; ++x)
             {
                 // setup scale.Width interpolators for interpolating points on the line 
@@ -420,7 +412,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 
                 for (var y = block.Y0; y <= block.Y1; ++y)
                 {
-                    // initialize color components
+                    // storage for color components 
+                    uint a, r, g, b;
                     a = r = g = b = colorBlockSize >> 2;
 
                     // collect color components of subpixels. 
@@ -476,16 +469,16 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         public ReprojectionBlock(int x0, int y0, int x1, int y1) { X0 = x0; Y0 = y0; X1 = x1; Y1 = y1; }
 
         /// <summary>Point (left|top)</summary>
-        public PointD LeftTop { get { return new PointD(X0, Y0); } }
+        public PointD LeftTop => new PointD(X0, Y0);
 
         /// <summary>Point (right|top)</summary>
-        public PointD RightTop { get { return new PointD(X1, Y0); } }
+        public PointD RightTop => new PointD(X1, Y0);
 
         /// <summary>Point (left|bottom)</summary>
-        public PointD LeftBottom { get { return new PointD(X0, Y1); } }
+        public PointD LeftBottom => new PointD(X0, Y1);
 
         /// <summary>Point (right|bottom)</summary>
-        public PointD RightBottom { get { return new PointD(X1, Y1); } }
+        public PointD RightBottom => new PointD(X1, Y1);
 
         /// <summary>
         /// Renders the block using the given pen. Used for debugging purposes.

@@ -25,10 +25,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         public string SpatialReferenceId { get; set; }
 
         /// <summary> Gets the collection of shapes to be displayed by this layer. </summary>
-        public ObservableCollection<FrameworkElement> Shapes
-        {
-            get { return shapes; }
-        }
+        public ObservableCollection<FrameworkElement> Shapes => shapes;
+
         #endregion
 
         /// <summary> Gets or sets the update strategy for shapes when the map viewport changes. If lazy update is activated,
@@ -57,12 +55,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         private readonly ObservableCollection<FrameworkElement> shapes;
         /// <summary> The map to which this canvas is added. </summary>
         private readonly MapView mapView;
-        /// <summary> Gets or sets the previous scale of the map. Used to detect if the shapes have to be reduced again. </summary>
-        private double PreviousScale { get; set; }
-        /// <summary> Gets or sets the current coordinates reference system. </summary>
-        private string SpatialReferenceId { get; set; }
+
         /// <summary> Gets or sets if the shapes should updated after viewportend only. </summary>
-        private bool lazyUpdate { get; set; }
+        private bool lazyUpdate { get; }
         #endregion
 
         #region public variables
@@ -85,7 +80,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         {
             var result = (Point)element.GetValue(LocationProperty);
             if (!result.IsValidGeoCoordinate() && (element is MapPolylineBase))
-                result = (new MapRectangle((element as MapPolylineBase).Points)).Center;
+                result = (new MapRectangle(((MapPolylineBase) element).Points)).Center;
             return result;
         }
         /// <summary> Sets the location of a certain shape element. </summary>
@@ -187,8 +182,6 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
             : base(mapView)
         {
             this.mapView = mapView;
-            PreviousScale = double.NaN;
-            SpatialReferenceId = spatialReferenceId;
             this.lazyUpdate = lazyUpdate;
 
             switch (spatialReferenceId)
@@ -217,10 +210,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         {
             var element = obj as FrameworkElement;
 
-            if (element.Parent is ShapeCanvas)
-            {
-                (element.Parent as ShapeCanvas).UpdateScale(element, (element.Parent as ShapeCanvas).MapView, UpdateMode.Refresh);
-            }
+            (element?.Parent as ShapeCanvas)?.UpdateScale(element, ((ShapeCanvas) element.Parent).MapView, UpdateMode.Refresh);
         }
 
         /// <summary> Event handler for a change of the scale factor of a certain shape element. Updates the scale of
@@ -231,10 +221,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         {
             var element = obj as FrameworkElement;
 
-            if (element.Parent is ShapeCanvas)
-            {
-                (element.Parent as ShapeCanvas).UpdateScale(element, (element.Parent as ShapeCanvas).MapView, UpdateMode.Refresh);
-            }
+            (element?.Parent as ShapeCanvas)?.UpdateScale(element, ((ShapeCanvas) element.Parent).MapView, UpdateMode.Refresh);
         }
         
         /// <summary> Event handler for a location change of a certain shape element. Updates the location of the
@@ -245,9 +232,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         {
             var element = obj as FrameworkElement;
 
-            if (element.Parent is ShapeCanvas)
+            if (element?.Parent is ShapeCanvas)
             {
-                var sc = element.Parent as ShapeCanvas;
+                var sc = (ShapeCanvas) element.Parent;
 
                 var location = (Point)args.NewValue;
                 sc.UpdateLocation(element, location);
@@ -313,9 +300,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <param name="shape"> Shape element to be added. </param>
         private void Add(FrameworkElement shape)
         {
-            if (shape is MapShape)
+            var mapShape = shape as MapShape;
+            if (mapShape != null)
             {
-                var mapShape = shape as MapShape;
                 mapShape.GeoTransform = transform;
 
                 if (mapView != null)
@@ -384,14 +371,14 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
 
         /// <summary> Updates the scale of a certain shape element. </summary>
         /// <param name="shape"> Shape element for which the scale is to be updated. </param>
-        /// <param name="mapView"> Mapview object, which contains the corresponding shape layer. It is needed for obtaining its currently used scale.</param>
+        /// <param name="inputMapView"> Mapview object, which contains the corresponding shape layer. It is needed for obtaining its currently used scale.</param>
         /// <param name="updateMode">At which part the current transition is.</param>
-        public void UpdateScale(FrameworkElement shape, MapView mapView, UpdateMode updateMode)
+        public void UpdateScale(FrameworkElement shape, MapView inputMapView, UpdateMode updateMode)
         {
-            if (shape is MapShape)
+            var mapShape = shape as MapShape;
+            if (mapShape != null)
             {
-                var mapShape = shape as MapShape;
-                mapShape.UpdateShape(mapView, updateMode, lazyUpdate);
+                mapShape.UpdateShape(inputMapView, updateMode, lazyUpdate);
             }
             else
             {
@@ -404,7 +391,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
                 }
                 if (NeedsUpdate(lazyUpdate, updateMode))
                 {
-                    var scale = mapView.CurrentScale;
+                    var scale = inputMapView.CurrentScale;
                     double lsf = GetScaleFactor(shape);
                     double elementScale = GetScale(shape);
                     if (lsf == 1 && elementScale == 1)

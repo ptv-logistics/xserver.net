@@ -175,15 +175,16 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns> The instance of the object or null if not found. </returns>
         public static T FindRelative<T>(this FrameworkElement fe) where T : DependencyObject
         {
-            if (fe.Parent is T)
-                return fe.Parent as T;
+            var variable = fe.Parent as T;
+            if (variable != null)
+                return variable;
+
             var child = FindChild<T>(fe.Parent);
             if (child != null)
                 return child;
-            if (fe.Parent is FrameworkElement)
-                return FindRelative<T>(fe.Parent as FrameworkElement);
 
-            return null;
+            var element = fe.Parent as FrameworkElement;
+            return (element != null) ? FindRelative<T>(element) : null;
         }
 
         /// <summary> Finds an object of type T for a framework element which is a parent in the visual tree. </summary>
@@ -192,11 +193,12 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns> The instance of the object or null if not found. </returns>
         public static T FindParent<T>(FrameworkElement fe) where T : DependencyObject
         {
-            if (fe.Parent is T)
-                return fe.Parent as T;
-            if (fe.Parent is FrameworkElement)
-                return FindParent<T>(fe.Parent as FrameworkElement);
-            return null;
+            var variable = fe.Parent as T;
+            if (variable != null)
+                return variable;
+
+            var element = fe.Parent as FrameworkElement;
+            return (element != null) ? FindParent<T>(element) : null;
         }
 
         /// <summary> Gets whether a control and all its parents are visible. </summary>
@@ -335,7 +337,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         {
             var bmp = new BitmapImage();
             bmp.BeginInit();
-            bmp.StreamSource = Application.GetResourceStream(new Uri(resourcePath, UriKind.Relative)).Stream;
+            bmp.StreamSource = Application.GetResourceStream(new Uri(resourcePath, UriKind.Relative))?.Stream;
             bmp.EndInit();
             bmp.Freeze();
 
@@ -415,7 +417,7 @@ namespace Ptv.XServer.Controls.Map.Tools
                 }
                 catch (System.Web.Services.Protocols.SoapException se)
                 {
-                    if (!se.Code.Name.Equals(expectedErrorCode)) throw se;
+                    if (!se.Code.Name.Equals(expectedErrorCode)) throw;
 
                     CheckedXMapLayers.Add(key, false);
                     return false;
@@ -426,8 +428,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             }
             finally
             {
-                if (Service is IDisposable)
-                    (Service as IDisposable).Dispose();
+                (Service as IDisposable)?.Dispose();
                 Service = null;
             }
         }
@@ -490,13 +491,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <summary> 
         /// Gets true, if we are in design mode of Visual Studio etc.. 
         /// </summary> 
-        public static bool DesignMode
-        {
-            get
-            {
-                return _designMode;
-            }
-        }
+        public static bool DesignMode => _designMode;
     }
 
     /// <summary>
@@ -571,6 +566,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <param name="baseUrl">Eventually partial specified URL needed for XServer's web services, for example 'eu-n-test' or 'http://localhost:50010'.</param>
         /// <param name="moduleName">Name of the XServer module, like XMap or XRoute. The casing is corrected according the internal requirements.</param>
         /// <returns></returns>
+        [Obsolete("Use XServerVersion class instead, especially method WithServicePath(). ")]
         public static string Complete(string baseUrl, string moduleName)
         {
             string lowerModuleName = moduleName.ToLower();
@@ -582,58 +578,46 @@ namespace Ptv.XServer.Controls.Map.Tools
             if (!match.Success)
                 return baseUrl;
 
-            // Scheme (http://)
-            string scheme = match.Groups[1].ToString();
-
-            // Port
-            string port = match.Groups[3].ToString();
-
-            // Host
-            string host = match.Groups[2].ToString();
-
+            var scheme = match.Groups[1].ToString();
+            if (!string.IsNullOrEmpty(scheme))
+                return baseUrl;
             // if no scheme is specified, the host is examined for an xServer internet like name
-            if (string.IsNullOrEmpty(scheme))
+
+            var host = match.Groups[2].ToString();
+            var port = match.Groups[3].ToString();
+
+            if (Match(@"^(?:" + lowerModuleName + @"-)?([a-z]+-[hnt](?:-test|-integration)?)(?:\.cloud\.ptvgroup\.com)?$", host, out match)) // eu-n style
             {
-                // eu-n style
-                regex = new Regex(@"^(?:" + lowerModuleName + @"-)?([a-z]+-[hnt](?:-test|-integration)?)(?:\.cloud\.ptvgroup\.com)?$", RegexOptions.IgnoreCase);
-                match = regex.Match(host);
-                if (match.Success)
-                {
-                    scheme = "https://";
-                    host = lowerModuleName + "-" + match.Groups[1] + ".cloud.ptvgroup.com";
-                    port = string.Empty;
-
-                    return scheme + host + port + "/" + lowerModuleName + "/ws/" + camelModuleName;
-                }
-
-                // api(-eu) style
-                regex = new Regex(@"^(?:([a-z]+(?:-[a-z]{2})?(?:-test|-integration)?))(?:\.cloud\.ptvgroup\.com)?$", RegexOptions.IgnoreCase);
-                match = regex.Match(host);
-                if (match.Success)
-                {
-                    scheme = "https://";
-                    host = match.Groups[1] + ".cloud.ptvgroup.com";
-                    port = string.Empty;
-
-                    return scheme + host + port + "/" + lowerModuleName + "/ws/" + camelModuleName;
-                }
-
-                // on-premise
+                scheme = "https://";
+                host = lowerModuleName + "-" + match.Groups[1] + ".cloud.ptvgroup.com";
+                port = string.Empty;
+            }
+            else if (Match(@"^(?:([a-z]+(?:-[a-z]{2})?(?:-test|-integration)?))(?:\.cloud\.ptvgroup\.com)?$", host, out match)) // api(-eu) style
+            {
+                scheme = "https://";
+                host = match.Groups[1] + ".cloud.ptvgroup.com";
+                port = string.Empty;
+            }
+            else // on-premise
+            {
                 scheme = "http://";
                 if (string.IsNullOrEmpty(port))
                     port = ":" + Port(lowerModuleName).ToString(CultureInfo.InvariantCulture);
+            }
 
-                return scheme + host + port + "/" + lowerModuleName + "/ws/" + camelModuleName;
-            }
-            else
-            {
-                return baseUrl;
-            }
+            return scheme + host + port + "/" + lowerModuleName + "/ws/" + camelModuleName;
         }
 
-        /// <summary> Checks if the provided URL addresses is an XServer deployed in an XServer Internet environment. </summary>
+        private static bool Match(string pattern, string input, out Match match)
+        {
+            var regex = new Regex(pattern, RegexOptions.IgnoreCase);
+            match = regex.Match(input);
+            return match.Success;
+        }
+
+        /// <summary> Checks if the provided URL address is an XServer deployed in an XServer Internet environment. </summary>
         /// <param name="url">URL to check for xServer internet deployment.</param>
-        /// <returns></returns>
+        /// <returns>True if it contains ".cloud.ptvgroup.com".</returns>
         public static bool IsXServerInternet(string url)
         {
             return url.ToLower().Contains(".cloud.ptvgroup.com");

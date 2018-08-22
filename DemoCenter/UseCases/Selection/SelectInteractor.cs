@@ -47,8 +47,7 @@ namespace Ptv.XServer.Demo.UseCases.Selection
                 {
                     var p1 = (new Point(GetLeft(shape), GetTop(shape)));
 
-                    var r = new Ellipse();
-                    r.Tag = shape;
+                    var r = new Ellipse {Tag = shape};
                     SetLeft(r, p1.X);
                     SetTop(r, p1.Y);
                     r.Width = r.Height = shape.ActualWidth * 2;

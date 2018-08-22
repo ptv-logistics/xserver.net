@@ -40,31 +40,20 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <summary> Gets or sets Documentation in progress... </summary>
         public double AggregateLine { get; set; }
         /// <summary> Gets Documentation in progress... </summary>
-        public List<T> Tags { get; private set; }
+        public List<T> Tags { get; }
 
         /// <summary> Gets Documentation in progress... </summary>
-        public double CentroidX1
-        {
-            get { return SumX1 / Aggregate1; }
-        }
+        public double CentroidX1 => SumX1 / Aggregate1;
 
         /// <summary> Gets Documentation in progress... </summary>
-        public double CentroidY1
-        {
-            get { return SumY1 / Aggregate1; }
-        }
+        public double CentroidY1 => SumY1 / Aggregate1;
 
         /// <summary> Gets Documentation in progress... </summary>
-        public double CentroidX2
-        {
-            get { return SumX2 / Aggregate2; }
-        }
+        public double CentroidX2 => SumX2 / Aggregate2;
 
         /// <summary> Gets Documentation in progress... </summary>
-        public double CentroidY2
-        {
-            get { return SumY2 / Aggregate2; }
-        }
+        public double CentroidY2 => SumY2 / Aggregate2;
+
         #endregion
 
         #region constructor

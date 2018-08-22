@@ -24,17 +24,13 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <summary> Gets or sets the aggregated value of the cluster. </summary>
         public double Aggregate { get; set; }
         /// <summary> Gets the list of items in a cluster. </summary>
-        public List<T> Tags { get; private set; }
+        public List<T> Tags { get; }
         /// <summary> Gets the aggregated centroid x value of the cluster. </summary>
-        public double CentroidX
-        {
-            get { return SumX / Aggregate; }
-        }
+        public double CentroidX => SumX / Aggregate;
+
         /// <summary> Gets the aggregated centroid y value of the cluster. </summary>
-        public double CentroidY
-        {
-            get { return SumY / Aggregate; }
-        }
+        public double CentroidY => SumY / Aggregate;
+
         #endregion
 
         #region constructor

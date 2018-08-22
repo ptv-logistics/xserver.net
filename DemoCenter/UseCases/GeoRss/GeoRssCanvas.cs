@@ -64,10 +64,10 @@ namespace Ptv.XServer.Demo.GeoRSS
             var posts = (from item in feedXML.Descendants(xmlns + "entry")
                          select new
                                     {
-                                        Title = item.Element(xmlns + "title").Value,
-                                        Published = DateTime.Parse(item.Element(xmlns + "updated").Value),
-                                        Url = item.Element(xmlns + "link").Attribute("href").Value,
-                                        Description = item.Element(xmlns + "summary").Value,
+                                        Title = item.Element(xmlns + "title")?.Value,
+                                        Published = DateTime.Parse(item.Element(xmlns + "updated")?.Value),
+                                        Url = item.Element(xmlns + "link")?.Attribute("href")?.Value,
+                                        Description = item.Element(xmlns + "summary")?.Value,
                                         Location = CoordinateGeoRssPoint(item.Element(georssns + "point")),
                                         //Simple GeoRSS <georss:point>X Y</georss.point>
                                     }).ToList();
@@ -154,7 +154,7 @@ namespace Ptv.XServer.Demo.GeoRSS
 
             if (elm == null) return emptyPoint;
             string val = elm.Value;
-            string[] vals = val.Split(new[] { ' ' });
+            string[] vals = val.Split(' ');
             if (vals.Length != 2) return emptyPoint;
 
             double x, y;

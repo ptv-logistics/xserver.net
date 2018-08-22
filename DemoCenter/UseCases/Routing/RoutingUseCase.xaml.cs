@@ -114,7 +114,7 @@ namespace Ptv.XServer.Demo.Routing
             if (disposed)
                 return;
 
-            (wayPointLayer as ShapeLayer).Shapes.Clear();
+            (wayPointLayer as ShapeLayer)?.Shapes.Clear();
 
             foreach (var wayPoint in wayPoints)
             {
@@ -154,7 +154,7 @@ namespace Ptv.XServer.Demo.Routing
                 ShapeCanvas.SetAnchor(pin, LocationAnchor.RightBottom);
                 ShapeCanvas.SetLocation(pin, new System.Windows.Point(wayPoint.x, wayPoint.y));
 
-                (wayPointLayer as ShapeLayer).Shapes.Add(pin);
+                (wayPointLayer as ShapeLayer)?.Shapes.Add(pin);
             }
 
             wayPointLayer.Refresh();
@@ -164,7 +164,7 @@ namespace Ptv.XServer.Demo.Routing
         /// <summary> Calculates the route between the given way points. </summary>
         private void CalculateRoute()
         {
-            switch (this.wayPoints.Count)
+            switch (wayPoints.Count)
             {
                 case 0: Dispatcher.BeginInvoke(new Action<string>(DisplayError), Properties.Resources.ErrorNoWaypointsSet); return;
                 case 1: Dispatcher.BeginInvoke(new Action<string>(DisplayError), Properties.Resources.ErrorNoDestWayPoint); return;
@@ -175,7 +175,7 @@ namespace Ptv.XServer.Demo.Routing
 
             #region doc:call xroute
             // build xServer wayPoints array from wayPoints
-            var wayPoints = this.wayPoints.Select(p => new WaypointDesc
+            var selectedWayPoints = wayPoints.Select(p => new WaypointDesc
             {
                 wrappedCoords = new[] { new XrouteService.Point { point = p } },
                 linkType = LinkType.NEXT_SEGMENT,
@@ -190,7 +190,7 @@ namespace Ptv.XServer.Demo.Routing
             {
                 xRoute.BegincalculateRoute(new calculateRouteRequest
                 {
-                    ArrayOfWaypointDesc_1 = wayPoints,
+                    ArrayOfWaypointDesc_1 = selectedWayPoints,
                     ResultListOptions_4 = new ResultListOptions { polygon = true }
                 }, Invoke, xRoute);
             }
@@ -209,9 +209,9 @@ namespace Ptv.XServer.Demo.Routing
             try
             {
                 // not the UI thread!
-                calculateRouteResponse response = (result.AsyncState as XRouteWS).EndcalculateRoute(result);
+                calculateRouteResponse response = (result.AsyncState as XRouteWS)?.EndcalculateRoute(result);
 
-                Dispatcher.BeginInvoke(new Action<Route>(DisplayRouteInMap), response.result);
+                Dispatcher.BeginInvoke(new Action<Route>(DisplayRouteInMap), response?.result);
                 Dispatcher.BeginInvoke(new Action(delegate { ClearRouteItem.IsEnabled = true; }));
             }
             catch (EntryPointNotFoundException)
@@ -258,7 +258,7 @@ namespace Ptv.XServer.Demo.Routing
             // already disposed
             if (disposed) return;
 
-            (routingLayer as ShapeLayer).Shapes.Clear();
+            (routingLayer as ShapeLayer)?.Shapes.Clear();
 
             if (route == null) return;
 
@@ -269,7 +269,7 @@ namespace Ptv.XServer.Demo.Routing
             new UseCases.RoutePolyline(routingLayer as ShapeLayer)
             {
                 Points = points,
-                ToolTip = string.Format("{0:0,0.0}km\n{1}", route.info.distance / 1000.0, TimeSpan.FromSeconds(route.info.time)),
+                ToolTip = $"{route.info.distance / 1000.0:0,0.0}km\n{TimeSpan.FromSeconds(route.info.time)}",
                 Color = Colors.Blue
             };
 
@@ -310,7 +310,7 @@ namespace Ptv.XServer.Demo.Routing
         /// <param name="e"> The event parameters. </param>
         private void RemoveItemClick(object sender, RoutedEventArgs e)
         {
-            wayPoints.Remove((sender as MenuItem).CommandParameter as PlainPoint);
+            wayPoints.Remove((sender as MenuItem)?.CommandParameter as PlainPoint);
             RefreshRouteUIElements();
         }
 
@@ -319,11 +319,11 @@ namespace Ptv.XServer.Demo.Routing
         /// <param name="e"> The event parameters. </param>
         private void MoveUpItemClick(object sender, RoutedEventArgs e)
         {
-            int index = wayPoints.IndexOf((sender as MenuItem).CommandParameter as PlainPoint);
+            int index = wayPoints.IndexOf((sender as MenuItem)?.CommandParameter as PlainPoint);
             if (index <= 0) return;
 
             wayPoints.RemoveAt(index);
-            wayPoints.Insert(index - 1, (sender as MenuItem).CommandParameter as PlainPoint);
+            wayPoints.Insert(index - 1, (sender as MenuItem)?.CommandParameter as PlainPoint);
             RefreshRouteUIElements();
         }
 
@@ -332,11 +332,11 @@ namespace Ptv.XServer.Demo.Routing
         /// <param name="e"> The event parameters. </param>
         private void MoveDownItemClick(object sender, RoutedEventArgs e)
         {
-            int index = wayPoints.IndexOf((sender as MenuItem).CommandParameter as PlainPoint);
+            int index = wayPoints.IndexOf((sender as MenuItem)?.CommandParameter as PlainPoint);
             if (index >= wayPoints.Count - 1) return;
 
             wayPoints.RemoveAt(index);
-            wayPoints.Insert(index + 1, (sender as MenuItem).CommandParameter as PlainPoint);
+            wayPoints.Insert(index + 1, (sender as MenuItem)?.CommandParameter as PlainPoint);
             RefreshRouteUIElements();
         }
 

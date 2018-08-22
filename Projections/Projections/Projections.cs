@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.IO;
 using System.IO.Packaging;
-using System.Threading;
 using System.Windows;
 using Ptv.Components.Projections.Proj4;
 using Ptv.Components.Projections.Custom;
@@ -122,8 +118,8 @@ namespace Ptv.Components.Projections
         /// </remarks>
         public override string ToString()
         {
-            string z = !Z.HasValue ? "" : String.Format("|{0:0.00000}", Z.Value);
-            return String.Format("({0:0.00000}|{1:0.00000}{2})", X, Y, z);
+            string z = Z.HasValue ? $"|{Z.Value:0.00000}" : "";
+            return $"({X:0.00000}|{Y:0.00000}{z})";
         }
 
         /// <summary>
@@ -193,151 +189,85 @@ namespace Ptv.Components.Projections
         /// </summary>
         public static class Mapserver
         {
-            /// <summary>
-            /// Gets the 'PTV Mercator' reference system.
-            /// </summary>
-            public static CoordinateReferenceSystem cfMERCATOR 
-                { get { return Registry.Get("cfMERCATOR"); } }
+            /// <summary> Gets the 'PTV Mercator' reference system. </summary>
+            public static CoordinateReferenceSystem cfMERCATOR => Registry.Get("cfMERCATOR");
 
-            /// <summary>
-            /// Gets the 'Gauß-Krüger' reference system.
-            /// </summary>
-            public static CoordinateReferenceSystem cfGK 
-                { get { return Registry.Get("cfGK"); } }
+            /// <summary> Gets the 'Gauß-Krüger' reference system. </summary>
+            public static CoordinateReferenceSystem cfGK => Registry.Get("cfGK");
 
-            /// <summary>
-            /// Gets the 'UTM' reference system.
-            /// </summary>
-            public static CoordinateReferenceSystem cfUTM
-                { get { return Registry.Get("cfUTM"); } }
+            /// <summary> Gets the 'UTM' reference system. </summary>
+            public static CoordinateReferenceSystem cfUTM => Registry.Get("cfUTM");
 
-            /// <summary>
-            /// Gets the 'PTV GeoMinSek' reference system.
-            /// </summary>
-            public static CoordinateReferenceSystem cfGEOMINSEK
-                { get { return Registry.Get("cfGEOMINSEK"); } }
+            /// <summary> Gets the 'PTV GeoMinSek' reference system. </summary>
+            public static CoordinateReferenceSystem cfGEOMINSEK => Registry.Get("cfGEOMINSEK");
 
-            /// <summary>
-            /// Gets the 'PTV Geodecimal' reference system.
-            /// </summary>
-            public static CoordinateReferenceSystem cfGEODECIMAL
-                { get { return Registry.Get("cfGEODECIMAL"); } }
+            /// <summary> Gets the 'PTV Geodecimal' reference system. </summary>
+            public static CoordinateReferenceSystem cfGEODECIMAL => Registry.Get("cfGEODECIMAL");
         };
 
-        /// <summary>
-        /// Defines well known XServer coordinate reference systems.
-        /// </summary>
+        /// <summary> Defines well known XServer coordinate reference systems. </summary>
         public static class XServer
         {
-            /// <summary>
-            /// Gets the 'PTV Mercator' reference system.
-            /// </summary>
-            public static CoordinateReferenceSystem PTV_MERCATOR
-                { get { return Registry.Get("PTV_MERCATOR"); } }
+            /// <summary> Gets the 'PTV Mercator' reference system. </summary>
+            public static CoordinateReferenceSystem PTV_MERCATOR => Registry.Get("PTV_MERCATOR");
 
-            /// <summary>
-            /// Gets the 'PTV Geodecimal' reference system.
-            /// </summary>
-            public static CoordinateReferenceSystem PTV_GEODECIMAL
-                { get { return Registry.Get("PTV_GEODECIMAL"); } }
+            /// <summary> Gets the 'PTV Geodecimal' reference system. </summary>
+            public static CoordinateReferenceSystem PTV_GEODECIMAL => Registry.Get("PTV_GEODECIMAL");
 
-            /// <summary>
-            /// Gets the 'EPSG:4326' reference system.
-            /// </summary>
-            public static CoordinateReferenceSystem OG_GEODECIMAL
-            { get { return Registry.Get("OG_GEODECIMAL"); } }
+            /// <summary> Gets the 'EPSG:4326' reference system. </summary>
+            public static CoordinateReferenceSystem OG_GEODECIMAL => Registry.Get("OG_GEODECIMAL");
 
-            /// <summary>
-            /// Gets the 'PTV GeoMinSec' reference system.
-            /// </summary>
-            public static CoordinateReferenceSystem PTV_GEOMINSEC
-                { get { return Registry.Get("PTV_GEOMINSEC"); } }
+            /// <summary> Gets the 'PTV GeoMinSec' reference system. </summary>
+            public static CoordinateReferenceSystem PTV_GEOMINSEC => Registry.Get("PTV_GEOMINSEC");
 
-            /// <summary>
-            /// Gets the 'PTV Smart Units' reference system.
-            /// </summary>
-            public static CoordinateReferenceSystem PTV_SMARTUNITS
-                { get { return Registry.Get("PTV_SMARTUNITS"); } }
+            /// <summary> Gets the 'PTV Smart Units' reference system. </summary>
+            public static CoordinateReferenceSystem PTV_SMARTUNITS => Registry.Get("PTV_SMARTUNITS");
 
-            /// <summary>
-            /// Gets the 'PTV Smart Units' reference system.
-            /// </summary>
-            public static CoordinateReferenceSystem PTV_RASTERSMARTUNITS
-                { get { return Registry.Get("PTV_RASTERSMARTUNITS"); } }
+            /// <summary> Gets the 'PTV Smart Units' reference system. </summary>
+            public static CoordinateReferenceSystem PTV_RASTERSMARTUNITS => Registry.Get("PTV_RASTERSMARTUNITS");
 
-            /// <summary>
-            /// Gets the 'PTV Superconform' reference system.
-            /// </summary>
-            public static CoordinateReferenceSystem PTV_SUPERCONFORM
-                { get { return Registry.Get("PTV_SUPERCONFORM"); } }
+            /// <summary> Gets the 'PTV Superconform' reference system. </summary>
+            public static CoordinateReferenceSystem PTV_SUPERCONFORM => Registry.Get("PTV_SUPERCONFORM");
 
-            /// <summary>
-            /// Gets the 'PTV Conform' reference system.
-            /// </summary>
-            public static CoordinateReferenceSystem PTV_CONFORM
-                { get { return Registry.Get("PTV_CONFORM"); } }
+            /// <summary> Gets the 'PTV Conform' reference system. </summary>
+            public static CoordinateReferenceSystem PTV_CONFORM => Registry.Get("PTV_CONFORM");
         };
 
-        /// <summary>
-        /// Name of the parameter used for CRS redirection / aliasing.
-        /// </summary>
+        /// <summary> Name of the parameter used for CRS redirection / aliasing. </summary>
         public const string RedirectionParameter = "+redirect=";
 
-        /// <summary>
-        /// Name of the parameter used for custom transformations.
-        /// </summary>
+        /// <summary> Name of the parameter used for custom transformations. </summary>
         public const string CustomParameter = "custom";
 
-        /// <summary>
-        /// Internal PROJ.4 projection handle.
-        /// </summary>
+        /// <summary> Internal PROJ.4 projection handle. </summary>
         private IntPtr pj = IntPtr.Zero;
 
-        /// <summary>
-        /// Initialization flag, used for lazy initialization in <see cref="CoordinateReferenceSystem.Init"/> method.
-        /// </summary>
+        /// <summary> Initialization flag, used for lazy initialization in <see cref="CoordinateReferenceSystem.Init"/> method. </summary>
         private bool initialized = false;
 
-        /// <summary>
-        /// Disposed flag.
-        /// </summary>
+        /// <summary> Disposed flag. </summary>
         private bool disposed = false;
 
-        /// <summary>
-        /// CRS parameters (Proj4 well known text).
-        /// </summary>
-        private string wkt = "";
+        /// <summary> CRS parameters (Proj4 well known text). </summary>
+        private readonly string wkt = "";
 
-        /// <summary>
-        /// CRS identifier.
-        /// </summary>
+        /// <summary> CRS identifier. </summary>
         internal string id = "";
 
-        /// <summary>
-        /// Lock object for <see cref="CoordinateReferenceSystem.Init"/> method.
-        /// </summary>
-        object lockInit = Guid.NewGuid();
+        /// <summary> Lock object for <see cref="CoordinateReferenceSystem.Init"/> method. </summary>
+        readonly object lockInit = Guid.NewGuid();
 
-        /// <summary>
-        /// Gets the custom transformation associated with this CoordinateReferenceSystem.
-        /// </summary>
+        /// <summary> Gets the custom transformation associated with this CoordinateReferenceSystem. </summary>
         internal CustomTransformation CustomTransformation { get; private set; }
 
-        /// <summary>
-        /// The original, unmodified custom transformation 
-        /// that has been used to construct the coordinate reference system.
-        /// </summary>
-        private CustomTransformation originalCustomTransformation = null;
+        /// <summary> The original, unmodified custom transformation  that has been used to construct the coordinate reference system. </summary>
+        private readonly CustomTransformation originalCustomTransformation = null;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CoordinateReferenceSystem"/> class.
-        /// </summary>
-        /// <remarks>
-        /// The default constructor initializes a coordinate reference system which is invalid.
-        /// </remarks>
+        /// <summary> Initializes a new instance of the <see cref="CoordinateReferenceSystem"/> class. </summary>
+        /// <remarks> The default constructor initializes a coordinate reference system which is invalid. </remarks>
         internal CoordinateReferenceSystem()
         {
-            this.initialized = true;
+            initialized = true;
         }
         
         /// <summary>
@@ -357,7 +287,7 @@ namespace Ptv.Components.Projections
             this.wkt = wkt.Trim();
 
             if (customTransform != null)
-                this.originalCustomTransformation = this.CustomTransformation = customTransform.Clone();
+                originalCustomTransformation = CustomTransformation = customTransform.Clone();
             
             if (!lazy)
                 Init();
@@ -366,15 +296,9 @@ namespace Ptv.Components.Projections
         /// <summary>
         /// Gets a value indicating whether a custom transformation is associated with this coordinate reference system.
         /// </summary>
-        internal bool HasCustomTransform
-        {
-            get
-            {
-                return CustomTransformation != null && CustomTransformation.Transforms;
-            }
-        }
+        internal bool HasCustomTransform => CustomTransformation != null && CustomTransformation.Transforms;
 
-        /// <summary>
+	    /// <summary>
         /// Initializes the transformation handles of the coordinate reference system.
         /// </summary>
         /// <returns>Returns true, if the coordinate reference system has been successfully initialized. Returns false otherwise.</returns>
@@ -529,52 +453,28 @@ namespace Ptv.Components.Projections
         /// <summary>
         /// Gets a value indicating whether a <see cref="CoordinateReferenceSystem"/> is an alias for another one.
         /// </summary>
-        internal bool IsAlias
-        {
-            get
-            {
-                return wkt.StartsWith(RedirectionParameter);
-            }
-        }
+        internal bool IsAlias => wkt.StartsWith(RedirectionParameter);
 
-        /// <summary>
+	    /// <summary>
         /// Gets the identifier for which a <see cref="CoordinateReferenceSystem"/> is an alias.
         /// </summary>
-        internal string AliasFor
-        {
-            get
-            {
-                return IsAlias ? wkt.Substring(RedirectionParameter.Length).Trim() : "";
-            }
-        }
+        internal string AliasFor => IsAlias ? wkt.Substring(RedirectionParameter.Length).Trim() : "";
 
-        /// <summary>
+	    /// <summary>
         /// Gets a value indicating whether the <see cref="CoordinateReferenceSystem"/> is valid. 
         /// </summary><remarks>
         /// Unless the initialized handle is invalid, <see cref="CoordinateReferenceSystem.Valid"/> method
         /// will return true. Use <see cref="CoordinateReferenceSystem.Init"/> method to force the handle 
         /// initialization.
         /// </remarks>
-        internal bool Valid
-		{
-            get
-            {
-                return (!initialized || pj != IntPtr.Zero) && !disposed;
-            }
-        }
+        internal bool Valid => (!initialized || pj != IntPtr.Zero) && !disposed;
 
-        /// <summary>
+	    /// <summary>
         /// Gets a value indicating whether the <see cref="CoordinateReferenceSystem"/> has already been initialized.
         /// </summary>
-        internal bool Initialized
-        {
-            get
-            {
-                return initialized;
-            }
-        }
+        internal bool Initialized => initialized;
 
-        /// <summary>
+	    /// <summary>
         /// Gets the WKT of the associated custom transformation, if any.
         /// </summary>
         private String CustomTransformationWKT
@@ -592,42 +492,23 @@ namespace Ptv.Components.Projections
         /// <summary>
         /// Gets the parameters of a <see cref="CoordinateReferenceSystem"/> (Proj4 well known text).
         /// </summary>
-        public String WKT
-		{
-			get
-			{
-                // CustomTransformationWKT may be empty - avoid 'if', fix blank with Trim()
-                return (wkt + " " + CustomTransformationWKT).Trim();
-			}
-		}
+        public String WKT => (wkt + " " + CustomTransformationWKT).Trim();
 
-        /// <summary>
+	    /// <summary>
         /// Gets a value indicating whether the coordinate reference system is of type latitude/longitude.
         /// </summary>
-        private bool IsLatLon
-        {
-            get
-            {
-                return Init() && Library.Instance.IsLatLon(pj);
-            }
-        }
+        private bool IsLatLon => Init() && Library.Instance.IsLatLon(pj);
 
-        /// <summary>
+	    /// <summary>
         /// Gets the identifier of the <see cref="CoordinateReferenceSystem"/>.
         /// </summary>
         /// <remarks>
         /// The identifier of a CRS is empty by default until the <see cref="CoordinateReferenceSystem"/> 
         /// has been stored in the <see cref="Registry"/>.
         /// </remarks>
-		public String Id
-		{
-			get
-			{
-                return id;
-			}
-		}
+		public String Id => id;
 
-        /// <summary>
+	    /// <summary>
         /// Gets the transformation handle of the <see cref="CoordinateReferenceSystem"/>.
         /// </summary>
 		internal IntPtr Handle
@@ -665,7 +546,7 @@ namespace Ptv.Components.Projections
         /// </summary>
         internal void Dispose()
         {
-            lock (this.lockInit)
+            lock (lockInit)
             {
                 disposed = true;
 
@@ -714,7 +595,7 @@ namespace Ptv.Components.Projections
         /// <summary>
         /// Internal lock object used by <see cref="TryGetCoordinateSystem"/>.
         /// </summary>
-        private static object lockRegistry = Guid.NewGuid();
+        private static readonly object lockRegistry = Guid.NewGuid();
 
         /// <summary>
         /// Finalize the registry.
@@ -731,7 +612,7 @@ namespace Ptv.Components.Projections
             /// </summary>
             ~Finalizer()
             {
-                Registry.Dispose();
+                Dispose();
             }
         }
         
@@ -796,7 +677,7 @@ namespace Ptv.Components.Projections
         /// <param name="handleRecord">Action to trigger.</param>
         private static void ReadDatabase(Action<String, String> handleRecord)
         {
-            using (Package resources = ZipPackage.Open(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(Registry).Namespace + ".resources.zip")))
+            using (Package resources = Package.Open(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(Registry).Namespace + ".resources.zip")))
                 using (Stream stm = resources.GetPart(new Uri("/epsg", UriKind.Relative)).GetStream())
                 {
                     int idx;
@@ -992,7 +873,7 @@ namespace Ptv.Components.Projections
                     Dispose();
             }
 
-            string[] lines = csv == null ? null : csv.Split('\n');
+            string[] lines = csv?.Split('\n');
 
             List<CoordinateReferenceSystem> aliases = 
                 new List<CoordinateReferenceSystem>();
@@ -1350,9 +1231,7 @@ namespace Ptv.Components.Projections
         /// <returns>True, if the arrays are valid, false otherwise.</returns>
         private bool ChkLen(double[] x, double[] y, double[] z, int idx, int length)
         {
-            Func<double[], bool, bool> isValid = (theArray, arrayMayBeNull) => {
-                return theArray == null ? arrayMayBeNull : idx >= 0 && length > 0 && idx < theArray.Length && (idx + length - 1) < theArray.Length;
-            };
+            Func<double[], bool, bool> isValid = (theArray, arrayMayBeNull) => theArray == null ? arrayMayBeNull : idx >= 0 && length > 0 && idx < theArray.Length && (idx + length - 1) < theArray.Length;
 
             return isValid(x, false) && isValid(y, false) && isValid(z, true);
         }
@@ -1371,7 +1250,7 @@ namespace Ptv.Components.Projections
         /// <param name="length">Number of coordinates to transform.</param>
         /// <remarks>The caller is responsible for allocating memory for the output arrays. It is allowed
         /// to use the input arrays in <c>xout</c>, <c>yout</c> and <c>zout</c>.</remarks>
-        abstract internal void TransformUnchecked(double[] xin, double[] yin, double[] zin, int idxin, double[] xout, double[] yout, double[] zout, int idxout, int length);
+        internal abstract void TransformUnchecked(double[] xin, double[] yin, double[] zin, int idxin, double[] xout, double[] yout, double[] zout, int idxout, int length);
 
         /// <summary>
         /// Transforms a coordinate.
@@ -1383,7 +1262,7 @@ namespace Ptv.Components.Projections
         /// <param name="yout">On return, contains the transformed y-coordinate.</param>
         /// <param name="zout">On return, contains the transformed z-coordinate.</param>
         /// <remarks>The returned z-coordinate is set to null if the input z-coordinate was null as well.</remarks>
-        abstract internal void TransformUnchecked(double xin, double yin, double? zin, out double xout, out double yout, out double? zout);
+        internal abstract void TransformUnchecked(double xin, double yin, double? zin, out double xout, out double yout, out double? zout);
 
         /// <summary>
         /// Transforms an array of <see cref="System.Windows.Point">System.Windows.Point</see>.
@@ -1394,7 +1273,7 @@ namespace Ptv.Components.Projections
         /// the input array. It is also valid to specify the input array in <c>pntsOut</c>, which is 
         /// the same as setting <c>pntsOut</c> to null.</remarks>
         /// <exception cref="TransformationException">Thrown in the unlikely event that a coordinate transformation fails.</exception>
-        abstract internal void TransformUnchecked(Point[] pntsIn, Point[] pntsOut);
+        internal abstract void TransformUnchecked(Point[] pntsIn, Point[] pntsOut);
 
         /// <summary>
         /// Transforms an array of <see cref="Location"/>.
@@ -1407,7 +1286,7 @@ namespace Ptv.Components.Projections
         /// It is also valid to specify the input array in <c>locsOut</c>, which is the same as setting 
         /// <c>locsOut</c> to null.
         /// </remarks>
-        abstract internal void TransformUnchecked(Location[] locsIn, Location[] locsOut);
+        internal abstract void TransformUnchecked(Location[] locsIn, Location[] locsOut);
 
         #region ICoordinateTransformation
 
@@ -1615,10 +1494,9 @@ namespace Ptv.Components.Projections
         /// <inheritdoc/>
         public virtual void Transform(double[] xin, double[] yin, double[] zin, double[] xout, double[] yout, double[] zout)
         {
-            Transform(xin, yin, zin, 0, xout, yout, zout, 0, xin != null ? xin.Length : 0);
+            Transform(xin, yin, zin, 0, xout, yout, zout, 0, xin?.Length ?? 0);
         }
 
-        /// <inheritdoc/>
         internal virtual void Transform(double[] xin, double[] yin, double[] zin, int idxin, double[] xout, double[] yout, double[] zout, int idxout, int length)
         {
             // no points, no error :-)
@@ -1644,20 +1522,12 @@ namespace Ptv.Components.Projections
 
         #endregion
 
-        /// <summary>
-        /// Gets a value indicating whether a transformation is generally possible. 
-        /// </summary>
+        /// <summary> Gets a value indicating whether a transformation is generally possible.  </summary>
         /// <remarks>
         /// Invalid parameters and lazy initialization of <see cref="CoordinateReferenceSystem"/> 
         /// may cause <see cref="Valid">CoordinateTransformation.Valid</see> to return false.
         /// </remarks>
-        internal virtual bool Valid
-        {
-            get
-            {
-                return false;
-            }
-        }
+        internal virtual bool Valid => false;
     }
 
     /// <summary>
@@ -1666,9 +1536,7 @@ namespace Ptv.Components.Projections
     /// </summary>
     public class TransformationNotFoundException : Exception
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TransformationNotFoundException"/> class.
-        /// </summary>
+        /// <summary> Initializes a new instance of the <see cref="TransformationNotFoundException"/> class. </summary>
         public TransformationNotFoundException()
             : base()
         {

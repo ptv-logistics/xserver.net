@@ -94,12 +94,22 @@
     <Compile Include="Layers\ViewportEndChangedWeakEventManager.cs" />
     <Compile Include="Layers\ViewportWhileChangedWeakEventManager.cs" />
     <Compile Include="Layers\WmsLayer.cs" />
-    <Compile Include="Layers\Xmap2LayerFactory.cs" />
+    <Compile Include="Layers\WmtsLayer\Extensions.cs" />
+    <Compile Include="Layers\WmtsLayer\LruCache.cs" />
+    <Compile Include="Layers\WmtsLayer\ReprojectionTileProvider.cs" />
+    <Compile Include="Layers\WmtsLayer\TileMatrix.cs" />
+    <Compile Include="Layers\WmtsLayer\WmtsLayer.cs" />
+    <Compile Include="Layers\WmtsLayer\WmtsMapService.cs" />
+    <Compile Include="Layers\Xmap2\DataInformation.cs" />
+    <Compile Include="Layers\Xmap2\FeatureLayers.cs" />
+    <Compile Include="Layers\Xmap2\LayerFactory.cs" />
+    <Compile Include="Layers\Xmap2\UntiledProvider.cs" />
     <Compile Include="Map\GlobalOptions.cs" />
     <Compile Include="Map\IMap.cs" />
     <Compile Include="Map\LayerCollection.cs" />
     <Compile Include="Map\MapRectangle.cs" />
     <Compile Include="Map\ToolTipManagement.cs" />
+    <Compile Include="Map\XServerVersion.cs" />
     <Compile Include="Symbols\LightenColorExtension.cs" />
     <Compile Include="Symbols\Misc\Crosshair.xaml.cs">
       <DependentUpon>Crosshair.xaml</DependentUpon>
@@ -371,9 +381,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Overview.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Map.snk" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\LayerDefault.png" />

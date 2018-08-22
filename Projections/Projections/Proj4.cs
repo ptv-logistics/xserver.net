@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.IO.Packaging;
-using System.Runtime;
 using System.Reflection;
-using System.Diagnostics;
-using System.Windows.Forms;
 using System.Windows;
 
 namespace Ptv.Components.Projections.Proj4
@@ -221,7 +215,7 @@ namespace Ptv.Components.Projections.Proj4
         /// <summary>
         /// Initialization lock.
         /// </summary>
-        private static object instanceLock = Guid.NewGuid();
+        private static readonly object instanceLock = Guid.NewGuid();
 
         /// <summary>
         /// Gets the possible names of the core PROJ.4 library.
@@ -292,7 +286,7 @@ namespace Ptv.Components.Projections.Proj4
             {
                 byte[] raw;
 
-                using (Package resources = ZipPackage.Open(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(CoordinateReferenceSystem).Namespace + ".resources.zip")))
+                using (Package resources = Package.Open(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(CoordinateReferenceSystem).Namespace + ".resources.zip")))
                 {
                     Uri partUri = new Uri("/" + name, UriKind.Relative);
 
@@ -347,16 +341,8 @@ namespace Ptv.Components.Projections.Proj4
             }
         }
 
-        /// <summary>
-        /// Gets a value indicating whether the core was already initialized.
-        /// </summary>
-        public static bool HasInstance
-        {
-            get
-            {
-                return instance != null;
-            }
-        }
+        /// <summary> Gets a value indicating whether the core was already initialized. </summary>
+        public static bool HasInstance => instance != null;
     }
 
     /// <summary>
@@ -368,12 +354,12 @@ namespace Ptv.Components.Projections.Proj4
         /// <summary>
         /// Source coordinate reference system.
         /// </summary>
-        private CoordinateReferenceSystem source = null;
+        private readonly CoordinateReferenceSystem source = null;
 
         /// <summary>
         /// Target coordinate reference system.
         /// </summary>
-        private CoordinateReferenceSystem target = null;
+        private readonly CoordinateReferenceSystem target = null;
 
         /// <summary>
         /// Helper performing array initialization.
@@ -418,8 +404,8 @@ namespace Ptv.Components.Projections.Proj4
         /// <param name="targetId">Identifier of the target coordinate reference system.</param>
         private CoordinateTransformation(String sourceId, String targetId)
         {
-            this.source = Registry.Get(sourceId);
-            this.target = Registry.Get(targetId);
+            source = Registry.Get(sourceId);
+            target = Registry.Get(targetId);
 
             if (source == null || !source.Valid || target == null || !target.Valid)
                 throw new TransformationNotFoundException(sourceId, targetId);
@@ -433,7 +419,7 @@ namespace Ptv.Components.Projections.Proj4
         /// <returns>The PROJ.4 coordinate transformation, provided through <see cref="Ptv.Components.Projections.ICoordinateTransformation"/>.</returns>
         /// <exception cref="TransformationNotFoundException">Thrown if no transformation is available to transform coordinates 
         /// from the specified source to the specified target coordinate reference system.</exception>
-        public static new Ptv.Components.Projections.ICoordinateTransformation Get(CoordinateReferenceSystem source, CoordinateReferenceSystem target)
+        public new static Ptv.Components.Projections.ICoordinateTransformation Get(CoordinateReferenceSystem source, CoordinateReferenceSystem target)
         {
             return new CoordinateTransformation(source, target);
         }
@@ -446,7 +432,7 @@ namespace Ptv.Components.Projections.Proj4
         /// <returns>The PROJ.4 coordinate transformation, provided through <see cref="Ptv.Components.Projections.ICoordinateTransformation"/>.</returns>
         /// <exception cref="TransformationNotFoundException">Thrown if no transformation is available to transform coordinates 
         /// from the specified source to the specified target coordinate reference system.</exception>
-        public static new Ptv.Components.Projections.ICoordinateTransformation Get(String sourceId, String targetId)
+        public new static Ptv.Components.Projections.ICoordinateTransformation Get(String sourceId, String targetId)
         {
             return new CoordinateTransformation(sourceId, targetId);
         }
@@ -552,13 +538,7 @@ namespace Ptv.Components.Projections.Proj4
         }
 
         /// <inheritdoc/>
-        internal override bool Valid
-        {
-            get
-            {
-                return source.Init() && target.Init();
-            }
-        }
+        internal override bool Valid => source.Init() && target.Init();
 
         /// <summary>
         /// Internal flag for <see cref="Enabled"/> property.
@@ -600,15 +580,13 @@ namespace Ptv.Components.Projections.Proj4
     /// </summary>
     internal static class WktExtensions
     {
-        /// <summary>
-        /// Returns the first n characters of a string. 
-        /// </summary>
+        /// <summary> Returns the first n characters of a string.  </summary>
         /// <param name="s">The string to process.</param>
         /// <param name="n">Number of characters to return.</param>
         /// <returns>The first <c>Min(n, s.Length)</c> characters of the specified string.</returns>
         public static String Left(this String s, uint n)
         {
-            if (s == null || s.Length < 1 || n >= s.Length)
+            if (string.IsNullOrEmpty(s) || n >= s.Length)
                 return s;
             else if (n == 0)
                 return "";
@@ -624,7 +602,7 @@ namespace Ptv.Components.Projections.Proj4
         /// <returns>The last <c>Min(n, s.Length)</c> characters of the specified string.</returns>
         public static String Right(this String s, uint n)
         {
-            if (s == null || s.Length < 1 || n >= s.Length)
+            if (string.IsNullOrEmpty(s) || n >= s.Length)
                 return s;
             else if (n == 0)
                 return "";

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using Ptv.Components.Projections;
@@ -93,10 +92,10 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         }
 
         /// <summary> Accesses the options to be used by the map service. </summary>
-        public ReprojectionServiceOptions ReprojectionServiceOptions { get; private set; }
+        public ReprojectionServiceOptions ReprojectionServiceOptions { get; }
 
         /// <summary> Accesses the re-projector used by the map service. </summary>
-        public ImageReprojector Reprojector { get; private set; }
+        public ImageReprojector Reprojector { get; }
         
         /// <summary>
         /// Used internally to describe the covering of a requested map section.
@@ -421,7 +420,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         }
 
         /// <inheritdoc />
-        public virtual string Crs {get; private set; }
+        public virtual string Crs { get; }
     }
 }
 

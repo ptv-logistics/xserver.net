@@ -46,7 +46,7 @@ namespace Ptv.XServer.Demo.Geocoding
 
         #region public properties
         /// <summary> Gets the wait message which is shown while the xLocate server is queried for suggestions. </summary>
-        public IEnumerable WaitMessage { get { return _WaitMessage; } }
+        public IEnumerable WaitMessage => _WaitMessage;
 
         /// <summary> Gets or sets the query for single field geocoding. </summary>
         public string QueryText
@@ -69,10 +69,10 @@ namespace Ptv.XServer.Demo.Geocoding
         {
             get
             {
-                Debug.Print("---" + (sfg != null ? sfg.Suggestions : null));
+                Debug.Print("---" + sfg?.Suggestions);
 
                 if (!string.IsNullOrEmpty(QueryText) && QueryText.Length >= 3)
-                    sfg.Suggest(QueryText);
+                    sfg?.Suggest(QueryText);
 
                 return sfg != null ? sfg.Suggestions ?? new string[] { } : new string[] { };
             }
@@ -133,8 +133,7 @@ namespace Ptv.XServer.Demo.Geocoding
         /// <param name="prop"> The name of the changed property. </param>
         protected void OnPropertyChanged(string prop)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
         #endregion
 
@@ -151,15 +150,13 @@ namespace Ptv.XServer.Demo.Geocoding
 
             if (singleField)
             {
-                if (sfg != null)
-                    sfg.Remove(wpfMap);
+                sfg?.Remove(wpfMap);
 
                 sfg = new SingleFieldGeocoder(DisplayError, SetMapEnvelopeToResult, wpfMap);
             }
             else
             {
-                if (mfg != null)
-                    mfg.Remove(wpfMap);
+                mfg?.Remove(wpfMap);
 
                 mfg = new MultiFieldGeocoder(DisplayError, SetMapEnvelopeToResult, wpfMap);
             }
@@ -174,14 +171,12 @@ namespace Ptv.XServer.Demo.Geocoding
         {
             if (singleField)
             {
-                if (sfg != null)
-                    sfg.Remove(wpfMap);
+                sfg?.Remove(wpfMap);
                 sfg = null;
             }
             else
             {
-                if (mfg != null)
-                    mfg.Remove(wpfMap);
+                mfg?.Remove(wpfMap);
                 mfg = null;
             }
         }

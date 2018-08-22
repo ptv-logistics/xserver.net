@@ -160,9 +160,9 @@ namespace Ptv.XServer.Controls.Routing
             var p = e.GetPosition(Map);
 
             if (sender is Via)
-                menu.Add("Remove via way point", () => (sender as Via).Route.Remove(sender as Via));
+                menu.Add("Remove via way point", () => ((Via) sender).Route.Remove((Via) sender));
             else
-                menu.Add("Remove stop " + (sender as Stop).Label, () => Remove(sender as Stop));
+                menu.Add("Remove stop " + (sender as Stop)?.Label, () => Remove(sender as Stop));
 
             menu.PlacementRectangle = new Rect(p, p);
             menu.IsOpen = true;
@@ -255,8 +255,9 @@ namespace Ptv.XServer.Controls.Routing
         /// <param name="wayPoint">Way point that was moved.</param>
         public void WayPointMoved(WayPoint wayPoint)
         {
-            if (wayPoint is Via)
-                (wayPoint as Via).Route.UpdateRouteForMovingWayPoint(wayPoint, MOVE_UPDATE_DELAY);
+            var via = wayPoint as Via;
+            if (via != null)
+                via.Route.UpdateRouteForMovingWayPoint(via, MOVE_UPDATE_DELAY);
             else
             {
                 var stop = wayPoint as Stop;
@@ -434,18 +435,12 @@ namespace Ptv.XServer.Controls.Routing
         /// <summary>
         /// Returns the number of stops.
         /// </summary>
-        public int StopCount
-        {
-            get { return stops.Count; }
-        }
+        public int StopCount => stops.Count;
 
         /// <summary>
         /// Checks if there are enough stops to calculate a route.
         /// </summary>
-        public bool Valid
-        {
-            get { return StopCount >= 2 && First != null && Last != null; }
-        }
+        public bool Valid => StopCount >= 2 && First != null && Last != null;
 
         /// <summary>
         /// Builds a tool tip text containing the overall information generated out of all routes. 

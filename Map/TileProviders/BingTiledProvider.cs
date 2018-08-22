@@ -142,19 +142,14 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         }
 
         /// <summary> Gets the url of the image as string. </summary>
-        public string CacheId { get { return metaInfo.ImageUrl; } }
+        public string CacheId => metaInfo.ImageUrl;
 
         /// <summary> Gets the minimum zoom level of the map where tiles are available. </summary>
-        public int MinZoom
-        {
-            get { return metaInfo.MinZoom; }
-        }
+        public int MinZoom => metaInfo.MinZoom;
 
         /// <summary> Gets the maximum zoom level of the map where tiles are available. </summary>
-        public int MaxZoom
-        {
-            get { return metaInfo.MaxZoom; }
-        }
+        public int MaxZoom => metaInfo.MaxZoom;
+
         #endregion
     }
 
@@ -194,7 +189,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         public BingMetaInfo(BingImagerySet imagerySet, BingMapVersion mapVersion, string key)
         {
             Key = key;
-            var url = string.Format(@"http://dev.virtualearth.net/REST/v1/Imagery/Metadata/{0}?mapVersion={1}&o=xml&key={2}", Enum.GetName(typeof(BingImagerySet), imagerySet), Enum.GetName(typeof(BingMapVersion), mapVersion), key);
+            var url = $@"http://dev.virtualearth.net/REST/v1/Imagery/Metadata/{Enum.GetName(typeof(BingImagerySet), imagerySet)}?mapVersion={Enum.GetName(typeof(BingMapVersion), mapVersion)}&o=xml&key={key}";
 
             // parse xml using linq
             XNamespace restns = "http://schemas.microsoft.com/search/local/ws/rest/v1";
@@ -208,9 +203,9 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                                                   ImageryMetaData = from meta in resource.Descendants(restns + "ImageryMetadata")
                                                                     select new
                                                                     {
-                                                                        ImagerUrl = meta.Element(restns + "ImageUrl").Value,
-                                                                        MinZoom = Convert.ToInt32(meta.Element(restns + "ZoomMin").Value),
-                                                                        MaxZoom = Convert.ToInt32(meta.Element(restns + "ZoomMax").Value),
+                                                                        ImagerUrl = meta.Element(restns + "ImageUrl")?.Value,
+                                                                        MinZoom = Convert.ToInt32(meta.Element(restns + "ZoomMin")?.Value),
+                                                                        MaxZoom = Convert.ToInt32(meta.Element(restns + "ZoomMax")?.Value),
                                                                         SubDomains = from subDomain in meta.Descendants(restns + "ImageUrlSubdomains")
                                                                                      select subDomain.Elements(restns + "string")
                                                                     }

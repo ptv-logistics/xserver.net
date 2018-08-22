@@ -13,7 +13,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <summary> Element displayed. </summary>
         private readonly FrameworkElement child;
         /// <summary> Current offset. </summary>
-        private Vector o;
+        private Vector offset;
         #endregion
 
         #region public variables
@@ -22,15 +22,12 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         {
             get
             {
-                return o;
+                return offset;
             }
             set
             {
-                o = value;
-
-                // update adorner layer
-                if (Parent is AdornerLayer)
-                    (Parent as AdornerLayer).Update(AdornedElement);
+                offset = value;
+                (Parent as AdornerLayer)?.Update(AdornedElement);
             }
         }
         #endregion
@@ -85,13 +82,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         }
 
         /// <inheritdoc/>  
-        protected override int VisualChildrenCount
-        {
-            get
-            {
-                return 1;
-            }
-        }
+        protected override int VisualChildrenCount => 1;
+
         #endregion
 
         #region public methods
@@ -104,7 +96,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
             generalTransformGroup.Children.Add(base.GetDesiredTransform(transform));
 
             // add a TranslateTransform taking our offset into account
-            generalTransformGroup.Children.Add(new TranslateTransform(o.X, o.Y));
+            generalTransformGroup.Children.Add(new TranslateTransform(offset.X, offset.Y));
 
             return generalTransformGroup;
         }

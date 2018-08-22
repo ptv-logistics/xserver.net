@@ -6,7 +6,6 @@ using System.Net;
 using System.Security.Authentication;
 using System.Windows;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Ptv.XServer.Controls.Map.Tools
 {
@@ -22,7 +21,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         #region Properties
 
         /// <summary> Gets or sets the xMapServer url (e.g. http://127.0.0.1:50010/xmap/ws/XMap). </summary>
-        public string Url { get; private set; }
+        public string Url { get; }
 
         /// <summary> Gets or sets the newUser name for basic Http authentication. </summary>
         public string User { get; private set; }
@@ -31,10 +30,10 @@ namespace Ptv.XServer.Controls.Map.Tools
         public string Password { get; private set; }
 
         /// <summary> Gets or sets the copyright text. </summary>
-        public string CopyrightText { get; private set; }
+        public string CopyrightText { get; }
 
         /// <summary> Gets or sets the maximum request size for an xMapServer image. </summary>
-        public Size MaxRequestSize { get; private set; }
+        public Size MaxRequestSize { get; }
 
         #endregion
 
@@ -195,46 +194,39 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <param name="password">Password of the HTTP authentication. The token value can be used here in combination with the user 'xtok'.</param>
         public void CheckCredentials(string user, string password)
         {
-            HttpWebRequest request;
-            HttpWebResponse response;
-            var responseSuccessful = false;
-
             string baseUrl = Url;
             if (baseUrl.ToUpper().EndsWith("/XMAP/WS/XMAP"))
                 baseUrl = baseUrl.Substring(0, baseUrl.Length - "/XMAP/WS/XMAP".Length);
 
-            if (XServerUrl.IsXServerInternet(baseUrl))
-            {
-                try
-                {
-                    request = (HttpWebRequest)WebRequest.Create(baseUrl + "/WMS/GetTile/xmap-ajaxfg/0/0/0.png?xtok=" + password);
-                    request.Timeout = 5000;
-                    using (response = request.GetResponse() as HttpWebResponse)
-                        if (response != null)
-                            responseSuccessful = response.StatusCode == HttpStatusCode.OK;
-                }
-                catch { responseSuccessful = false; }
-            }
+            if (XServerUrl.IsXServerInternet(baseUrl) && CheckSampleRequest(baseUrl, password))
+                return; // Check OK
 
-            if (responseSuccessful) return; // Check if a request is possible for an URL without any authentication
-            try
-            {
-                request = (HttpWebRequest)WebRequest.Create(baseUrl + "/WMS/GetTile/xmap-ajaxbg/0/0/0.png");
-                request.Timeout = 5000;
+            if (new XServer2Version(Url).IsValidUrl())
+                throw new ArgumentException("The XMap url addresses an XServer 2 service. This is currently not supported.");
 
-                using (response = request.GetResponse() as HttpWebResponse)
-                    if (response != null)
-                        responseSuccessful = response.StatusCode == HttpStatusCode.OK;
-            }
-            catch { responseSuccessful = false; }
-
-            if (!responseSuccessful)
+            if (!CheckSampleRequest(baseUrl, null))
                 throw new ArgumentException("The XMap url is not configured correctly. Maybe the corresponding server does not exist or is currently not available.");
 
             if (XServerUrl.IsXServerInternet(baseUrl))
                 // The token-free request works, but the token-request failed --> Token is not valid
                 throw new AuthenticationException("The specified authentication data does not validate against the specified url. The url itself is working as expected. " +
                                                   "Please note that the pre-supplied access token (15-day-test-license) may have expired.");
+        }
+
+        private bool CheckSampleRequest(string baseUrl, string password)
+        {
+            try
+            {
+                string url = baseUrl + "/WMS/GetTile/xmap-ajaxfg/0/0/0.png";
+                if (!string.IsNullOrEmpty(password))
+                    url += "?xtok=" + password;
+
+                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
+                request.Timeout = 5000;
+                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+                    return response?.StatusCode == HttpStatusCode.OK;
+            }
+            catch { return false; }
         }
     }
 }

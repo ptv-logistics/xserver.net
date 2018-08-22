@@ -56,7 +56,7 @@ namespace Ptv.XServer.Demo.Clustering
         /// adapted size when zooming in and out the map. If the factor is 1.0, the elements have pixel size. If the
         /// factor is 0.0, the elements have Mercator size. If the factor lies between 0.0 and 1.0, the elements are
         /// scaled with a logarithmic multiplier. </summary>
-        private readonly double logicalScaleFactor = .75;
+        private readonly double logicalScaleFactor;
         #endregion
 
         #region doc:constructor

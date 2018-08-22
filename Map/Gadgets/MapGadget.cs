@@ -80,13 +80,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         public Map Map { get; set; }
 
         /// <summary> Gets a value indicating whether the gadget is used in design mode. </summary>
-        public static bool IsInDesignMode
-        {
-            get
-            {
-                return DesignTest.DesignMode;
-            }
-        }
+        public static bool IsInDesignMode => DesignTest.DesignMode;
+
         #endregion
 
         #region dependency properties

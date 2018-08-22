@@ -51,51 +51,50 @@ namespace Ptv.XServer.Demo.UseCases
             ShowIntro(index);
         }
 
-        private void ShowIntro(int index)
+        private void ShowIntro(int introIndex)
         {
-            if (index < 0)
+            if (introIndex < 0)
                 return;
 
-            location.Children.Add(introControls[index]);
+            location.Children.Add(introControls[introIndex]);
 
-            if (HandlerCallback != null && handlerIds.Length > index)
-                HandlerCallback(handlerIds[index], true);
+            if (HandlerCallback != null && handlerIds.Length > introIndex)
+                HandlerCallback(handlerIds[introIndex], true);
 
-            introControls[index].Forwarded = () =>
+            introControls[introIndex].Forwarded = () =>
             {
-                if (HandlerCallback != null && handlerIds.Length > index)
-                    HandlerCallback(handlerIds[index], false);
+                if (HandlerCallback != null && handlerIds.Length > introIndex)
+                    HandlerCallback(handlerIds[introIndex], false);
 
-                if (introControls.Length > index)
-                    location.Children.Remove(introControls[index]);
+                if (introControls.Length > introIndex)
+                    location.Children.Remove(introControls[introIndex]);
 
-                index++;
+                introIndex++;
 
-                if (index < introControls.Length)
-                    ShowIntro(index);
+                if (introIndex < introControls.Length)
+                    ShowIntro(introIndex);
                 else
-                    HandlerCallback("_SkippedIntro", false);
+                    HandlerCallback?.Invoke("_SkippedIntro", false);
             };
 
-            introControls[index].Backwarded = () =>
+            introControls[introIndex].Backwarded = () =>
             {
-                if (HandlerCallback != null && handlerIds.Length > index)
-                    HandlerCallback(handlerIds[index], false);
+                if (HandlerCallback != null && handlerIds.Length > introIndex)
+                    HandlerCallback(handlerIds[introIndex], false);
 
-                if(introControls.Length > index)
-                    location.Children.Remove(introControls[index]);
+                if(introControls.Length > introIndex)
+                    location.Children.Remove(introControls[introIndex]);
 
-                index--;
-                ShowIntro(index);
+                introIndex--;
+                ShowIntro(introIndex);
             };
 
-            introControls[index].Skipped = yes =>
+            introControls[introIndex].Skipped = yes =>
             {
-                if (HandlerCallback != null)
-                    HandlerCallback(handlerIds[index], false);
+                HandlerCallback?.Invoke(handlerIds[introIndex], false);
 
-                location.Children.Remove(introControls[index]);
-                HandlerCallback("_SkippedIntro", !yes);
+                location.Children.Remove(introControls[introIndex]);
+                HandlerCallback?.Invoke("_SkippedIntro", !yes);
             };
         }
     }

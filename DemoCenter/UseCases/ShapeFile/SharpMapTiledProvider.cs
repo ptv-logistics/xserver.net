@@ -17,7 +17,6 @@ using SharpMap.Rendering.Thematics;
 using SharpMap.Geometries;
 using System.Drawing.Imaging;
 using SharpMap.Styles;
-using SharpMap.Data;
 using System.Globalization;
 using Ptv.XServer.Controls.Map;
 using Ptv.XServer.Controls.Map.Layers;
@@ -134,16 +133,12 @@ namespace Ptv.XServer.Demo.ShapeFile
         /// <summary>The data source containing the shape files.</summary>
         private readonly string shapeFile;
 
-        /// <summary> A random number which is used to color the shapes if no population density data is available. </summary>
-        private readonly Random myRandom;
-
         /// <summary> Initializes a new instance of the <see cref="SharpMapTiledProvider"/> class. The SharpMap tiled
         /// provider reads the shapes from the given shape file path. </summary>
         /// <param name="shapeFile"> The full qualified path to the shape file. </param>
         public SharpMapTiledProvider(string shapeFile)
         {
             this.shapeFile = shapeFile;
-            myRandom = new Random();
         }
 
         #region doc:GetPopDensStyle method
@@ -169,12 +164,7 @@ namespace Ptv.XServer.Demo.ShapeFile
                 scale = -1.0f;
             }
 
-            Color fillColor;
-            if (scale < 0)
-                fillColor = Color.Gray;
-            else
-            // use the sharpmap ColorBlend for a color gradient green->yellow->red
-                fillColor = ColorBlend.ThreeColors(Color.Green, Color.Yellow, Color.Red).GetColor(scale);
+            var fillColor = scale < 0 ? Color.Gray : ColorBlend.ThreeColors(Color.Green, Color.Yellow, Color.Red).GetColor(scale);
 
             // make fill color alpha-transparent
             fillColor = Color.FromArgb(180, fillColor.R, fillColor.G, fillColor.B);
@@ -232,13 +222,14 @@ namespace Ptv.XServer.Demo.ShapeFile
         #endregion // doc:GetImageStream method
 
         /// <inheritdoc/>
-        public string CacheId { get { return "SharpMapTiledProvider"; } }
+        public string CacheId => "SharpMapTiledProvider";
 
         /// <inheritdoc/>
-        public int MaxZoom { get { return 19; } }
+        public int MaxZoom => 19;
 
         /// <inheritdoc/>
-        public int MinZoom { get { return 0; } }
+        public int MinZoom => 0;
+
         #endregion
     }
 }

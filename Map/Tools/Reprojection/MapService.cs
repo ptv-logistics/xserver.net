@@ -88,16 +88,16 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         }
         
         /// <inheritdoc />
-        public double MinX { get { return Math.Min(Left, Right); } }
+        public double MinX => Math.Min(Left, Right);
 
         /// <inheritdoc />
-        public double MinY { get { return Math.Min(Top, Bottom); } }
+        public double MinY => Math.Min(Top, Bottom);
 
         /// <inheritdoc />
-        public double MaxX { get { return Math.Max(Left, Right); } }
+        public double MaxX => Math.Max(Left, Right);
 
         /// <inheritdoc />
-        public double MaxY { get { return Math.Max(Top, Bottom); } }
+        public double MaxY => Math.Max(Top, Bottom);
 
         /// <summary>
         /// Resizes the area covered by the rectangle. Creates and returns a new rectangle reflecting the changes.
@@ -214,7 +214,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         public ContentAlignment MinAlignment { get; protected set; }
 
         /// <inheritdoc/>
-        public virtual IBoundingBox Limits { get { return null;  } }
+        public virtual IBoundingBox Limits => null;
     }
 
     /// <summary>
@@ -539,7 +539,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         public Location[] Bottom { get; internal set; }
 
         /// <summary>Left top corner point.</summary>
-        public Location LeftTop { get { return Left[0]; } }
+        public Location LeftTop => Left[0];
 
         /// <summary>Checks if all coordinates of all bounding lines are valid.</summary>
         public bool AllCoordinatesValid
@@ -547,7 +547,11 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             get
             {
                 Func<IEnumerable<Location>, IEnumerable<double>> enumC =
-                    locs => locs.Select(loc => loc.X).Concat(locs.Select(loc => loc.Y));
+                    locs =>
+                    {
+                        var enumerable = locs.ToList();
+                        return enumerable.Select(loc => loc.X).Concat(enumerable.Select(loc => loc.Y));
+                    };
 
                 Func<double, bool> valid = 
                     d => !double.IsInfinity(d) && !double.IsNaN(d);
@@ -559,7 +563,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         }
 
         /// <summary>Right bottom corner point.</summary>
-        public Location RightBottom { get { return Bottom.Last(); } }
+        public Location RightBottom => Bottom.Last();
 
         /// <summary>The x-deviation of the line string on the left side.</summary>
         /// <remarks>The line can be considered a straight line if the deviation is very small.</remarks>
@@ -578,6 +582,6 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         public double BottomDeviation { get { return Bottom.Max(p => p.Y) - Bottom.Min(p => p.Y); } }
 
         /// <summary>Checks if the bounding box described by the bounding lines can be considered rectangular.</summary>
-        public bool IsRectangular { get { return LeftDeviation < 1e-6 && TopDeviation < 1e-6 && RightDeviation < 1e-6 && BottomDeviation < 1e-6; } }
+        public bool IsRectangular => LeftDeviation < 1e-6 && TopDeviation < 1e-6 && RightDeviation < 1e-6 && BottomDeviation < 1e-6;
     }
 }

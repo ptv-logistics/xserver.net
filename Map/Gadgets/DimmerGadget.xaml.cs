@@ -38,7 +38,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
             Canvas.SetLeft(dimmerCanvas, -dimmerCanvas.Width / 2);
             Canvas.SetTop(dimmerCanvas, -dimmerCanvas.Height / 2);
-            Canvas.SetZIndex(dimmerCanvas, 990);
+            Panel.SetZIndex(dimmerCanvas, 990);
             MapView.GeoCanvas.Children.Add(dimmerCanvas);
         }
         #endregion

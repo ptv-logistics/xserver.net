@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
+using Ptv.XServer.Controls.Map.Layers.Xmap2;
 
 namespace Ptv.XServer.Controls.Map
 {
@@ -183,6 +184,10 @@ namespace Ptv.XServer.Controls.Map
 
         /// <summary> Gets the object providing all functionality relevant for tool tip management. </summary>
         ToolTipManagement ToolTipManagement { get; }
+
+        /// <summary>Gets the helper object for integration of XMap2 layers and Feature Layers of XServer 2.
+        /// The reference is only set when property <see cref="XMapUrl"/> is set with an XMap2 conform URL.</summary>
+        LayerFactory Xmap2LayerFactory { get; }
     }
 
     /// <summary>

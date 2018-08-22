@@ -140,13 +140,7 @@
         /// Gets a value indicating whether the rectangle is empty. This is true,
         /// if the width or height value is lower 0.
         /// </summary>
-        public bool IsEmpty
-        {
-            get
-            {
-                return (Width < 0) || (Height < 0);
-            }
-        }
+        public bool IsEmpty => (Width < 0) || (Height < 0);
 
         /// <summary>
         /// Gets or sets the West boundary of the rectangle. The rectangle is empty, if the value is higher than the <see cref="East"/> boundary value.
@@ -175,22 +169,22 @@
         /// <summary> 
         /// Gets the SouthWest point of the rectangle. 
         /// </summary> 
-        public Point SouthWest { get { return new Point(West, South); } }
+        public Point SouthWest => new Point(West, South);
 
         /// <summary> 
         /// Gets the SouthEast point of the rectangle. 
         /// </summary>
-        public Point SouthEast { get { return new Point(East, South); } }
+        public Point SouthEast => new Point(East, South);
 
         /// <summary>
         /// Gets the NorthWest point of the rectangle. 
         /// </summary> 
-        public Point NorthWest { get { return new Point(West, North); } }
+        public Point NorthWest => new Point(West, North);
 
         /// <summary> 
         /// Gets the NorthEast point of the rectangle. 
         /// </summary> 
-        public Point NorthEast { get { return new Point(East, North); } }
+        public Point NorthEast => new Point(East, North);
 
         /// <summary>
         /// Gets or sets the width of the rectangle. If the width is set, the rectangle's center remains the same.
@@ -556,7 +550,8 @@
             if (o == null || GetType() != o.GetType())
                 return false;
 
-            return (o is MapRectangle) && Equals(this, (MapRectangle) o);
+            var rectangle = o as MapRectangle;
+            return (rectangle != null) && Equals(this, rectangle);
         }
 
         /// <summary> 

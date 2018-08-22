@@ -101,16 +101,15 @@ namespace Ptv.XServer.Controls.Map.Layers
         {
             // helper that tries to cast a provider object to 
             // XMapTiledProvider in order to set the maximum zoom value.
-            Action<object, int> setMaxZoom = (provider, value) => {
-                if (provider is XMapTiledProvider)
-                    (provider as XMapTiledProvider).MaxZoom = value;
+            Action<object, int> setMaxZoom = (provider, value) =>
+            {
+                var tiledProvider = provider as XMapTiledProvider;
+                if (tiledProvider != null)
+                    tiledProvider.MaxZoom = value;
             };
 
-            if (layers[BackgroundLayerName] != null)
-                setMaxZoom((layers[BackgroundLayerName] as TiledLayer).TiledProvider, maxZoom);
-
-            if (layers[LabelsLayerName] != null)
-                setMaxZoom((layers[LabelsLayerName] as UntiledLayer).UntiledProvider, maxZoomLabels.GetValueOrDefault(maxZoom));
+            setMaxZoom((layers[BackgroundLayerName] as TiledLayer)?.TiledProvider, maxZoom);
+            setMaxZoom((layers[LabelsLayerName] as UntiledLayer)?.UntiledProvider, maxZoomLabels.GetValueOrDefault(maxZoom));
         }
 
         /// <summary>
@@ -128,15 +127,13 @@ namespace Ptv.XServer.Controls.Map.Layers
             // XMapTiledProvider in order to set the minimum zoom value.
             Action<object, int> setMinZoom = (provider, value) =>
             {
-                if (provider is XMapTiledProvider)
-                    (provider as XMapTiledProvider).MinZoom = value;
+                var tiledProvider = provider as XMapTiledProvider;
+                if (tiledProvider != null)
+                    tiledProvider.MinZoom = value;
             };
 
-            if (layers[BackgroundLayerName] != null)
-                setMinZoom((layers[BackgroundLayerName] as TiledLayer).TiledProvider, minZoom);
-
-            if (layers[LabelsLayerName] != null)
-                setMinZoom((layers[LabelsLayerName] as UntiledLayer).UntiledProvider, minZoomLabels.GetValueOrDefault(minZoom));
+            setMinZoom((layers[BackgroundLayerName] as TiledLayer)?.TiledProvider, minZoom);
+            setMinZoom((layers[LabelsLayerName] as UntiledLayer)?.UntiledProvider, minZoomLabels.GetValueOrDefault(minZoom));
         }
 
         /// <summary>
@@ -151,15 +148,13 @@ namespace Ptv.XServer.Controls.Map.Layers
             // XMapTiledProvider in order to set the custom profile.
             Action<object, string> setProfile = (provider, value) =>
             {
-                if (provider is XMapTiledProvider)
-                    (provider as XMapTiledProvider).CustomProfile = value;
+                var tiledProvider = provider as XMapTiledProvider;
+                if (tiledProvider != null)
+                    tiledProvider.CustomProfile = value;
             };
 
-            if (layers[BackgroundLayerName] != null)
-                setProfile((layers[BackgroundLayerName] as TiledLayer).TiledProvider, profileBackground);
-
-            if (layers[LabelsLayerName] != null)
-                setProfile((layers[LabelsLayerName] as UntiledLayer).UntiledProvider, profileLabels);
+            setProfile((layers[BackgroundLayerName] as TiledLayer)?.TiledProvider, profileBackground);
+            setProfile((layers[LabelsLayerName] as UntiledLayer)?.UntiledProvider, profileLabels);
         }
 
 

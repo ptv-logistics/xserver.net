@@ -207,7 +207,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                         var bmp = image as System.Drawing.Bitmap;
 
                         // make map background color transparent
-                        bmp.MakeTransparent(System.Drawing.Color.FromArgb(255, 254, 185));
+                        bmp?.MakeTransparent(System.Drawing.Color.FromArgb(255, 254, 185));
 
                         return SaveAndConvert(bmp);
                     }

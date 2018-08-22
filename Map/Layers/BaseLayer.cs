@@ -137,10 +137,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         }
 
         /// <summary> Gets a value indicating whether the layer has a settings dialog describing its properties. </summary>
-        public virtual bool HasSettingsDialog
-        {
-            get { return false; }
-        }
+        public virtual bool HasSettingsDialog => false;
 
         /// <summary> Gets or sets the zIndex of the layer. </summary>
         public int Priority
@@ -190,7 +187,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         private void UpdateZindex()
         {
             for (int canvasPosition = 0; canvasPosition < canvasInstances.Count; canvasPosition++)
-                Canvas.SetZIndex(canvasInstances[canvasPosition], (int)(canvasInstances[canvasPosition].CanvasCategory) * 1000000 + priority * 1000 + canvasPosition);
+                Panel.SetZIndex(canvasInstances[canvasPosition], (int)(canvasInstances[canvasPosition].CanvasCategory) * 1000000 + priority * 1000 + canvasPosition);
         }
         #endregion
 

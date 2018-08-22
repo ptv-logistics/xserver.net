@@ -27,7 +27,7 @@ namespace Ptv.XServer.Demo.MapMarket
 
             // the data is located in an MS Access database
             // note: appication has to run as x64 for JET DBs!
-            var connection = new OleDbConnection(string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0}\Resources\Districts.mdb", baseDir));
+            var connection = new OleDbConnection($@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={baseDir}\Resources\Districts.mdb");
             connection.Open();
 
             // the provider for map&market regions 

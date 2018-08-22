@@ -1,8 +1,5 @@
 ﻿using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
 
 namespace System.Reflection
 {
@@ -74,7 +71,7 @@ namespace System.Reflection
         private static FieldInfo[] GetOrderedFields(object o)
         {
             FieldInfo[] fi = o.GetType().GetFields();
-            Array.Sort(fi, (a, b) => String.Compare(a.Name, b.Name));
+            Array.Sort(fi, (a, b) => string.Compare(a.Name, b.Name));
             return fi;
         }
 

@@ -45,7 +45,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         private static readonly Logger logger = new Logger("XMapTiledProvider");
 
         /// <summary> URL of the xMap server. </summary>
-        private readonly string url = string.Empty;
+        private readonly string url;
         /// <summary> Mode of the xMap layer. </summary>
         private readonly XMapMode mode;
         /// <summary> The user name for basic Http authentication. </summary>
@@ -66,7 +66,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             Password = password;
             this.mode = mode;
 
-            base.needsTransparency = mode != XMapMode.Background;
+            needsTransparency = mode != XMapMode.Background;
 
             // TODO: REVIEW ME - DEEP ZOOM
             //
@@ -80,7 +80,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             // If this is ok, remove this comment. Otherwise find a better solution.
 
             if (mode == XMapMode.Town)
-                base.MaxZoom = 19;
+                MaxZoom = 19;
         }
 
         /// <summary> Initializes a new instance of the <see cref="XMapTiledProvider"/> class with the given connection
@@ -103,8 +103,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         {
             var size = new System.Windows.Size(width, height);
 
-            if (MapUdpate != null)
-                MapUdpate(null, size);
+            MapUdpate?.Invoke(null, size);
 
             using (var service = new XMapWSServiceImpl(url))
             {
@@ -192,8 +191,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                     IssueBoundingBoxWarning(bbox, map.visibleSection.boundingBox, width, height, profile);
 #endif
 
-                if (MapUdpate != null)
-                    MapUdpate(map, size);
+                MapUdpate?.Invoke(map, size);
 
                 return map.image.rawImage;
             }

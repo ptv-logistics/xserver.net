@@ -79,10 +79,10 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
                 UpdateLayerList();
 
-                Controls.Map.Tools.Reordering.GridReordering.apply(LayersStack, 1, null);
+                Tools.Reordering.GridReordering.apply(LayersStack, 1, null);
 
-                Controls.Map.Tools.Reordering.GridReordering.AddRowMovedHandler(LayersStack, (s, e) => layers.Move(layerIndices[e.SourceRow], layerIndices[e.TargetRow]));
-                Controls.Map.Tools.Reordering.GridReordering.AddAllowMoveRowHandler(LayersStack, (s, e) =>
+                Tools.Reordering.GridReordering.AddRowMovedHandler(LayersStack, (s, e) => layers.Move(layerIndices[e.SourceRow], layerIndices[e.TargetRow]));
+                Tools.Reordering.GridReordering.AddAllowMoveRowHandler(LayersStack, (s, e) =>
                 {
                     // only allow to move within the same primary category
                     int targetRow = Math.Min(layers.Count - 1, Math.Max(e.TargetRow, 0));
@@ -173,7 +173,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <param name="e"> The event parameters. </param>
         private void textBlock_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            layers.ShowSettingsDialog(layers[(sender as TextBlock).Tag as string]);
+            layers.ShowSettingsDialog(layers[(sender as TextBlock)?.Tag as string]);
             LayersExpander.IsExpanded = false;
         }
 
@@ -199,7 +199,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <param name="e"> The event parameters. </param>
         private void selection_Exclusive(object sender, RoutedEventArgs e)
         {
-            var layer = layers[(sender as CheckBox).Tag as string];
+            var layer = layers[(sender as CheckBox)?.Tag as string];
             layers.ExclusiveSelectableLayer = (layer == layers.ExclusiveSelectableLayer) ? null : layer;
             UpdateSelection();
         }
@@ -232,7 +232,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <param name="e"> Event parameters. </param>
         private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            layers[(sender as Slider).Tag as string].Opacity = e.NewValue / 100.0;
+            layers[(sender as Slider)?.Tag as string].Opacity = e.NewValue / 100.0;
         }
         #endregion
 
@@ -248,7 +248,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
                 var bmi = new BitmapImage();
                 bmi.BeginInit();
-                bmi.StreamSource = Application.GetResourceStream(new Uri("Ptv.XServer.Controls.Map;component/Resources/LayerDefault.png", UriKind.Relative)).Stream;
+                bmi.StreamSource = Application.GetResourceStream(new Uri("Ptv.XServer.Controls.Map;component/Resources/LayerDefault.png", UriKind.Relative))?.Stream;
                 bmi.EndInit();
                 bmi.Freeze();
                 return defaultImageSource = bmi;
@@ -401,7 +401,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
             if (layers.ExclusiveSelectableLayer == null)
                 // No exclusive layer: Toggle the selectable flag according the CheckBox
-                layers.SetSelectable(layers[(sender as CheckBox).Tag as string], selectable);
+                layers.SetSelectable(layers[(sender as CheckBox)?.Tag as string], selectable);
             else
                 // If an exclusive layer is activated and the LMB is clicked, 
                 // the exclusive mode is reset. All standard selection settings
@@ -420,18 +420,21 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                     continue;
 
                 var checkBox = element as CheckBox;
-                var layer = layers[checkBox.Tag as string];
-
-                if (layers.ExclusiveSelectableLayer == null)
-                    checkBox.IsChecked = layers.IsSelectableBase(layer);
-                else if (layers.ExclusiveSelectableLayer == layer)
+                if (checkBox != null)
                 {
-                    updateByExclusiveSelection = true;
-                    checkBox.IsChecked = true;
-                    updateByExclusiveSelection = false;
+                    var layer = layers[checkBox.Tag as string];
+
+                    if (layers.ExclusiveSelectableLayer == null)
+                        checkBox.IsChecked = layers.IsSelectableBase(layer);
+                    else if (layers.ExclusiveSelectableLayer == layer)
+                    {
+                        updateByExclusiveSelection = true;
+                        checkBox.IsChecked = true;
+                        updateByExclusiveSelection = false;
+                    }
+                    else
+                        checkBox.IsChecked = null;
                 }
-                else
-                    checkBox.IsChecked = null;
             }
         }
         #endregion
@@ -467,11 +470,11 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                 inactiveLayersExpanderHeader = txtBlock;
             }
 
-            ((LayersExpander.Header) as UIElement).Visibility = Visibility.Hidden;
+            (LayersExpander.Header as UIElement).Visibility = Visibility.Hidden;
             var tmpHeader = inactiveLayersExpanderHeader;
             inactiveLayersExpanderHeader = LayersExpander.Header;
             LayersExpander.Header = tmpHeader;
-            ((LayersExpander.Header) as UIElement).Visibility = Visibility.Visible;
+            (LayersExpander.Header as UIElement).Visibility = Visibility.Visible;
         }
 
         /// <summary> Sets the appropriate header on app startup. This helps at development time since the gadget is
@@ -560,13 +563,13 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         {
             if (LayersExpander.Header is TextBlock && (LayersExpander.Header as TextBlock).FontSize != HeaderText.FontSize)
             {
-                (LayersExpander.Header as TextBlock).FontSize = HeaderText.FontSize;
-                (LayersExpander.Header as TextBlock).Margin = new Thickness(0, 0, 4, 0);
+                ((TextBlock) LayersExpander.Header).FontSize = HeaderText.FontSize;
+                ((TextBlock) LayersExpander.Header).Margin = new Thickness(0, 0, 4, 0);
             }
 
             if (LayersExpander.Header is TextBlock && (LayersExpander.Header as TextBlock).ActualHeight != HeaderText.ActualHeight)
             {
-                (LayersExpander.Header as TextBlock).Height = HeaderText.ActualHeight;
+                ((TextBlock) LayersExpander.Header).Height = HeaderText.ActualHeight;
             }
         }
         #endregion

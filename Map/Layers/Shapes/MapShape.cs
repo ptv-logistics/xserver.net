@@ -46,11 +46,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         private static void OnMapStrokeThicknessChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
         {
             var element = obj as FrameworkElement;
-
-            if (element.Parent is ShapeCanvas)
-            {
-                (element.Parent as ShapeCanvas).UpdateScale(element, (element.Parent as ShapeCanvas).MapView, UpdateMode.Refresh);
-            }
+            (element?.Parent as ShapeCanvas)?.UpdateScale(element, ((ShapeCanvas) element.Parent).MapView, UpdateMode.Refresh);
         }
 
         protected bool NeedsUpdate(bool lazyUpdate, UpdateMode updateMode)

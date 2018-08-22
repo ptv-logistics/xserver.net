@@ -29,20 +29,22 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
             bw.CancelAsync();
         }
 
-        public void StartPlanScenario(Scenario scenario)
+        public void StartPlanScenario(Scenario newScenario)
         {
             orderMap = new BusinessToX<Order, string>();
             depotMap = new BusinessToX<Depot, string>();
             vehicleMap = new BusinessToX<Vehicle, string>();
 
-            this.scenario = scenario;
+            scenario = newScenario;
 
-            bw = new BackgroundWorker();
-            bw.WorkerReportsProgress = true;
-            bw.WorkerSupportsCancellation = true;
+            bw = new BackgroundWorker
+            {
+                WorkerReportsProgress = true,
+                WorkerSupportsCancellation = true
+            };
             bw.DoWork += bw_DoWork;
-            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
-            bw.ProgressChanged += new ProgressChangedEventHandler(bw_ProgressChanged);
+            bw.RunWorkerCompleted += bw_RunWorkerCompleted;
+            bw.ProgressChanged += bw_ProgressChanged;
             bw.RunWorkerAsync();
         }
 
@@ -51,18 +53,18 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
             if (Progress != null)
             {
                 var job = e.UserState as Job;
-                if (job.progress == null)
-                    this.ProgressMessage = job.status.ToString();
+                if (job?.progress == null)
+                    ProgressMessage = job.status.ToString();
                 else if (job.progress is PlanProgress)
                 {
-                    var pp = job.progress as PlanProgress;
+                    var pp = (PlanProgress) job.progress;
                     if (pp.action == "DistanceMatrix.Calculation")
                     {
                         var dimaProgress = pp.distanceMatrixCalculationProgress.currentDistanceMatrixProgress;
                         var currentRowIndex = dimaProgress.currentRowIndex;
                         var lastRowIndex = dimaProgress.lastRowIndex;
-                        this.ProgressPercent = 50 * currentRowIndex / lastRowIndex;
-                        this.ProgressMessage = string.Format("Calculating Distance Matrix: {0}/{1}", currentRowIndex, lastRowIndex);
+                        ProgressPercent = 50 * currentRowIndex / lastRowIndex;
+                        ProgressMessage = $"Calculating Distance Matrix: {currentRowIndex}/{lastRowIndex}";
                     }
                     else if (pp.action == "Optimization.Improvement")
                     {
@@ -70,16 +72,16 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
                         var availableMachineTime = improvementProgress.availableMachineTime;
                         var usedMachineTime = improvementProgress.usedMachineTime;
                         var iterationIndex = improvementProgress.iterationIndex;
-                        this.ProgressPercent = 50 + 50 * usedMachineTime / availableMachineTime;
-                        this.ProgressMessage = string.Format("Improving plan, iteration index: {0}, machine time: {1}/{2}", iterationIndex, usedMachineTime, availableMachineTime);
+                        ProgressPercent = 50 + 50 * usedMachineTime / availableMachineTime;
+                        ProgressMessage = $"Improving plan, iteration index: {iterationIndex}, machine time: {usedMachineTime}/{availableMachineTime}";
                     }
                     else
                     {
-                        this.ProgressMessage = pp.action;
+                        ProgressMessage = pp.action;
                     }
                 }
                 else
-                    this.ProgressMessage = job.progress.ToString();
+                    ProgressMessage = job.progress.ToString();
 
                 Progress();
             }
@@ -91,19 +93,18 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
             {
                 if (!e.Cancelled)
                 {
-                    this.ProgressMessage = "Finished";
-                    this.ProgressPercent = 100;
+                    ProgressMessage = "Finished";
+                    ProgressPercent = 100;
                 }
                 else
                 {
-                    this.ProgressMessage = "Cancelled";
-                    this.ProgressPercent = 0;
+                    ProgressMessage = "Cancelled";
+                    ProgressPercent = 0;
                 }
                 Progress();
             }
 
-            if (Finished != null)
-                Finished();
+            Finished?.Invoke();
         }
 
         void bw_DoWork(object sender, DoWorkEventArgs e)
@@ -132,7 +133,7 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
                                   },
                                   openingIntervalConstraint = OpeningIntervalConstraint.START_OF_SERVICE,
                               },
-                              deliveryQuantities = new Quantities { wrappedQuantities = new int[] { o.Quantity } }
+                              deliveryQuantities = new Quantities { wrappedQuantities = new[] { o.Quantity } }
                           }).ToArray();
 
             var depots = (from d in scenario.Depots
@@ -151,9 +152,11 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
 
             var allVehicles = (from d in scenario.Depots select d.Fleet).SelectMany(x => x);
 
-            var interval = new Interval();
-            interval.from = 0;
-            interval.till = Convert.ToInt32(scenario.OperatingPeriod.TotalSeconds);
+            var interval = new Interval
+            {
+                @from = 0,
+                till = Convert.ToInt32(scenario.OperatingPeriod.TotalSeconds)
+            };
 
             var vehicles = (from v in allVehicles
                             select new XtourService.Vehicle
@@ -164,10 +167,10 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
                                 isPreloaded = false,
                                 capacities = new Capacities
                                 {
-                                    wrappedCapacities = new Quantities[] { new Quantities { wrappedQuantities =
-                                    new int[] { v.Capacity } } }
+                                    wrappedCapacities = new[] { new Quantities { wrappedQuantities =
+                                    new[] { v.Capacity } } }
                                 },
-                                wrappedOperatingIntervals = new Interval[] { interval },
+                                wrappedOperatingIntervals = new[] { interval },
                                 dimaId = 1,
                                 dimaIdSpecified = true,
                             }).ToArray();
@@ -176,7 +179,7 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
 
             var planningParams = new StandardParams
             {
-                wrappedDistanceMatrixCalculation = new[] {new DistanceMatrixByRoad
+                wrappedDistanceMatrixCalculation = new DistanceMatrixCalculation[] {new DistanceMatrixByRoad
                 {
                     dimaId = 1,
                     deleteBeforeUsage = true,
@@ -270,8 +273,8 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
     public class BusinessToX<B, K>
     {
         private int idx;
-        private Dictionary<K, int> bTox = new Dictionary<K, int>();
-        private Dictionary<int, B> xTob = new Dictionary<int, B>();
+        private readonly Dictionary<K, int> bTox = new Dictionary<K, int>();
+        private readonly Dictionary<int, B> xTob = new Dictionary<int, B>();
 
         public int B2X(B obj, K key)
         {

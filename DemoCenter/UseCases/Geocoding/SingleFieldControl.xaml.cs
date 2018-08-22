@@ -29,7 +29,7 @@ namespace Ptv.XServer.Demo.Geocoding
         private void LocateButton_Click(object sender, RoutedEventArgs e)
         {
             var geocoder = Resources["Geocoder"] as GeocoderDemo;
-            geocoder.LocateSingleField(locatebox.Text);
+            geocoder?.LocateSingleField(locatebox.Text);
         }
 
         /// <summary> Event handler for arbitrary events. Using this handler prevents the events from bubbling up to
@@ -52,7 +52,7 @@ namespace Ptv.XServer.Demo.Geocoding
             // subsequent null checks keep the designer working
             if ((geocoder == null) || !(sender is UserControl)) return;
 
-            switch ((sender as UserControl).Visibility)
+            switch (((UserControl) sender).Visibility)
             {
                 case Visibility.Collapsed:
                 {

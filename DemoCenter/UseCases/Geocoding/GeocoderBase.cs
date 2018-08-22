@@ -83,7 +83,7 @@ namespace Ptv.XServer.Demo.Geocoding
                     Height = 40,
                     Width = 40
                 };
-                ToolTipService.SetToolTip(pin, string.Format("{0} {1} {2} {3} {4}", address.postCode, address.city, address.city2, address.street, address.houseNumber));
+                ToolTipService.SetToolTip(pin, $"{address.postCode} {address.city} {address.city2} {address.street} {address.houseNumber}");
                 ShapeCanvas.SetAnchor(pin, LocationAnchor.RightBottom);
                 ShapeCanvas.SetLocation(pin, new System.Windows.Point(address.coordinates.point.x, address.coordinates.point.y));
                 ContentLayer.Shapes.Add(pin);
@@ -101,12 +101,11 @@ namespace Ptv.XServer.Demo.Geocoding
         {
             ContentLayer.Shapes.Clear();
 
-            if (ContentLayer != null)
-                ContentLayer.Refresh();
+            ContentLayer?.Refresh();
 
             #region doc:remove result layer
-            if (wpfMap != null)
-                wpfMap.Layers.Remove(ContentLayer);
+
+            wpfMap?.Layers.Remove(ContentLayer);
 
             ContentLayer = null;
             #endregion

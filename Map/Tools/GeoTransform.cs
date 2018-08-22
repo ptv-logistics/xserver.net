@@ -226,9 +226,9 @@ namespace Ptv.XServer.Controls.Map.Tools
             if (sourceSrid == destStrid)
                 return p => p;
             if (sourceSrid == "PTV_MERCATOR" && destStrid == "EPSG:4326")
-                return p => PtvMercatorToWGS(p);
+                return PtvMercatorToWGS;
             if (sourceSrid == "EPSG:4326" && destStrid == "PTV_MERCATOR")
-                return p => WGSToPtvMercator(p);
+                return WGSToPtvMercator;
             return TransformProj4(sourceSrid, destStrid);
         }
 

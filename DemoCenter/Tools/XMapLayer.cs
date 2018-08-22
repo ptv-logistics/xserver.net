@@ -67,14 +67,14 @@ namespace Ptv.XServer.Controls.Map
             }
 
             /// <summary> Property delegate. Reads or writes the set of custom xMap Server layers. </summary>
-            public IEnumerable<xserver.Layer> CustomXMapLayers
+            public IEnumerable<Layer> CustomXMapLayers
             {
                 get { return ((XMapTiledProvider) UntiledProvider).CustomXMapLayers; }
                 set { ((XMapTiledProvider) UntiledProvider).CustomXMapLayers = value; }
             }
 
             /// <summary> Property delegate. Reads or writes the set of custom Caller Contexts. </summary>
-            public IEnumerable<xserver.CallerContextProperty> CustomCallerContextProperties
+            public IEnumerable<CallerContextProperty> CustomCallerContextProperties
             {
                 get { return ((XMapTiledProvider) UntiledProvider).CustomCallerContextProperties; }
                 set { ((XMapTiledProvider) UntiledProvider).CustomCallerContextProperties = value; }
@@ -92,22 +92,20 @@ namespace Ptv.XServer.Controls.Map
             /// <returns>Matching layer objects.</returns>
             protected override IEnumerable<IMapObject> ToolTipHitTest(IEnumerable<IMapObject> infos, Point center, double maxPixelDistance)
             {
-                var list = base.ToolTipHitTest(infos, center, maxPixelDistance).ToList();
+                var enumerable = infos as IMapObject[] ?? infos.ToArray();
+                var list = base.ToolTipHitTest(enumerable, center, maxPixelDistance).ToList();
 
-                foreach (var info in infos.Except(list))
+                foreach (var info in enumerable.Except(list))
                 { 
                     var isMatch = false;
                     var layerObject = info.Source as LayerObject;
 
-                    if (layerObject?.geometry?.pixelGeometry != null)
+                    var lineString = layerObject?.geometry?.pixelGeometry as PlainLineString;
+                    if (lineString?.wrappedPoints != null)
                     {
-                        var lineString = layerObject.geometry.pixelGeometry as xserver.PlainLineString;
-                        if (lineString?.wrappedPoints != null)
-                        {
-                            isMatch = (lineString.wrappedPoints.Length > 1)
-                                ? PointInRangeOfLinestring(lineString.wrappedPoints.Select(pp => new Point(pp.x, pp.y)).ToArray(), center, maxPixelDistance)
-                                : (lineString.wrappedPoints.Length == 1) && (center - new Point(lineString.wrappedPoints[0].x, lineString.wrappedPoints[0].y)).Length <= maxPixelDistance;
-                        }
+                        isMatch = (lineString.wrappedPoints.Length > 1)
+                            ? PointInRangeOfLinestring(lineString.wrappedPoints.Select(pp => new Point(pp.x, pp.y)).ToArray(), center, maxPixelDistance)
+                            : (lineString.wrappedPoints.Length == 1) && (center - new Point(lineString.wrappedPoints[0].x, lineString.wrappedPoints[0].y)).Length <= maxPixelDistance;
                     }
 
                     if (isMatch)
@@ -185,7 +183,7 @@ namespace Ptv.XServer.Controls.Map
 
                 var fce = ce as FrameworkContentElement;
 
-                return fce != null ? fce.Parent : null;
+                return fce?.Parent;
             }
 
             /// <summary>
@@ -234,7 +232,7 @@ namespace Ptv.XServer.Controls.Map
                     new PointHitTestParameters(point)
                 );
 
-                return result != null ? result.VisualHit : null;
+                return result?.VisualHit;
             }
         }
     }

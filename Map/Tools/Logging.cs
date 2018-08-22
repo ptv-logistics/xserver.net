@@ -39,7 +39,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         {
             if (!traceSource.Switch.ShouldTrace(eventType)) return;
 
-            var formattedMessage = string.Format("{0} [{1}]: {2}", DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss:fff", System.Globalization.CultureInfo.InvariantCulture), eventType, message);
+            var formattedMessage = $"{DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss:fff", System.Globalization.CultureInfo.InvariantCulture)} [{eventType}]: {message}";
             foreach (TraceListener listener in traceSource.Listeners)
                 action(listener, formattedMessage);
         }

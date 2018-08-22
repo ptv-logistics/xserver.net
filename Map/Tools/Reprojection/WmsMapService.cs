@@ -32,10 +32,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         public String Height { get; set; }
 
         /// <summary> Returns all placeholder names in list. </summary>
-        public IList<String> Names
-        {
-            get { return new[] { BoundingBox, Width, Height }; }
-        }
+        public IList<String> Names => new[] { BoundingBox, Width, Height };
     }
 
     /// <summary> Delegate used by WmsMapServer; used for request customization. </summary>
@@ -57,10 +54,9 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         public RequestCreatedHandler OnRequestCreated = null;
 
         /// <summary> Creates and initializes an instance of WmsMapService. </summary>
-        /// <param name="urlTemplate">URL template. See remarks below.</param>
+        /// <param name="urlTemplate">The URL template is expected to include an SRS/CRS parameter. It defines placeholders for bounding box, image width and height.</param>
         /// <param name="minAlignment">Position of (MinX|MinY) in resulting images. Defaults to ContentAlignment.BottomLeft. Refer to MinAlignment for details.</param>
         /// <param name="placeholders">Defines the placeholder names. May be null to use the internal defaults.</param>
-        /// <remarks> The url template is expected to include an SRS/CRS parameter.  and to define placeholders for bounding box, image width and height. </remarks>
         /// <exception cref="ArgumentException">
         /// Fails with an ArgumentException if the url template misses mandatory elements or if the specified alignment is set to an unsupported 
         /// value (such as ContentAlignment.MiddleCenter).
@@ -107,7 +103,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 
         static Dictionary<string, string> ParseQueryString(string queryString)
         {
-            return queryString.Split(new[] { '&' }).
+            return queryString.Split('&').
                 Select(keyValue => keyValue.Split(new[] { '=' })). // The query string is converted into a list of key-value-pairs. 
                 ToLookup(splittedKeyValue => splittedKeyValue[0].ToLowerInvariant(), splittedKeyValue => splittedKeyValue[1]). // a Lookup is used to for duplicates of keys (happened in Euska)
                 ToDictionary(kl => kl.Key, kl => kl.First()); // Only the first element of a potential duplicate is used.
@@ -126,8 +122,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                 var request = CreateRequest(InstantiateUrl(box, requestedSize));
 
                 // trigger event handler, if any
-                if (OnRequestCreated != null)
-                    OnRequestCreated(request);
+                OnRequestCreated?.Invoke(request);
 
                 // fetch response
                 var response = request.GetResponse();

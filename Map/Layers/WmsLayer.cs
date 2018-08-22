@@ -24,7 +24,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <br />
         /// Because the visible region of a map control changes during a user session, and the size in pixel may vary, some parameters in the URL's
         /// query string have to be parameterized. I.e. the parameters 'BBOX', 'WIDTH' and 'HEIGHT' must be used in a parameterized way: They have to
-        /// look like: ..&BBOX=${boundingbox}&WIDTH=${width}&HEIGHT=${height}.."
+        /// look like: ..&amp;BBOX=${boundingbox}&amp;WIDTH=${width}&amp;HEIGHT=${height}.."
         /// </param>
         /// <param name="isTiled"> Indicating if a tiled variant is used for filling the map control with content, or not. </param>
         /// <param name="isBaseMap"> Indicating if the content represents a background information which completely fills the drawing area of the map control
@@ -37,13 +37,13 @@ namespace Ptv.XServer.Controls.Map.Layers
             ReprojectionProvider = new ReprojectionProvider(urlTemplate);
             layer = isTiled
                 ? (ILayer)new TiledLayer(name) { TiledProvider = ReprojectionProvider, Copyright = copyRight, CanvasCategories = canvasCategories }
-                : (ILayer)new UntiledLayer(name) { UntiledProvider = ReprojectionProvider, Copyright = copyRight, CanvasCategories = canvasCategories };
+                : new UntiledLayer(name) { UntiledProvider = ReprojectionProvider, Copyright = copyRight, CanvasCategories = canvasCategories };
         }
 
         /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged;
         /// <inheritdoc/>
-        public string Name { get { return layer.Name; } }
+        public string Name => layer.Name;
         /// <inheritdoc/>
         public int Priority { get { return layer.Priority; } set { layer.Priority = value; } }
         /// <inheritdoc/>
@@ -57,11 +57,13 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <inheritdoc/>
         public void RemoveFromMapView(MapView mapView) { layer.RemoveFromMapView(mapView); }
         /// <inheritdoc/>
-        public string Copyright { get { return layer.Copyright; } }
+        public string Copyright => layer.Copyright;
+
         /// <inheritdoc/>
-        public bool HasSettingsDialog { get { return layer.HasSettingsDialog; } }
+        public bool HasSettingsDialog => layer.HasSettingsDialog;
+
         /// <inheritdoc/>
-        public CanvasCategory[] CanvasCategories { get { return layer.CanvasCategories; } }
+        public CanvasCategory[] CanvasCategories => layer.CanvasCategories;
 
         /// <summary> Provider used for retrieving images from the specified URL and reprojecting it if necessary. </summary>
         public readonly ReprojectionProvider ReprojectionProvider;
@@ -85,7 +87,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <br />
         /// Because the visible region of a map controls changes during a user session, and the size in pixel may vary, some parameters in the URL's
         /// query string have to be parameterized. I.e. the parameters 'BBOX', 'WIDTH' and 'HEIGHT' must used in a parameterized way: They have to
-        /// look like: ..&BBOX=${boundingbox}&WIDTH=${width}&HEIGHT=${height}.."
+        /// look like: ..&amp;BBOX=${boundingbox}&amp;WIDTH=${width}&amp;HEIGHT=${height}.."
         /// </param>
         public ReprojectionProvider(string urlTemplate)
         {
@@ -112,7 +114,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         }
 
         /// <inheritdoc/>
-        public string CacheId { get { return template; } }
+        public string CacheId => template;
 
         /// <inheritdoc/>
         public Stream GetImageStream(int x, int y, int z)
@@ -122,10 +124,10 @@ namespace Ptv.XServer.Controls.Map.Layers
         }
 
         /// <inheritdoc/>
-        public int MaxZoom { get { return 23; } }
+        public int MaxZoom => 23;
 
         /// <inheritdoc/>
-        public int MinZoom { get { return 0; } }
+        public int MinZoom => 0;
 
         /// <summary>
         /// Calculate the Mercator bounds for a tile key

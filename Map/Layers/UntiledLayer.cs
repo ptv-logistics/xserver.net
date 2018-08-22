@@ -13,13 +13,13 @@ using Ptv.XServer.Controls.Map.TileProviders;
 using Ptv.XServer.Controls.Map.Tools;
 using Ptv.XServer.Controls.Map.Layers.Tiled;
 using Ptv.XServer.Controls.Map.Localization;
+using Ptv.XServer.Controls.Map.Layers.Xmap2;
 using xserver;
 using Environment = System.Environment;
 using Timer = System.Threading.Timer;
 using UserControl = System.Windows.Controls.UserControl;
 using Image = System.Windows.Controls.Image;
 using Point = System.Windows.Point;
-using Ptv.XServer.Controls.Map.UntiledProviders;
 
 namespace Ptv.XServer.Controls.Map.Layers.Untiled
 {
@@ -131,15 +131,15 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         }
 
         /// <summary>Object infos which are stored when request is sent to xMap2. </summary>
-        /// <param name="mapObjects"></param>
+        /// <param name="newMapObjects"></param>
         /// <param name="size"></param>
-        public void UpdateXmap2ObjectInfos(IEnumerable<IMapObject> mapObjects, Size size)
+        public void UpdateXmap2ObjectInfos(IEnumerable<IMapObject> newMapObjects, Size size)
         {
-            if (mapObjects != null)
+            if (newMapObjects != null)
             {
                 map.Dispatcher.Invoke((Action)(() =>
                 {
-                    this.mapObjects = mapObjects.ToArray();
+                    mapObjects = newMapObjects.ToArray();
                     imageSize = size;
                 }), DispatcherPriority.Send, null);
             }
@@ -163,18 +163,18 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             if (map == null)
                 return;
 
-            var mapObjects = xServerMap?.wrappedObjects?
+            IMapObject[] xmap1MapObjects = xServerMap?.wrappedObjects?
                 .Select(objects => objects.wrappedObjects?.Select(layerObject => new XMap1MapObject(objects, layerObject)))
                 .Where(objects => objects != null && objects.Any())
                 .SelectMany(objects => objects)
                 .ToArray();
 
-            if (mapObjects == null || !mapObjects.Any())
+            if (xmap1MapObjects == null || !xmap1MapObjects.Any())
                 return;
 
             map.Dispatcher.Invoke((Action)(() =>
             {
-                this.mapObjects = mapObjects;
+                mapObjects = xmap1MapObjects;
                 imageSize = requestedSize;
             }), DispatcherPriority.Send, null);
         }
@@ -196,13 +196,13 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         }
 
         /// <summary> Hit tests the given layer features.  </summary>
-        /// <param name="mapObjects">Object information to hit test.</param>
+        /// <param name="mapObjectsForHitTest">Object information to hit test.</param>
         /// <param name="center">Point to test</param>
         /// <param name="maxPixelDistance">Maximal distance from the specified position to get the tool tips for.</param>
         /// <returns>Matching layer objects.</returns>
-        protected virtual IEnumerable<IMapObject> ToolTipHitTest(IEnumerable<IMapObject> mapObjects, Point center, double maxPixelDistance)
+        protected virtual IEnumerable<IMapObject> ToolTipHitTest(IEnumerable<IMapObject> mapObjectsForHitTest, Point center, double maxPixelDistance)
         {
-            return mapObjects
+            return mapObjectsForHitTest
                 .Where(mapObject => mapObject.Count > 0)
                 .Where(mapObject => (center - mapObject.Point).Length <= maxPixelDistance);
         }
@@ -315,7 +315,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             {
                 case UpdateMode.Refresh: UpdateOverlay(true); break;
                 case UpdateMode.BeginTransition:
-                    if (updateDelay == 0 || MapView.Printing)
+                    if (MapView.Printing)
                     {
                         UpdateOverlay(false);
                     }
@@ -335,7 +335,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
 
                     break;
                 case UpdateMode.EndTransition:
-                    if (GlobalOptions.InfiniteZoom && mapImage != null & mapImage.Tag != null)
+                    if (GlobalOptions.InfiniteZoom && mapImage?.Tag != null)
                     {
                         var mapParam = (MapParam)mapImage.Tag;
                         SetLeft(mapImage, mapParam.Left + MapView.OriginOffset.X);
@@ -418,7 +418,10 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
 
                 Dispatcher.BeginInvoke(new Action<byte[], MapParam>(DisplayImage), imageBytes, mapParam);
             }
-            catch (Exception) { } // ignore
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         /// <summary> Display the loaded image. </summary>
@@ -427,10 +430,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         private void DisplayImage(byte[] buffer, MapParam mapParam)
         {
             // map viewport changed already
-            if (mapParam.Index != this.index)
-            {
+            if (mapParam.Index != index)
                 return;
-            }
 
             lastZoom = MapView.FinalZoom;
             mapImage.Width = mapParam.Right - mapParam.Left;
@@ -473,7 +474,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             if (!forceUpdate && (mapParam == lastParam)) return;
 
             lastParam = mapParam;
-            mapParam.Index = ++this.index;
+            mapParam.Index = ++index;
 
             if (worker != null)
             {
@@ -499,7 +500,10 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             else
             {
                 try { DisplayImage(GetImageBytes(mapParam), mapParam); }
-                catch { } // ignore
+                catch
+                {
+                    // ignored
+                }
             }
         }
 
@@ -599,7 +603,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             /// <inheritdoc/>
             public override bool Equals(object obj)
             {
-                return Equals((MapParam)obj);
+                return obj != null && Equals((MapParam)obj);
             }
 
             /// <summary>
