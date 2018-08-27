@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using NUnit.Framework;
 
 
 namespace Ptv.XServer.Controls.Map.UnitTests

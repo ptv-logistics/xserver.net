@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 

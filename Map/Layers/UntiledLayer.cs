@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -330,7 +332,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
                     break;
                 case UpdateMode.WhileTransition:
                     // fade out for big scale differences
-                    if (mapImage != null && lastZoom != 0)
+                    const double TOLERANCE = 0.0001;
+                    if (mapImage != null && Math.Abs(lastZoom) > TOLERANCE)
                         mapImage.Opacity = 1.0 - Math.Min(1, .25 * Math.Abs(MapView.CurrentZoom - lastZoom));
 
                     break;
@@ -355,7 +358,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             MapRectangle rect = MapView.FinalEnvelope;
             var mapParam = new MapParam(rect.West, rect.South, rect.East, rect.North, MapView.ActualWidth, MapView.ActualHeight);
 
-            if (mapParam.Width == 0 || mapParam.Height == 0)
+            const double TOLERANCE = 0.0001;
+            if (Math.Abs(mapParam.Width) < TOLERANCE || Math.Abs(mapParam.Height) < TOLERANCE)
                 return mapParam;
 
             // clip the rectangle to the maximum rectangle
@@ -567,11 +571,13 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             /// <returns> Boolean value showing if the map parameters are equal. </returns>
             public static bool operator ==(MapParam a, MapParam b)
             {
+                const double TOLERANCE = 0.0001;
+
                 // Return true if the fields match:
                 return
-                    a.Left == b.Left && a.Top == b.Top &&
-                    a.Right == b.Right && a.Bottom == b.Bottom &&
-                    a.Width == b.Width && a.Height == b.Height;
+                    Math.Abs(a.Left - b.Left) < TOLERANCE && Math.Abs(a.Top - b.Top) < TOLERANCE &&
+                    Math.Abs(a.Right - b.Right) < TOLERANCE && Math.Abs(a.Bottom - b.Bottom) < TOLERANCE &&
+                    Math.Abs(a.Width - b.Width) < TOLERANCE && Math.Abs(a.Height - b.Height) < TOLERANCE;
             }
 
             /// <summary> Compares two map parameters and returns a boolean value showing if the map parameters are not

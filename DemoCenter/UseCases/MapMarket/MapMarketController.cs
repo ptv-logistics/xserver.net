@@ -1,9 +1,4 @@
-﻿//--------------------------------------------------------------
-// Copyright (c) PTV Group
-// 
-// For license details, please refer to the file COPYING, which 
-// should have been provided with this distribution.
-//--------------------------------------------------------------
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
 using System.Windows;
 using System.Collections.ObjectModel;

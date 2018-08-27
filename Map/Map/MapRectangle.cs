@@ -1,4 +1,6 @@
-﻿namespace Ptv.XServer.Controls.Map
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+namespace Ptv.XServer.Controls.Map
 {
     using System;
     using System.Collections.Generic;
@@ -508,7 +510,12 @@
                 return false;
             if (rect1.IsEmpty && rect2.IsEmpty)
                 return true;
-            return (rect1.West == rect2.West) && (rect1.East == rect2.East) && (rect1.South == rect2.South) && (rect1.North == rect2.North);
+
+            const double TOLERANCE = 0.0001;
+            return (Math.Abs(rect1.West - rect2.West) < TOLERANCE) 
+                   && (Math.Abs(rect1.East - rect2.East) < TOLERANCE) 
+                   && (Math.Abs(rect1.South - rect2.South) < TOLERANCE) 
+                   && (Math.Abs(rect1.North - rect2.North) < TOLERANCE);
         }
 
         /// <summary>

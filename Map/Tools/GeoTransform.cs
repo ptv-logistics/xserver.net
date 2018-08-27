@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System;
 using System.Text;
 using System.Windows;
 using Ptv.XServer.Controls.Map.Localization;
@@ -72,7 +74,8 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns>False if one the coordinates are NaN or both coordinates are equal zero.</returns>
         public static bool IsValidGeoCoordinate(this Point p)
         {
-            return !double.IsNaN(p.X) && !double.IsNaN(p.Y) && (p.X != 0 || p.Y != 0);
+            const double TOLERANCE = 0.0001;
+            return !double.IsNaN(p.X) && !double.IsNaN(p.Y) && (Math.Abs(p.X) > TOLERANCE || Math.Abs(p.Y) > TOLERANCE);
         }
 
         /// <summary> Envelope rectangle of a certain tile, specified by x- and y-position and zoom level. </summary>

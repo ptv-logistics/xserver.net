@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
@@ -243,10 +245,10 @@ namespace Ptv.Components.Projections
         private IntPtr pj = IntPtr.Zero;
 
         /// <summary> Initialization flag, used for lazy initialization in <see cref="CoordinateReferenceSystem.Init"/> method. </summary>
-        private bool initialized = false;
+        private bool initialized;
 
         /// <summary> Disposed flag. </summary>
-        private bool disposed = false;
+        private bool disposed;
 
         /// <summary> CRS parameters (Proj4 well known text). </summary>
         private readonly string wkt = "";
@@ -261,7 +263,7 @@ namespace Ptv.Components.Projections
         internal CustomTransformation CustomTransformation { get; private set; }
 
         /// <summary> The original, unmodified custom transformation  that has been used to construct the coordinate reference system. </summary>
-        private readonly CustomTransformation originalCustomTransformation = null;
+        private readonly CustomTransformation originalCustomTransformation;
 
         /// <summary> Initializes a new instance of the <see cref="CoordinateReferenceSystem"/> class. </summary>
         /// <remarks> The default constructor initializes a coordinate reference system which is invalid. </remarks>
@@ -552,7 +554,7 @@ namespace Ptv.Components.Projections
 
                 if (pj != IntPtr.Zero)
                 {
-                    Proj4.Library.Instance.FreeProjection(pj);
+                    Library.Instance.FreeProjection(pj);
                     pj = IntPtr.Zero;
                 }
             }
@@ -585,37 +587,18 @@ namespace Ptv.Components.Projections
         /// <summary>
         /// The registry itself.
         /// </summary>
-        private static SortedList<String, CoordinateReferenceSystem> internalRegistry = null;
+        private static SortedList<String, CoordinateReferenceSystem> internalRegistry;
 
         /// <summary>
         /// Internal flag indicating if EPSG database was already initialized.
         /// </summary>
-        private static bool epsgDatabaseLoaded = false;
+        private static bool epsgDatabaseLoaded;
 
         /// <summary>
         /// Internal lock object used by <see cref="TryGetCoordinateSystem"/>.
         /// </summary>
         private static readonly object lockRegistry = Guid.NewGuid();
 
-        /// <summary>
-        /// Finalize the registry.
-        /// </summary>
-        private static readonly Finalizer finalizer = new Finalizer();
-
-        /// <summary>
-        /// Provides a finalization for the <see cref="Registry"/> class.
-        /// </summary>
-        private sealed class Finalizer
-        {
-            /// <summary>
-            /// Finalizes an instance of the <see cref="Finalizer"/> class. This object disposes the contents of the <see cref="Registry"/> class.
-            /// </summary>
-            ~Finalizer()
-            {
-                Dispose();
-            }
-        }
-        
         /// <summary>
         /// Accesses the registry, lazily filling in known coordinate reference systems.
         /// </summary>
@@ -627,7 +610,7 @@ namespace Ptv.Components.Projections
             if (internalRegistry == null)
             {
                 // create registry
-                internalRegistry = new SortedList<String, CoordinateReferenceSystem>();
+                internalRegistry = new SortedList<string, CoordinateReferenceSystem>();
 
                 // add some core transformations
                 Add(CoordinateReferenceSystem.Parse("EPSG:4326", "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs", true));
@@ -704,7 +687,7 @@ namespace Ptv.Components.Projections
                 GetRegistry(false).TryGetValue(id, out cs);
 
                 if (cs == null && !epsgDatabaseLoaded)
-                    GetRegistry(true).TryGetValue(id, out cs);
+                    GetRegistry().TryGetValue(id, out cs);
             }
         }
 
@@ -826,7 +809,7 @@ namespace Ptv.Components.Projections
         /// <returns>Returns the list of the coordinate reference system identifiers.</returns>
         public static IList<String> GetIds()
         {
-            return GetRegistry(true).Keys;
+            return GetRegistry().Keys;
         }
 
         /// <summary>
@@ -1162,13 +1145,6 @@ namespace Ptv.Components.Projections
     public abstract class CoordinateTransformation : ICoordinateTransformation
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CoordinateTransformation"/> class.
-        /// </summary>
-        protected CoordinateTransformation()
-        {
-        }
-
-        /// <summary>
         /// Gets a coordinate transformation for the specified coordinate reference system identifiers.
         /// </summary>
         /// <param name="sourceId">Identifier of the source coordinate reference system.</param>
@@ -1295,14 +1271,14 @@ namespace Ptv.Components.Projections
         {
             double x, y;
             Transform(pnt.X, pnt.Y, out x, out y);
-            return new System.Windows.Point(x, y);
+            return new Point(x, y);
         }
 
         /// <inheritdoc/>
         public virtual Point[] Transform(Point[] pntsIn)
         {
             Point[] pntsOut = 
-                pntsIn != null ? new System.Windows.Point[pntsIn.Length] : null;
+                pntsIn != null ? new Point[pntsIn.Length] : null;
 
             Transform(pntsIn, pntsOut);
 
@@ -1367,8 +1343,7 @@ namespace Ptv.Components.Projections
         {
             int i = 0;
 
-            IEnumerator<T> enumerator =
-                enumerable.GetEnumerator();
+            IEnumerator<T> enumerator = enumerable.GetEnumerator();
 
             if (enumerator.MoveNext())
             {
@@ -1383,13 +1358,13 @@ namespace Ptv.Components.Projections
                 {
                     if (i >= xyz[0].Length)
                     {
-                        Array.Resize<T>(ref t, t.Length * 2);
+                        Array.Resize(ref t, t.Length * 2);
 
                         for (int j = 0; j < 3; j++)
-                            Array.Resize<double>(ref xyz[j], t.Length);
+                            Array.Resize(ref xyz[j], t.Length);
                     }
 
-                    Location currentLocation = getLocation(t[i] = (T)enumerator.Current);
+                    Location currentLocation = getLocation(t[i] = enumerator.Current);
 
                     xyz[0][i] = currentLocation.X;
                     xyz[1][i] = currentLocation.Y;
@@ -1425,25 +1400,22 @@ namespace Ptv.Components.Projections
         {
             int i = 0;
 
-            IEnumerator<T> enumerator = 
-                enumerable.GetEnumerator();
+            IEnumerator<T> enumerator = enumerable.GetEnumerator();
 
             if (enumerator.MoveNext())
             {
                 T[] t = new T[1024];
 
-                double[][] xy = new double[2][] {
-                    new double[t.Length], new double[t.Length]
-                };
+                double[][] xy = new double[][] { new double[t.Length], new double[t.Length] };
 
                 do
                 {
                     if (i >= xy[0].Length)
                     {
-                        Array.Resize<T>(ref t, t.Length * 2);
+                        Array.Resize(ref t, t.Length * 2);
 
-                        Array.Resize<double>(ref xy[0], t.Length);
-                        Array.Resize<double>(ref xy[1], t.Length);
+                        Array.Resize(ref xy[0], t.Length);
+                        Array.Resize(ref xy[1], t.Length);
                     }
 
                     Point currentPoint = getPoint(t[i] = enumerator.Current);
@@ -1538,7 +1510,6 @@ namespace Ptv.Components.Projections
     {
         /// <summary> Initializes a new instance of the <see cref="TransformationNotFoundException"/> class. </summary>
         public TransformationNotFoundException()
-            : base()
         {
         }
 
@@ -1581,7 +1552,6 @@ namespace Ptv.Components.Projections
         /// Initializes a new instance of the <see cref="TransformationException"/> class. 
         /// </summary>
         public TransformationException()
-            : base()
         {
         }
 

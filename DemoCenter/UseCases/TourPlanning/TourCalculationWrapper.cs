@@ -1,4 +1,6 @@
-﻿using Ptv.XServer.Demo.Tools;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using Ptv.XServer.Demo.Tools;
 using Ptv.XServer.Demo.XtourService;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;

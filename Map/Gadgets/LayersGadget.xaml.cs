@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -561,13 +563,14 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <param name="e"> Event parameters. </param>
         private void LayersExpander_LayoutUpdated(object sender, EventArgs e)
         {
-            if (LayersExpander.Header is TextBlock && (LayersExpander.Header as TextBlock).FontSize != HeaderText.FontSize)
+            const double TOLERANCE = 0.0001;
+            if (LayersExpander.Header is TextBlock && Math.Abs((LayersExpander.Header as TextBlock).FontSize - HeaderText.FontSize) > TOLERANCE)
             {
                 ((TextBlock) LayersExpander.Header).FontSize = HeaderText.FontSize;
                 ((TextBlock) LayersExpander.Header).Margin = new Thickness(0, 0, 4, 0);
             }
 
-            if (LayersExpander.Header is TextBlock && (LayersExpander.Header as TextBlock).ActualHeight != HeaderText.ActualHeight)
+            if (LayersExpander.Header is TextBlock && Math.Abs((LayersExpander.Header as TextBlock).ActualHeight - HeaderText.ActualHeight) > TOLERANCE)
             {
                 ((TextBlock) LayersExpander.Header).Height = HeaderText.ActualHeight;
             }

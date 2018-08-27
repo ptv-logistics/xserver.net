@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System;
 using Ptv.XServer.Controls.Map.TileProviders;
 using Ptv.XServer.Controls.Map.Tools;
 using Ptv.XServer.Controls.Map.Layers.Tiled;

@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System.Windows;
 using System.Windows.Media;
 using System.ComponentModel;
 using System.Collections.Generic;

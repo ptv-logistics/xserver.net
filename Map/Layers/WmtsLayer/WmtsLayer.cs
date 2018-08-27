@@ -1,4 +1,6 @@
-﻿using Ptv.XServer.Controls.Map.Layers.Tiled;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using Ptv.XServer.Controls.Map.Layers.Tiled;
 
 namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
 {

@@ -1,3 +1,5 @@
+// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
 using System;
 using System.Windows.Media.Animation;
 using System.Windows;
@@ -90,7 +92,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
 
             double min = Math.Min(From.Value, To.Value), max = To.Value;
 
-            if (To.Value == min)
+            const double TOLERANCE = 0.0001;
+            if (Math.Abs(To.Value - min) < TOLERANCE)
             {
                 max = From.Value;
                 f = 1 - f;

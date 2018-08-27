@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System.Linq;
 using Ptv.XServer.Controls.Map.Layers.Tiled;
 using Ptv.XServer.Controls.Map.Layers.Untiled;
 using Ptv.XServer.Controls.Map.TileProviders;

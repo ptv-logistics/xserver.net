@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace System.IO

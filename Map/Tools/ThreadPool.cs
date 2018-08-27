@@ -1,4 +1,6 @@
-﻿// ThreadPool.cs
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+// ThreadPool.cs
 //
 // This file defines a custom ThreadPool class that supports the following
 // characteristics (property and method names shown in []):

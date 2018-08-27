@@ -1,4 +1,6 @@
-﻿namespace Ptv.XServer.Controls.Map.Localization
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+namespace Ptv.XServer.Controls.Map.Localization
 {
     /// <summary>
     /// <para>

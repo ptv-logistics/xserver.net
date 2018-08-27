@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -473,7 +475,8 @@ namespace Ptv.XServer.Controls.Map
         /// <param name="maxAutoZoom"> Maximum automatic zoom. </param>
         private void SetEnvelopeHelper(MapRectangle rect, bool animate, double maxAutoZoom)
         {
-            if (ActualHeight == 0 || ActualWidth == 0)
+            const double TOLERANCE = 0.0001;
+            if (Math.Abs(ActualHeight) < TOLERANCE || Math.Abs(ActualWidth) < TOLERANCE)
             {
                 envMapRectangle = new MapRectangle(rect);
                 return;
@@ -483,7 +486,7 @@ namespace Ptv.XServer.Controls.Map
             double dy = rect.Height;
 
             double zoomX;
-            if (dx == 0)
+            if (Math.Abs(dx) < TOLERANCE)
                 zoomX = MaxZoom;
             else
             {
@@ -492,7 +495,7 @@ namespace Ptv.XServer.Controls.Map
             }
 
             double zoomY;
-            if (dy == 0)
+            if (Math.Abs(dy) < TOLERANCE)
                 zoomY = MaxZoom;
             else
             {
@@ -556,8 +559,9 @@ namespace Ptv.XServer.Controls.Map
                 }
             }
 
-            bool doPan = (FinalX != xCenter || FinalY != yCenter);
-            bool doZoom = (z != zoom);
+            const double TOLERANCE = 0.0001;
+            bool doPan = (Math.Abs(FinalX - xCenter) > TOLERANCE || Math.Abs(FinalY - yCenter) > TOLERANCE);
+            bool doZoom = (Math.Abs(z - zoom) > TOLERANCE);
 
             x = xCenter + canvasOffset.X / ZoomAdjust / ReferenceSize * LogicalSize;
             y = yCenter - canvasOffset.Y / ZoomAdjust / ReferenceSize * LogicalSize;

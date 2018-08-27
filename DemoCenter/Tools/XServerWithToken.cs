@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using Ptv.XServer.Demo.XlocateService;

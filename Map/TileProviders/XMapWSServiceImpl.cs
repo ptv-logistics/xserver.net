@@ -1,4 +1,6 @@
-﻿namespace Ptv.XServer.Controls.Map.TileProviders
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+namespace Ptv.XServer.Controls.Map.TileProviders
 {
     /// <summary>
     /// Class which wraps the xServer web proxy and implements <see cref="xserver.IXMapWSBinding"/> interface.

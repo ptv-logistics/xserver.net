@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -150,7 +152,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             if (selfNotify)
                 return;
 
-            if (MapView.FinalZoom * 10 != MapZoom)
+            const double TOLERANCE = 0.0001;
+            if (Math.Abs(MapView.FinalZoom * 10 - MapZoom) > TOLERANCE)
                 MapView.SetZoom((double)MapZoom / 10, Map.UseAnimation);
         }
 

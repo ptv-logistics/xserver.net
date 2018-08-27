@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System.Windows;
 using System.Windows.Input;
 using Ptv.XServer.Controls.Map.Tools;
 using System.Windows.Media;

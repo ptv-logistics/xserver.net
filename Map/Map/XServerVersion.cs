@@ -1,4 +1,6 @@
-﻿using Ptv.XServer.Controls.Map.Layers;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using Ptv.XServer.Controls.Map.Layers;
 using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;

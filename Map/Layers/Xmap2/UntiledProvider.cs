@@ -1,4 +1,6 @@
-﻿using Ptv.XServer.Controls.Map.Layers.Untiled;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using Ptv.XServer.Controls.Map.Layers.Untiled;
 using System.Text;
 using System.IO;
 using System.Net;

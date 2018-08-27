@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -394,7 +396,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
                     var scale = inputMapView.CurrentScale;
                     double lsf = GetScaleFactor(shape);
                     double elementScale = GetScale(shape);
-                    if (lsf == 1 && elementScale == 1)
+                    const double TOLERANCE = 0.0001;
+                    if (Math.Abs(lsf - 1) < TOLERANCE && Math.Abs(elementScale - 1) < TOLERANCE)
                     {
                         shape.RenderTransform = null;
                     }

@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
@@ -171,7 +174,8 @@ namespace Ptv.XServer.Controls.Map.Layers
             get { return opacity; }
             set
             {
-                if (opacity == value)
+                const double TOLERANCE = 0.0001;
+                if (Math.Abs(opacity - value) < TOLERANCE)
                     return;
 
                 opacity = value;

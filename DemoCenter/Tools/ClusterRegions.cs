@@ -1,4 +1,6 @@
-﻿using Ptv.XServer.Controls.Map.Tools;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using Ptv.XServer.Controls.Map.Tools;
 using System;
 using System.Text.RegularExpressions;
 

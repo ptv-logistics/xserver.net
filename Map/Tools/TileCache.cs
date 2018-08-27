@@ -1,4 +1,6 @@
-﻿namespace Ptv.XServer.Controls.Map.Tools
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+namespace Ptv.XServer.Controls.Map.Tools
 {
     /// <summary> Class for caching the tile images. </summary>
     public class TileCache : MemoryCacheMultiThreaded
