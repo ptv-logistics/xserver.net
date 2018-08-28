@@ -3,11 +3,11 @@ PTV xServer .Net
 Copyright (c) 2018  PTV Group, Karlsruhe, Germany.
 
 Permission is hereby granted, free of charge, to any person obtaining a 
-copy of this software and associated documentation files, to deal in the 
-software without restriction, including without limitation the rights to 
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
-copies of the software, and to permit persons to whom the software is 
-furnished to do so, subject to the following conditions:
+copy of this software and associated documentation and source code files, 
+to deal in the software without restriction, including without limitation 
+the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+and/or sell copies of the software, and to permit persons to whom the 
+software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the software.
@@ -20,23 +20,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 IN THE SOFTWARE.
 
-The software is a supplement to the PTV xServer and intended to provide 
-an abstraction and convenience layer for integrating the PTV xServer into 
-applications based on the Microsoft .NET Framework. You are not allowed
-to use the software without applying PTV xServer technology.
-
-Modification is restricted to the source code generally represented by code 
-samples and provided by the software. You are not allowed to reverse engineer, 
-decompile or modify the binary components provided in any way.
-
-The software makes use of PTV xServer running on a PTV test system. You 
-are allowed to run the software using those servers for demo purposes only. 
-You are required to change the server settings before running the software 
-in any form in a productive environment.
-
 The software, mainly the samples it provides, incorporates software taken
 from other software projects. License terms for those projects along with 
-additional information is provided in the folder "Licenses". 
+additional information is provided in the SDK folder "Licenses". 
 
 The incorporated software projects and their corresponding licenses are:
 
@@ -49,3 +35,4 @@ Demos / Code Samples:
 - Proj.Net                               [lgpl-2.1.txt ]
 - NetTopologySuite                       [lgpl-3.0.txt ]
 - Aviad.WPF.Controls.AutoCompleteTextBox [CPOL.htm     ]
+- GeoAPI                                 [GeoAPI.txt   ]
