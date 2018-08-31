@@ -86,11 +86,11 @@ namespace Ptv.XServer.Controls.Map.Tools
 
             gp.AddPolygon(CreateWKBLinearRing(reader, byteOrder, transform));
 
-            // Create a new array of linearrings for the interior rings.
+            // Create a new array of linear rings for the interior rings.
             for (int i = 0; i < (numRings - 1); i++)
                 gp.AddPolygon(CreateWKBLinearRing(reader, byteOrder, transform));
 
-            // Create and return the Poylgon.
+            // Create and return the Polygon.
             return gp;
         }
 
@@ -164,10 +164,10 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns> The <see cref="System.Drawing.Drawing2D.GraphicsPath"/> object. </returns>
         public static GraphicsPath Parse(byte[] bytes, Func<double, double, Point> transform)
         {
-            // Create a memory stream using the suppiled byte array.
+            // Create a memory stream using the supplied byte array.
             using (var memoryStream = new MemoryStream(bytes))
             {
-                // Create a new binary reader using the newly created memorystream.
+                // Create a new binary reader using the newly created memory stream.
                 using (var reader = new BinaryReader(memoryStream))
                 {
                     // Call the main create function.

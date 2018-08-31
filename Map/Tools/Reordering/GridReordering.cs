@@ -123,7 +123,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         private Point? dragDropOrigin;
         /// <summary> True while element is being dragged. </summary>
         private bool IsDragging;
-        /// <summary> Lock for sync'ing events. </summary>
+        /// <summary> Lock for synchronizing events. </summary>
         private readonly object lockObject = new Object();
         /// <summary> Event reference counter. </summary>
         private long eventRef;
@@ -316,9 +316,9 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         {
             for (int childPos = 0; childPos < grid.Children.Count; childPos++)
             {
-                if (!(grid.Children[childPos] is TextBlock))
+                if (!(grid.Children[childPos] is TextBlock textBlock))
                     continue;
-                defaultColor = ((TextBlock) grid.Children[childPos]).Foreground;
+                defaultColor = textBlock.Foreground;
                 break;
             }
         }
@@ -356,11 +356,11 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         {
             for (int childPos = 0; childPos < grid.Children.Count; childPos++)
             {
-                if (!(grid.Children[childPos] is TextBlock))
+                if (!(grid.Children[childPos] is TextBlock textBlock))
                     continue;
 
-                ((TextBlock) grid.Children[childPos]).MouseEnter += TextBlock_MouseEnter;
-                ((TextBlock) grid.Children[childPos]).MouseLeave += TextBlock_MouseLeave;
+                textBlock.MouseEnter += TextBlock_MouseEnter;
+                textBlock.MouseLeave += TextBlock_MouseLeave;
             }
         }
 
@@ -369,11 +369,11 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         {
             for (int childPos = 0; childPos < grid.Children.Count; childPos++)
             {
-                if (!(grid.Children[childPos] is TextBlock))
+                if (!(grid.Children[childPos] is TextBlock textBlock))
                     continue;
 
-                ((TextBlock) grid.Children[childPos]).MouseEnter -= TextBlock_MouseEnter;
-                ((TextBlock) grid.Children[childPos]).MouseLeave -= TextBlock_MouseLeave;
+                textBlock.MouseEnter -= TextBlock_MouseEnter;
+                textBlock.MouseLeave -= TextBlock_MouseLeave;
             }
         }
 
@@ -382,7 +382,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         {
             for (int i = 0; i <= gridRows.Count; i++)
             {
-                // insert new row defintion
+                // insert new row definition
                 grid.RowDefinitions.Insert(i * 2, new RowDefinition { Height = new GridLength(0) });
 
                 // update row of existing elements
@@ -680,8 +680,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <param name="e"> The event parameters. </param>
         private static void TextBlock_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (sender != null)
-                (sender as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(224, 33, 41)); // PTV rot
+            if (sender is TextBlock textBlock)
+                textBlock.Foreground = new SolidColorBrush(Color.FromRgb(224, 33, 41)); // PTV rot
         }
 
         /// <summary> Handler for leaving a text block with the mouse. </summary>
@@ -689,8 +689,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <param name="e"> The event parameters. </param>
         private static void TextBlock_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (sender != null)
-                (sender as TextBlock).Foreground = defaultColor;
+            if (sender is TextBlock textBlock)
+                textBlock.Foreground = defaultColor;
         }
 
         /// <summary>
@@ -717,10 +717,9 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         {
             InvokeSecurely(e, args =>
             {
-                var f = args.OriginalSource as FrameworkElement;
-                if (f == null || (DragColumn.HasValue && PositionOf(f).Column != DragColumn.Value)) return;
+                if (!(args.OriginalSource is FrameworkElement originalSource) || (DragColumn.HasValue && PositionOf(originalSource).Column != DragColumn.Value)) return;
 
-                dragDropOrigin = args.GetPosition(args.OriginalSource as FrameworkElement);
+                dragDropOrigin = args.GetPosition(originalSource);
                 args.Handled = true;
             });
         }
@@ -753,26 +752,25 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         {
             InvokeSecurely(e, args =>
             {
-                FrameworkElement f =
-                    args.OriginalSource as FrameworkElement;
+                FrameworkElement originalSource = args.OriginalSource as FrameworkElement;
 
                 args.Handled = IsDragging || dragDropOrigin.HasValue;
 
                 if (IsDragging)
                 {
                     // we're dragging, update position
-                    DragMove(f);
+                    DragMove(originalSource);
                 }
-                else if (dragDropOrigin.HasValue && Point.Subtract(dragDropOrigin.Value, args.GetPosition(f)).Length >= 3)
+                else if (dragDropOrigin.HasValue && Point.Subtract(dragDropOrigin.Value, args.GetPosition(originalSource)).Length >= 3)
                 {
                     // start drag&drop if mouse moved at least 
                     // 3 pixels while left mouse button is pressed
                     // we need to capture the mouse
-                    if (f == null || !f.CaptureMouse()) return;
+                    if (originalSource == null || !originalSource.CaptureMouse()) return;
 
                     IsDragging = true;
                     createGridRows();
-                    StartDragDrop(f);
+                    StartDragDrop(originalSource);
                 }
             });
         }
@@ -783,9 +781,9 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         internal class GridPosition
         {
             /// <summary> Documentation in progress... </summary>
-            public int Row = 0;
+            public int Row;
             /// <summary> Documentation in progress... </summary>
-            public int Column = 0;
+            public int Column;
         }
         #endregion
 

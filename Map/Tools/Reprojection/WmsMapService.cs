@@ -106,8 +106,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         static Dictionary<string, string> ParseQueryString(string queryString)
         {
             return queryString.Split('&').
-                Select(keyValue => keyValue.Split(new[] { '=' })). // The query string is converted into a list of key-value-pairs. 
-                ToLookup(splittedKeyValue => splittedKeyValue[0].ToLowerInvariant(), splittedKeyValue => splittedKeyValue[1]). // a Lookup is used to for duplicates of keys (happened in Euska)
+                Select(keyValue => keyValue.Split('=')). // The query string is converted into a list of key-value-pairs. 
+                ToLookup(splitKeyValue => splitKeyValue[0].ToLowerInvariant(), splitKeyValue => splitKeyValue[1]). // a Lookup is used to for duplicates of keys (happened in Euska)
                 ToDictionary(kl => kl.Key, kl => kl.First()); // Only the first element of a potential duplicate is used.
         }
 
@@ -117,7 +117,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         {
             try
             {
-                // we're going to return requestd size ...
+                // we're going to return requested size ...
                 effectiveSize = requestedSize;
 
                 // create web request

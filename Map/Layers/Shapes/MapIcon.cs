@@ -47,22 +47,22 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <summary> Gets or sets the location of the MapIcon. </summary>
         public Point Location
         {
-            get { return (Point)GetValue(ShapeCanvas.LocationProperty); }
-            set { SetValue(ShapeCanvas.LocationProperty, value); }
+            get => (Point)GetValue(ShapeCanvas.LocationProperty);
+            set => SetValue(ShapeCanvas.LocationProperty, value);
         }
 
         /// <summary> Gets or sets the anchor of the MapIcon. </summary>
         public LocationAnchor Anchor
         {
-            get { return (LocationAnchor)GetValue(ShapeCanvas.AnchorProperty); }
-            set { SetValue(ShapeCanvas.AnchorProperty, value); }
+            get => (LocationAnchor)GetValue(ShapeCanvas.AnchorProperty);
+            set => SetValue(ShapeCanvas.AnchorProperty, value);
         }
 
         /// <summary> Gets or sets the  scale factor. See <see cref="ShapeCanvas.ScaleFactorProperty"/>. </summary>
         public double ScaleFactor
         {
-            get { return (double)GetValue(ShapeCanvas.ScaleFactorProperty); }
-            set { SetValue(ShapeCanvas.ScaleFactorProperty, value); }
+            get => (double)GetValue(ShapeCanvas.ScaleFactorProperty);
+            set => SetValue(ShapeCanvas.ScaleFactorProperty, value);
         }
         #endregion
 

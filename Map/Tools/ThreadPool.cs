@@ -26,27 +26,27 @@
 //
 // * pool extends WaitHandle, becomes signaled when last thread exits [StopAndWait, WaitHandle methods]
 //
-// * operations enqueued to the pool are cancellable [IWorkRequest returned by PostRequest]
+// * operations en-queued to the pool are cancellable [IWorkRequest returned by PostRequest]
 //
 // * enqueue operation supports early bound approach (ala ThreadPool.QueueUserWorkItem)
 //   as well as late bound approach (ala Control.Invoke/BeginInvoke) to posting work requests [PostRequest]
 //
-// * optional propogation of calling thread call context to target [PropogateCallContext]
+// * optional propagation of calling thread call context to target [PropagateCallContext]
 //
-// * optional propogation of calling thread principal to target [PropogateThreadPrincipal]
+// * optional propagation of calling thread principal to target [PropagateThreadPrincipal]
 //
-// * optional propogation of calling thread HttpContext to target [PropogateHttpContext]
+// * optional propagation of calling thread HttpContext to target [PropagateHttpContext]
 //
 // * support for started/stopped event subscription & notification [Started, Stopped]
 //
 // Known issues/limitations/comments:
 //
-// * The PropogateCASMarkers property exists for future support for propogating
+// * The PropagateCASMarkers property exists for future support for propagating
 //   the calling thread's installed CAS markers in the same way that the built-in thread
 //   pool does.  Currently, there is no support for user-defined code to perform that
 //   operation.
 //
-// * PropogateCallContext and PropogateHttpContext both use reflection against private
+// * PropagateCallContext and PropagateHttpContext both use reflection against private
 //   members to due their job.  As such, these two properties are set to false by default,
 //   but do work on the first release of the framework (including .NET Server) and its
 //   service packs.  These features have not been tested on Everett at this time.
@@ -149,12 +149,8 @@ namespace DevelopMentor
             this.newThreadTrigger = new TimeSpan(TimeSpan.TicksPerMillisecond * newThreadTrigger);
             this.threadPriority = threadPriority;
             requestQueue = new Queue(requestQueueLimit < 0 ? 4096 : requestQueueLimit);
-            
-            if (poolName == null)
-            {
-                throw new ArgumentNullException(nameof(poolName), "Thread pool name cannot be null");
-            }
-            threadPoolName = poolName;
+
+            threadPoolName = poolName ?? throw new ArgumentNullException(nameof(poolName), "Thread pool name cannot be null");
         }
         #endregion
 
@@ -164,8 +160,8 @@ namespace DevelopMentor
         /// <summary> Gets or sets Documentation in progress... </summary>
         public ThreadPriority Priority
         {
-            get { return(threadPriority); }
-            
+            get => threadPriority;
+
             set
             {
                 if (IsStarted)
@@ -180,8 +176,8 @@ namespace DevelopMentor
         /// <summary> Gets or sets Documentation in progress... </summary>
         public int DynamicThreadDecay
         {
-            get { return(decayTime); }
-            
+            get => (decayTime);
+
             set
             {
                 if (IsStarted)
@@ -201,8 +197,8 @@ namespace DevelopMentor
         /// <summary> Gets or sets Documentation in progress... </summary>
         public int NewThreadTrigger
         {
-            get { return((int)newThreadTrigger.TotalMilliseconds); }
-            
+            get => ((int)newThreadTrigger.TotalMilliseconds);
+
             set
             {
                 if (value <= 0)
@@ -220,8 +216,8 @@ namespace DevelopMentor
         /// <summary> Gets or sets Documentation in progress... </summary>
         public int RequestQueueLimit
         {
-            get { return(requestQueueLimit); }
-            set { requestQueueLimit = (value < 0 ? DEFAULT_REQUEST_QUEUE_LIMIT : value); }
+            get => (requestQueueLimit);
+            set => requestQueueLimit = (value < 0 ? DEFAULT_REQUEST_QUEUE_LIMIT : value);
         }
 
         /// <summary> Gets Documentation in progress... </summary>
@@ -230,13 +226,13 @@ namespace DevelopMentor
         /// <summary> Gets or sets Documentation in progress... </summary>
         public int MaxThreads
         {
-            get { return(maxThreadCount); }
+            get => (maxThreadCount);
 
             set
             {
                 if (value < initialThreadCount)
                 {
-                    throw new ArgumentException("Maximum thread count must be >= initial thread count.", "MaxThreads");
+                    throw new ArgumentException("Maximum thread count must be >= initial thread count.", nameof(maxThreadCount));
                 }
 
                 maxThreadCount = value;
@@ -247,35 +243,35 @@ namespace DevelopMentor
         public bool IsStarted { get; private set; }
 
         /// <summary> Gets or sets a value indicating whether Documentation in progress... </summary>
-        public bool PropogateThreadPrincipal
+        public bool PropagateThreadPrincipal
         {
-            get { return(propogateThreadPrincipal); }
-            set { propogateThreadPrincipal = value; }
+            get => (propagateThreadPrincipal);
+            set => propagateThreadPrincipal = value;
         }
 
         /// <summary> Gets or sets a value indicating whether Documentation in progress... </summary>
-        public bool PropogateCallContext
+        public bool PropagateCallContext
         {
-            get { return(propogateCallContext); }
-            set { propogateCallContext = value; }
+            get => (propagateCallContext);
+            set => propagateCallContext = value;
         }
 
         /// <summary> Gets or sets a value indicating whether Documentation in progress... </summary>
-        public bool PropogateHttpContext
+        public bool PropagateHttpContext
         {
-            get { return(propogateHttpContext); }
-            set { propogateHttpContext = value; }
+            get => (propagateHttpContext);
+            set => propagateHttpContext = value;
         }
 
         /// <summary> Gets a value indicating whether Documentation in progress... </summary>
-        public bool PropogateCASMarkers { get; private set; }
+        public bool PropagateCASMarkers => false;
 
 
         /// <summary> Gets or sets a value indicating whether Documentation in progress... </summary>
         public bool IsBackground
         {
-            get { return(useBackgroundThreads); }
-            
+            get => (useBackgroundThreads);
+
             set
             {
                 if (IsStarted)
@@ -399,8 +395,7 @@ namespace DevelopMentor
         /// <returns> Documentation in progress... </returns>
         public bool PostRequest(WorkRequestDelegate cb, object state)
         {
-            IWorkRequest notUsed;
-            return PostRequest(cb, state, out notUsed);
+            return PostRequest(cb, state, out _);
         }
 
         /// <summary> Documentation in progress... </summary>
@@ -410,7 +405,7 @@ namespace DevelopMentor
         /// <returns> Documentation in progress... </returns>
         public bool PostRequest(WorkRequestDelegate cb, object state, out IWorkRequest reqStatus)
         {
-            var request = new WorkRequest(cb, state, propogateThreadPrincipal, propogateCallContext, propogateHttpContext, PropogateCASMarkers);
+            var request = new WorkRequest(cb, state, propagateThreadPrincipal, propagateCallContext, PropagateCASMarkers);
             reqStatus = request;
             return PostRequest(request);
         }
@@ -424,8 +419,7 @@ namespace DevelopMentor
         /// <returns> Documentation in progress... </returns>
         public bool PostRequest(Delegate cb, object[] args)
         {
-            IWorkRequest notUsed;
-            return PostRequest(cb, args, out notUsed);
+            return PostRequest(cb, args, out _);
         }
 
         /// <summary> Documentation in progress... </summary>
@@ -435,7 +429,7 @@ namespace DevelopMentor
         /// <returns> Documentation in progress... </returns>
         public bool PostRequest(Delegate cb, object[] args, out IWorkRequest reqStatus)
         {
-            var request = new WorkRequest(cb, args, propogateThreadPrincipal, propogateCallContext, propogateHttpContext, PropogateCASMarkers);
+            var request = new WorkRequest(cb, args, propagateThreadPrincipal, propagateCallContext, PropagateCASMarkers);
             reqStatus = request;
             return PostRequest(request);
         }
@@ -493,9 +487,7 @@ namespace DevelopMentor
         #endregion
 
         #region Private ThreadPool member variables
-        /// <summary> Documentation in progress... </summary>
         private bool stopInProgress;
-        /// <summary> Documentation in progress... </summary>
         private readonly string threadPoolName;
         /// <summary> Initial # of threads to create (called "static threads" in this class). </summary>
         private readonly int initialThreadCount;
@@ -507,22 +499,16 @@ namespace DevelopMentor
         private int decayTime;
         /// <summary> If a work request sits in the queue this long before being processed, a new thread will be added to queue up to the max. </summary>
         private TimeSpan newThreadTrigger;
-        /// <summary> Documentation in progress... </summary>
         private ThreadPriority threadPriority;
         /// <summary> Signaled after Stop called and last thread exits. </summary>
         private readonly ManualResetEvent stopCompleteEvent = new ManualResetEvent(false);
-        /// <summary> Documentation in progress... </summary>
         private readonly Queue requestQueue;
         /// <summary> Throttle for maximum # of work requests that can be added. </summary>
         private int requestQueueLimit;
-        /// <summary> Documentation in progress... </summary>
         private bool useBackgroundThreads = true;
-        /// <summary> Documentation in progress... </summary>
-        private bool propogateThreadPrincipal;
-        /// <summary> Documentation in progress... </summary>
-        private bool propogateCallContext;
-        /// <summary> Documentation in progress... </summary>
-        private bool propogateHttpContext;
+        private bool propagateThreadPrincipal;
+        private bool propagateCallContext;
+        private bool propagateHttpContext;
 
         #endregion
 
@@ -540,8 +526,7 @@ namespace DevelopMentor
             // Cached type information.
             /// <summary> Documentation in progress... </summary>
             const BindingFlags bfNonPublicInstance = BindingFlags.Instance | BindingFlags.NonPublic;
-            /// <summary> Documentation in progress... </summary>
-            const BindingFlags bfNonPublicStatic = BindingFlags.Static | BindingFlags.NonPublic;
+
             /// <summary> Documentation in progress... </summary>
             static readonly MethodInfo miGetLogicalCallContext = typeof(Thread).GetMethod("GetLogicalCallContext", bfNonPublicInstance);
             /// <summary> Documentation in progress... </summary>
@@ -549,17 +534,15 @@ namespace DevelopMentor
             #endregion
 
             #region constructor
+
             /// <summary> Documentation in progress... </summary>
-            /// <param name="propogateThreadPrincipal"> Documentation in progress... </param>
-            /// <param name="propogateCallContext"> Documentation in progress... </param>
-            /// <param name="propogateHttpContext"> Documentation in progress... </param>
-            /// <param name="propogateCASMarkers"> Documentation in progress... </param>
+            /// <param name="propagateThreadPrincipal"> Documentation in progress... </param>
+            /// <param name="propagateCallContext"> Documentation in progress... </param>
+            /// <param name="propagateCASMarkers"> Documentation in progress... </param>
             /// <returns> Documentation in progress... </returns>
-            public static ThreadInfo Capture(bool propogateThreadPrincipal, bool propogateCallContext,
-                                              bool propogateHttpContext, bool propogateCASMarkers)
+            public static ThreadInfo Capture(bool propagateThreadPrincipal, bool propagateCallContext, bool propagateCASMarkers)
             {
-                return new ThreadInfo(propogateThreadPrincipal, propogateCallContext,
-                                       propogateHttpContext, propogateCASMarkers);
+                return new ThreadInfo(propagateThreadPrincipal, propagateCallContext, propagateCASMarkers);
             }
 
             /// <summary> Documentation in progress... </summary>
@@ -569,25 +552,23 @@ namespace DevelopMentor
             {
                 if (ti == null) throw new ArgumentNullException(nameof(ti));
 
-                ThreadInfo prevInfo = Capture(true, true, true, true);
+                ThreadInfo prevInfo = Capture(true, true, true);
                 Restore(ti);
                 return(prevInfo);
             }
 
             /// <summary> Initializes a new instance of the <see cref="ThreadInfo"/> class. </summary>
-            /// <param name="propogateThreadPrincipal"> Documentation in progress... </param>
-            /// <param name="propogateCallContext"> Documentation in progress... </param>
-            /// <param name="propogateHttpContext"> Documentation in progress... </param>
-            /// <param name="propogateCASMarkers"> Documentation in progress... </param>
-            private ThreadInfo(bool propogateThreadPrincipal, bool propogateCallContext,
-                    bool propogateHttpContext, bool propogateCASMarkers)
+            /// <param name="propagateThreadPrincipal"> Documentation in progress... </param>
+            /// <param name="propagateCallContext"> Documentation in progress... </param>
+            /// <param name="propagateCASMarkers"> Documentation in progress... </param>
+            private ThreadInfo(bool propagateThreadPrincipal, bool propagateCallContext, bool propagateCASMarkers)
             {
-                if (propogateThreadPrincipal)
+                if (propagateThreadPrincipal)
                 {
                     principal = Thread.CurrentPrincipal;
                 }
 
-                if (propogateCallContext && (miGetLogicalCallContext != null))
+                if (propagateCallContext && (miGetLogicalCallContext != null))
                 {
                     callContext = (LogicalCallContext)miGetLogicalCallContext.Invoke(Thread.CurrentThread, null);
                     callContext = (LogicalCallContext)callContext.Clone();
@@ -596,7 +577,7 @@ namespace DevelopMentor
                     //       instead of leaving it up to the Clone method.
                 }
 
-                if (propogateCASMarkers)
+                if (propagateCASMarkers)
                 {
                     // TODO: Uncomment the following when Thread.GetCompressedStack is no longer guarded
                     //       by a StrongNameIdentityPermission.
@@ -624,13 +605,13 @@ namespace DevelopMentor
                 
                 // Restore thread identity.  It's important that this be done after
                 // restoring call context above, since restoring call context also
-                // overwrites the current thread principal setting.  If propogateCallContext
-                // and propogateThreadPrincipal are both true, then the following is redundant.
-                // However, since propogating call context requires the use of reflection
-                // to capture/restore call context, I want that behavior to be independantly
+                // overwrites the current thread principal setting.  If propagateCallContext
+                // and propagateThreadPrincipal are both true, then the following is redundant.
+                // However, since propagating call context requires the use of reflection
+                // to capture/restore call context, I want that behavior to be independently
                 // switchable so that it can be disabled; while still allowing thread principal
-                // to be propogated.  This also covers us in the event that call context
-                // propogation changes so that it no longer propogates thread principal.
+                // to be propagated.  This also covers us in the event that call context
+                // propagation changes so that it no longer propagates thread principal.
                 //
                 Thread.CurrentPrincipal = ti.principal;
                 
@@ -668,7 +649,7 @@ namespace DevelopMentor
             /// <summary> Documentation in progress... </summary>
             internal readonly object[] procArgs;           // Used with Delegate.DynamicInvoke.
             /// <summary> Documentation in progress... </summary>
-            internal DateTime timeStampStarted;   // Time work request was originally enqueued (held constant).
+            internal DateTime timeStampStarted;   // Time work request was originally en-queued (held constant).
             /// <summary> Documentation in progress... </summary>
             internal DateTime workingTime;        // Current timestamp used for triggering new threads (moving target).
             /// <summary> Documentation in progress... </summary>
@@ -678,55 +659,46 @@ namespace DevelopMentor
             #endregion
 
             #region constructor
+
             /// <summary> Initializes a new instance of the <see cref="WorkRequest"/> class. </summary>
             /// <param name="cb"> Documentation in progress... </param>
             /// <param name="arg"> Documentation in progress... </param>
-            /// <param name="propogateThreadPrincipal"> Documentation in progress... </param>
-            /// <param name="propogateCallContext"> Documentation in progress... </param>
-            /// <param name="propogateHttpContext"> Documentation in progress... </param>
-            /// <param name="propogateCASMarkers"> Documentation in progress... </param>
+            /// <param name="propagateThreadPrincipal"> Documentation in progress... </param>
+            /// <param name="propagateCallContext"> Documentation in progress... </param>
+            /// <param name="propagateCASMarkers"> Documentation in progress... </param>
             public WorkRequest(WorkRequestDelegate cb, object arg,
-                                bool propogateThreadPrincipal, bool propogateCallContext,
-                                bool propogateHttpContext, bool propogateCASMarkers)
+                                bool propagateThreadPrincipal, bool propagateCallContext, bool propagateCASMarkers)
             {
                 targetProc = cb;
                 procArg = arg;
                 procArgs = null;
 
-                Initialize(propogateThreadPrincipal, propogateCallContext,
-                            propogateHttpContext, propogateCASMarkers);
+                Initialize(propagateThreadPrincipal, propagateCallContext, propagateCASMarkers);
             }
 
             /// <summary> Initializes a new instance of the <see cref="WorkRequest"/> class. </summary>
             /// <param name="cb"> Documentation in progress... </param>
             /// <param name="args"> Documentation in progress... </param>
-            /// <param name="propogateThreadPrincipal"> Documentation in progress... </param>
-            /// <param name="propogateCallContext"> Documentation in progress... </param>
-            /// <param name="propogateHttpContext"> Documentation in progress... </param>
-            /// <param name="propogateCASMarkers"> Documentation in progress... </param>
-            public WorkRequest(Delegate cb, object[] args,
-                                bool propogateThreadPrincipal, bool propogateCallContext,
-                                bool propogateHttpContext, bool propogateCASMarkers)
+            /// <param name="propagateThreadPrincipal"> Documentation in progress... </param>
+            /// <param name="propagateCallContext"> Documentation in progress... </param>
+            /// <param name="propagateCASMarkers"> Documentation in progress... </param>
+            public WorkRequest(Delegate cb, object[] args, bool propagateThreadPrincipal, bool propagateCallContext, bool propagateCASMarkers)
             {
                 targetProc = cb;
                 procArg = null;
                 procArgs = args;
 
-                Initialize(propogateThreadPrincipal, propogateCallContext,
-                            propogateHttpContext, propogateCASMarkers);
+                Initialize(propagateThreadPrincipal, propagateCallContext, propagateCASMarkers);
             }
 
             /// <summary> Documentation in progress... </summary>
-            /// <param name="propogateThreadPrincipal"> Documentation in progress... </param>
-            /// <param name="propogateCallContext"> Documentation in progress... </param>
-            /// <param name="propogateHttpContext"> Documentation in progress... </param>
-            /// <param name="propogateCASMarkers"> Documentation in progress... </param>
-            void Initialize(bool propogateThreadPrincipal, bool propogateCallContext,
-                             bool propogateHttpContext, bool propogateCASMarkers)
+            /// <param name="propagateThreadPrincipal"> Documentation in progress... </param>
+            /// <param name="propagateCallContext"> Documentation in progress... </param>
+            /// <param name="propagateCASMarkers"> Documentation in progress... </param>
+            void Initialize(bool propagateThreadPrincipal, bool propagateCallContext, bool propagateCASMarkers)
             {
                 workingTime = timeStampStarted = DateTime.Now;
-                threadInfo = ThreadInfo.Capture(propogateThreadPrincipal, propogateCallContext,
-                                                 propogateHttpContext, propogateCASMarkers);
+                threadInfo = ThreadInfo.Capture(propagateThreadPrincipal, propagateCallContext, propagateCASMarkers);
             }
             #endregion
 
@@ -932,9 +904,7 @@ namespace DevelopMentor
                         //
                         originalThreadInfo = ThreadInfo.Impersonate(wr.threadInfo);
 
-                        WorkRequestDelegate targetProc = wr.targetProc as WorkRequestDelegate;
-
-                        if (targetProc != null)
+                        if (wr.targetProc is WorkRequestDelegate targetProc)
                         {
                             targetProc(wr.procArg, wr.timeStampStarted);
                         }

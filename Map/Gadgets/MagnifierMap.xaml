@@ -1,5 +1,5 @@
 ﻿<!-- To change the size of the MagnifierMap alter the BaseSize property in the constructor of MagnifierMap or
-     do it programmtically anywhere in your code -->
+     do it programmatically anywhere in your code -->
 <local:MapGadget x:Class="Ptv.XServer.Controls.Map.Gadgets.MagnifierMap" 
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 

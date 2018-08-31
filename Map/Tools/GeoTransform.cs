@@ -82,7 +82,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <param name="tileX">X-position of a tile.</param>
         /// <param name="tileY">Y-position of a tile.</param>
         /// <param name="zoom">Zoom level.</param>
-        /// <returns>Envelope rectangle of the specified tile, specified in Web Mercator coordinates (srid = 900913).</returns>
+        /// <returns>Envelope rectangle of the specified tile, specified in Web Mercator coordinates (srid = 3857).</returns>
         public static Rect TileToWebMercatorAtZoom(int tileX, int tileY, int zoom)
         {
             // build "web Mercator" for provider (srid: 900913)
@@ -211,40 +211,40 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// </summary>
         /// <param name="p">The point to transform.</param>
         /// <param name="sourceSrid">The current reference system.</param>
-        /// <param name="destStrid">The desired reference system.</param>
+        /// <param name="destSrid">The desired reference system.</param>
         /// <returns>The transformed point.</returns>
-        public static Point Transform(Point p, string sourceSrid, string destStrid)
+        public static Point Transform(Point p, string sourceSrid, string destSrid)
         {
-            return GetTransform(sourceSrid, destStrid)(p);
+            return GetTransform(sourceSrid, destSrid)(p);
         }
 
         /// <summary>
         /// Gets a transformation function for a point.
         /// </summary>
         /// <param name="sourceSrid">The current reference system.</param>
-        /// <param name="destStrid">The desired reference system.</param>
+        /// <param name="destSrid">The desired reference system.</param>
         /// <returns>The transformation.</returns>
-        public static Func<Point, Point> GetTransform(string sourceSrid, string destStrid)
+        public static Func<Point, Point> GetTransform(string sourceSrid, string destSrid)
         {
-            if (sourceSrid == destStrid)
+            if (sourceSrid == destSrid)
                 return p => p;
-            if (sourceSrid == "PTV_MERCATOR" && destStrid == "EPSG:4326")
+            if (sourceSrid == "PTV_MERCATOR" && destSrid == "EPSG:4326")
                 return PtvMercatorToWGS;
-            if (sourceSrid == "EPSG:4326" && destStrid == "PTV_MERCATOR")
+            if (sourceSrid == "EPSG:4326" && destSrid == "PTV_MERCATOR")
                 return WGSToPtvMercator;
-            return TransformProj4(sourceSrid, destStrid);
+            return TransformProj4(sourceSrid, destSrid);
         }
 
         /// <summary>
         /// Gets a transformation function for a point using proj4.
         /// </summary>
         /// <param name="sourceSrid"> The current reference system. </param>
-        /// <param name="destStrid"> The desired reference system. </param>
+        /// <param name="destSrid"> The desired reference system. </param>
         /// <returns> The transformation. </returns>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static Func<Point, Point> TransformProj4(string sourceSrid, string destStrid)
+        private static Func<Point, Point> TransformProj4(string sourceSrid, string destSrid)
         {
-            return CoordinateTransformation.Get(sourceSrid, destStrid).Transform;
+            return CoordinateTransformation.Get(sourceSrid, destSrid).Transform;
         }
     }
 }
@@ -277,11 +277,11 @@ namespace System.Windows
         /// </summary>
         /// <param name="p">The point to transform.</param>
         /// <param name="sourceSrid">The source reference system.</param>
-        /// <param name="destStrid">The destination reference system.</param>
+        /// <param name="destSrid">The destination reference system.</param>
         /// <returns>The transformed point.</returns>
-        public static Point GeoTransform(this Point p, string sourceSrid, string destStrid)
+        public static Point GeoTransform(this Point p, string sourceSrid, string destSrid)
         {
-            return Ptv.XServer.Controls.Map.Tools.GeoTransform.Transform(p, sourceSrid, destStrid);
+            return Ptv.XServer.Controls.Map.Tools.GeoTransform.Transform(p, sourceSrid, destSrid);
         }
     }
 }

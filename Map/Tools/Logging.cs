@@ -14,7 +14,7 @@ namespace Ptv.XServer.Controls.Map.Tools
     {
         private readonly TraceSource traceSource;
 
-        /// <summary> Constructor initializes the encorporated TraceSource instance. </summary>
+        /// <summary> Constructor initializes the incorporated TraceSource instance. </summary>
         /// <param name="name"> Name for the TraceSource instance. </param>
         public Logger(string name)
         {

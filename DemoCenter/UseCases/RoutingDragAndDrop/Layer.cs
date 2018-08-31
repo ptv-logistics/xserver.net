@@ -154,10 +154,10 @@ namespace Ptv.XServer.Controls.Routing
 
             var p = e.GetPosition(Map);
 
-            if (sender is Via)
-                menu.Add("Remove via way point", () => ((Via) sender).Route.Remove((Via) sender));
-            else
-                menu.Add("Remove stop " + (sender as Stop)?.Label, () => Remove(sender as Stop));
+            if (sender is Via via)
+                menu.Add("Remove via way point", () => via.Route.Remove(via));
+            if (sender is Stop stop)
+                menu.Add("Remove stop " + stop.Label, () => Remove(stop));
 
             menu.PlacementRectangle = new Rect(p, p);
             menu.IsOpen = true;
@@ -250,8 +250,7 @@ namespace Ptv.XServer.Controls.Routing
         /// <param name="wayPoint">Way point that was moved.</param>
         public void WayPointMoved(WayPoint wayPoint)
         {
-            var via = wayPoint as Via;
-            if (via != null)
+            if (wayPoint is Via via)
                 via.Route.UpdateRouteForMovingWayPoint(via, MOVE_UPDATE_DELAY);
             else
             {

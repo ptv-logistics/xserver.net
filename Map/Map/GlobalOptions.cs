@@ -11,7 +11,7 @@ namespace Ptv.XServer.Controls.Map
     {
         /// <summary>
         /// Enable the incrementation of memory pressure for bitmap images
-        /// The default setting is automatic, wich disables it for 64-Bit and enables it
+        /// The default setting is automatic, which disables it for 64-Bit and enables it
         /// when running in a 32-Bit process.
         /// Must be called before the first initialization of the map control!
         /// </summary>
@@ -45,7 +45,7 @@ namespace Ptv.XServer.Controls.Map
         /// </summary>
         Disable = 1,
         /// <summary>
-        /// Disable memory pressore when running as 64-bi and enable it when running in a 32-Bit process.        
+        /// Disable memory pressure when running as 64-bi and enable it when running in a 32-Bit process.        
         /// </summary>
         Automatic = 2,
     }

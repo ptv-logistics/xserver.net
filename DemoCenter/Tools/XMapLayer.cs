@@ -93,9 +93,7 @@ namespace Ptv.XServer.Controls.Map
                 foreach (var info in enumerable.Except(list))
                 { 
                     var isMatch = false;
-                    var layerObject = info.Source as LayerObject;
-
-                    var lineString = layerObject?.geometry?.pixelGeometry as PlainLineString;
+                    var lineString = (info.Source as LayerObject)?.geometry?.pixelGeometry as PlainLineString;
                     if (lineString?.wrappedPoints != null)
                     {
                         isMatch = (lineString.wrappedPoints.Length > 1)
@@ -165,20 +163,11 @@ namespace Ptv.XServer.Controls.Map
             /// <returns>Parent of the dependency object</returns>
             public static DependencyObject GetParent(this DependencyObject obj)
             {
-                if (obj == null)
-                    return null;
+                if (obj == null) return null;
 
-                var ce = obj as ContentElement;
+                if (!(obj is ContentElement contentElement)) return VisualTreeHelper.GetParent(obj);
 
-                if (ce == null) return VisualTreeHelper.GetParent(obj);
-
-                DependencyObject parent = ContentOperations.GetParent(ce);
-                if (parent != null)
-                    return parent;
-
-                var fce = ce as FrameworkContentElement;
-
-                return fce?.Parent;
+                return ContentOperations.GetParent(contentElement) ?? (contentElement as FrameworkContentElement)?.Parent;
             }
 
             /// <summary>
@@ -191,9 +180,7 @@ namespace Ptv.XServer.Controls.Map
             {
                 while (obj != null)
                 {
-                    var objTest = obj as T;
-
-                    if (objTest != null)
+                    if (obj is T objTest)
                         return objTest;
 
                     obj = GetParent(obj);
@@ -215,12 +202,11 @@ namespace Ptv.XServer.Controls.Map
             {
                 HitTestResult result = null;
 
-                VisualTreeHelper.HitTest(visual, target => {
-                        var uiElement = target as UIElement;
-                        return ((uiElement != null) && (!uiElement.IsHitTestVisible ||!uiElement.IsVisible))
-                            ? HitTestFilterBehavior.ContinueSkipSelfAndChildren
-                            : HitTestFilterBehavior.Continue;
-                    }, target => {
+                VisualTreeHelper.HitTest(visual, 
+                    target => ((target is UIElement uiElement) && (!uiElement.IsHitTestVisible || !uiElement.IsVisible))
+                        ? HitTestFilterBehavior.ContinueSkipSelfAndChildren
+                        : HitTestFilterBehavior.Continue, 
+                    target => {
                         result = target;
                         return HitTestResultBehavior.Stop;
                     },

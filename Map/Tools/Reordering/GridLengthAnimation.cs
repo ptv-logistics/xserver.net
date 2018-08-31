@@ -25,22 +25,22 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <summary> Gets or sets Documentation in progress... </summary>
         public GridLength From
         {
-            get { return (GridLength)GetValue(FromProperty); }
-            set { SetValue(FromProperty, value); }
+            get => (GridLength)GetValue(FromProperty);
+            set => SetValue(FromProperty, value);
         }
 
         /// <summary> Gets or sets Documentation in progress... </summary>
         public GridLength To
         {
-            get { return (GridLength)GetValue(ToProperty); }
-            set { SetValue(ToProperty, value); }
+            get => (GridLength)GetValue(ToProperty);
+            set => SetValue(ToProperty, value);
         }
 
         /// <summary> Gets or sets Documentation in progress... </summary>
         public IEasingFunction EasingFunction
         {
-            get { return (IEasingFunction)GetValue(EasingFunctionProperty); }
-            set { SetValue(EasingFunctionProperty, value); }
+            get => (IEasingFunction)GetValue(EasingFunctionProperty);
+            set => SetValue(EasingFunctionProperty, value);
         }
         #endregion
 
@@ -92,8 +92,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
 
             double min = Math.Min(From.Value, To.Value), max = To.Value;
 
-            const double TOLERANCE = 0.0001;
-            if (Math.Abs(To.Value - min) < TOLERANCE)
+            if (To.Value == min)
             {
                 max = From.Value;
                 f = 1 - f;

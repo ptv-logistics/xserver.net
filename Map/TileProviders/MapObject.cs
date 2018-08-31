@@ -89,7 +89,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         Point Point { get; }
 
         /// <summary>
-        /// Gets the location of the map object in world coordiantes (EPSG:76131).
+        /// Gets the location of the map object in world coordinates (EPSG:76131).
         /// </summary>
         Point LogicalPosition { get; }
 

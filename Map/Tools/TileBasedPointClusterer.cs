@@ -192,8 +192,7 @@ namespace Ptv.XServer.Controls.Map.Tools
 
                 // try to get the cluster from the dictionary.
                 // If not, create a new one
-                Cluster<T> cluster;
-                if (!(baseClusters.TryGetValue(tmpTile, out cluster)))
+                if (!(baseClusters.TryGetValue(tmpTile, out var cluster)))
                 {
                     cluster = new Cluster<T>(tmpTile.X, tmpTile.Y);
                     baseClusters[tmpTile] = cluster;
@@ -220,8 +219,7 @@ namespace Ptv.XServer.Controls.Map.Tools
 
                     // try to get the cluster from the dictionary.
                     // If not, create a new one
-                    Cluster<T> childCluster;
-                    if (!(childClusters.TryGetValue(tmpTile, out childCluster)))
+                    if (!(childClusters.TryGetValue(tmpTile, out var childCluster)))
                     {
                         childCluster = new Cluster<T>(tmpTile.X, tmpTile.Y);
                         childClusters[tmpTile] = childCluster;
@@ -266,12 +264,11 @@ namespace Ptv.XServer.Controls.Map.Tools
             int yMaxTile = (int)(yMax / clusterSize) + 1;
 
             Dictionary<Tile, Cluster<T>> clusters = clusterLevels[level];
-            Cluster<T> cluster;
 
-             // add all clusters within window 
+            // add all clusters within window 
             for (int i = xMinTile; i < xMaxTile; i++)
                 for (int j = yMinTile; j < yMaxTile; j++)
-                    if (clusters.TryGetValue(new Tile { X = i, Y = j }, out cluster))
+                    if (clusters.TryGetValue(new Tile { X = i, Y = j }, out var cluster))
                         result.Add(cluster);
 
             return result;

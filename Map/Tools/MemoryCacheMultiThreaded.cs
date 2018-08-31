@@ -42,8 +42,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             if (TryGetValueInternal(key, out value))
                 return true;
 
-            ManualResetEvent keyLock;
-            if (!(lockedKeys.TryGetValue(key, out keyLock)))
+            if (!(lockedKeys.TryGetValue(key, out var keyLock)))
             {
                 lockedKeys.Add(key, new ManualResetEvent(false));
 

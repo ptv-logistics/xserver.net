@@ -46,8 +46,7 @@ namespace System.IO
         {
             try
             {
-                GuidAttribute guid = 
-                    Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GuidAttribute), true)[0] as GuidAttribute;
+                GuidAttribute guid = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GuidAttribute), true)[0] as GuidAttribute;
 
                 tempBase += Path.GetTempPath() + guid.Value;
 

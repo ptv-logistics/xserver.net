@@ -120,7 +120,7 @@ namespace Ptv.XServer.Demo.UseCases
         /// </summary>
         public Color Color
         {
-            get { return color; }
+            get => color;
             set
             {
                 color = value;
@@ -131,15 +131,15 @@ namespace Ptv.XServer.Demo.UseCases
         /// <summary>Gets or sets the width of the polyline.</summary>
         public double Width
         {
-            get { return MapPolyline.MapStrokeThickness; }
-            set { MapPolyline.MapStrokeThickness = AnimatedPolyline.MapStrokeThickness = value; }
+            get => MapPolyline.MapStrokeThickness;
+            set => MapPolyline.MapStrokeThickness = AnimatedPolyline.MapStrokeThickness = value;
         }
 
         /// <summary>Gets and sets the tooltip text along the polyline shape.</summary>
         public string ToolTip
         {
-            get { return MapPolyline.ToolTip as string; }
-            set { MapPolyline.ToolTip = string.IsNullOrEmpty(value) ? null : value; }
+            get => MapPolyline.ToolTip as string;
+            set => MapPolyline.ToolTip = string.IsNullOrEmpty(value) ? null : value;
         }
 
         /* The following mouse events are not used, because they activate the animation

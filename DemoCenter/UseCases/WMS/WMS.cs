@@ -51,7 +51,7 @@ namespace Ptv.XServer.Demo.UseCases.WMS
         {
             if (wpfMap.Layers.Contains(wpfMap.Layers[secondWmsLayerName])) return;
 
-            const string urlTemplate = "http://ows.terrestris.de/osm-haltestellen?LAYERS=OSM-Bushaltestellen&TRANSPARENT=true&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG:900913";
+            const string urlTemplate = "http://ows.terrestris.de/osm-haltestellen?LAYERS=OSM-Bushaltestellen&TRANSPARENT=true&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG:3857";
 
             // For demonstration of proxy settings some lines of code later
             // const string urlTemplate = "http://80.146.239.180/WMS/WMS?REQUEST=GetMap&format=image/png&version=1.1.1&layers=xmap-plain&srs=EPSG:505456&styles=";

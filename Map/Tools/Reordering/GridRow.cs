@@ -20,7 +20,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         private readonly Grid grid;
         /// <summary> UI elements of the row. </summary>
         private readonly List<UIElement> elements;
-        /// <summary> Initial opacities of the UI elements. </summary>
+        /// <summary> Initial opacity of the UI elements. </summary>
         private readonly List<double> opacities = new List<double>();
         /// <summary> Index of the reference element in the elements list. -1 if there is no reference element. </summary>
         private readonly int referenceElementIndex;
@@ -82,7 +82,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         public int Row
         {
             // Just need to get row for element #0, all elements are (should be) in the same row
-            get { return Grid.GetRow(elements[0]); }
+            get => Grid.GetRow(elements[0]);
             // Update the row, keeping the column of each element
             set { elements.ForEach(element => element.SetGridPosition(value, Grid.GetColumn(element))); }
         }
@@ -139,7 +139,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
             elements = (from UIElement e in grid.Children where Grid.GetRow(e) == row select e).ToList();
             referenceElementIndex = !refCol.HasValue ? -1 : elements.FindIndex(e => Grid.GetColumn(e) == refCol);
 
-            // backup opacities
+            // backup opacity
             elements.ForEach(element => opacities.Add(element.Opacity));
         }
         #endregion

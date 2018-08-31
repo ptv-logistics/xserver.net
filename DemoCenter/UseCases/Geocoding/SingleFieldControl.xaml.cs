@@ -43,23 +43,19 @@ namespace Ptv.XServer.Demo.Geocoding
         /// <param name="e"> Event parameters. </param>
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            var geocoder = Resources["Geocoder"] as GeocoderDemo;
-            // subsequent null checks keep the designer working
-            if ((geocoder == null) || !(sender is UserControl)) return;
+            if (!(Resources["Geocoder"] is GeocoderDemo geocoder) || !(sender is UserControl userControl)) return;
 
-            switch (((UserControl) sender).Visibility)
+            switch (userControl.Visibility)
             {
                 case Visibility.Collapsed:
                 {
-                    var mainWindow = Application.Current.MainWindow as MainWindow;
-                    if (mainWindow != null)
+                    if (Application.Current.MainWindow is MainWindow mainWindow)
                         geocoder.Remove(mainWindow.FindName("wpfMap") as WpfMap, true);
                     break;
                 }
                 case Visibility.Visible:
                 {
-                    var mainWindow = Application.Current.MainWindow as MainWindow;
-                    if (mainWindow != null)
+                    if (Application.Current.MainWindow is MainWindow mainWindow)
                         geocoder.AddTo(mainWindow.FindName("wpfMap") as WpfMap, "SingleFieldGC", true);
                     break;
                 }

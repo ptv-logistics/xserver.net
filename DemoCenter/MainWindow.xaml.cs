@@ -1,9 +1,4 @@
-﻿//--------------------------------------------------------------
-// Copyright (c) PTV Group
-// 
-// For license details, please refer to the file COPYING, which 
-// should have been provided with this distribution.
-//--------------------------------------------------------------
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
 using System;
 using System.Linq;
@@ -278,8 +273,7 @@ namespace Ptv.XServer.Demo
 
         private string getUrlFromComboBox()
         {
-            var urlItem = XURLComboBox.SelectedItem as ComboBoxItem;
-            return ((urlItem == null) || string.IsNullOrEmpty(urlItem.Tag as string)) 
+            return (!(XURLComboBox.SelectedItem is ComboBoxItem urlItem) || string.IsNullOrEmpty(urlItem.Tag as string)) 
                 ? XURLComboBox.Text.Trim() 
                 : (string) urlItem.Tag;
         }
@@ -500,8 +494,7 @@ namespace Ptv.XServer.Demo
 
         private void FeatureLayerComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var comboBox = sender as ComboBox;
-            if (comboBox == null) return;
+            if (!(sender is ComboBox comboBox)) return;
             featureLayerUseCase.SetScenario(ThemeFrom(comboBox), comboBox.SelectedIndex);
         }
 

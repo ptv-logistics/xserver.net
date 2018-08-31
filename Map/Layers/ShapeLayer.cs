@@ -58,7 +58,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <summary> The map to which this canvas is added. </summary>
         private readonly MapView mapView;
 
-        /// <summary> Gets or sets if the shapes should updated after viewportend only. </summary>
+        /// <summary> Gets or sets if the shapes should updated after viewport end only. </summary>
         private bool lazyUpdate { get; }
         #endregion
 
@@ -81,8 +81,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         public static Point GetLocation(UIElement element)
         {
             var result = (Point)element.GetValue(LocationProperty);
-            if (!result.IsValidGeoCoordinate() && (element is MapPolylineBase))
-                result = (new MapRectangle(((MapPolylineBase) element).Points)).Center;
+            if (!result.IsValidGeoCoordinate() && (element is MapPolylineBase mapPolyline))
+                result = new MapRectangle(mapPolyline.Points).Center;
             return result;
         }
         /// <summary> Sets the location of a certain shape element. </summary>
@@ -179,7 +179,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <param name="mapView"> Map on which the canvas is to be displayed. </param>
         /// <param name="shapes"> The shape elements which are to be painted on the canvas. </param>
         /// <param name="spatialReferenceId"> Spatial reference system to which the point of the shapes refer. </param>
-        /// <param name="lazyUpdate">The shapes should be updated after viewportend only.</param>
+        /// <param name="lazyUpdate">The shapes should be updated after viewport end only.</param>
         public ShapeCanvas(MapView mapView, ObservableCollection<FrameworkElement> shapes, string spatialReferenceId, bool lazyUpdate)
             : base(mapView)
         {
@@ -234,16 +234,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         {
             var element = obj as FrameworkElement;
 
-            if (element?.Parent is ShapeCanvas)
+            if (element?.Parent is ShapeCanvas shapeCanvas)
             {
-                var sc = (ShapeCanvas) element.Parent;
-
                 var location = (Point)args.NewValue;
-                sc.UpdateLocation(element, location);
-                var vc = element.Parent as ShapeCanvas;
-                var canvasPoint = vc.transform(location);
-
-                sc.UpdateLocation(element, canvasPoint);
+                shapeCanvas.UpdateLocation(element, location);
+                var canvasPoint = shapeCanvas.transform(location);
+                shapeCanvas.UpdateLocation(element, canvasPoint);
             }
         }
 
@@ -274,16 +270,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         {
             var element = obj as FrameworkElement;
 
-            if (element.Parent is ShapeCanvas)
+            if (element?.Parent is ShapeCanvas shapeCanvas)
             {
-                var sc = element.Parent as ShapeCanvas;
-
                 var location = GetLocation(obj as UIElement);
-                sc.UpdateLocation(element, location);
-                var vc = element.Parent as ShapeCanvas;
-                var canvasPoint = vc.transform(location);
-
-                sc.UpdateLocation(element, canvasPoint);
+                shapeCanvas.UpdateLocation(element, location);
+                var canvasPoint = shapeCanvas.transform(location);
+                shapeCanvas.UpdateLocation(element, canvasPoint);
             }
         }
 
@@ -302,8 +294,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <param name="shape"> Shape element to be added. </param>
         private void Add(FrameworkElement shape)
         {
-            var mapShape = shape as MapShape;
-            if (mapShape != null)
+            if (shape is MapShape mapShape)
             {
                 mapShape.GeoTransform = transform;
 
@@ -338,12 +329,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         {
             var element = sender as FrameworkElement;
 
-            if (element.Parent is ShapeCanvas)
+            if (element?.Parent is ShapeCanvas shapeCanvas)
             {
                 var location = GetLocation(element);
                 UpdateLocation(element, location);
-                var vc = element.Parent as ShapeCanvas;
-                var canvasPoint = vc.transform(location);
+                var canvasPoint = shapeCanvas.transform(location);
 
                 UpdateLocation(element, canvasPoint);
             }
@@ -373,12 +363,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
 
         /// <summary> Updates the scale of a certain shape element. </summary>
         /// <param name="shape"> Shape element for which the scale is to be updated. </param>
-        /// <param name="inputMapView"> Mapview object, which contains the corresponding shape layer. It is needed for obtaining its currently used scale.</param>
+        /// <param name="inputMapView"> MapView object, which contains the corresponding shape layer. It is needed for obtaining its currently used scale.</param>
         /// <param name="updateMode">At which part the current transition is.</param>
         public void UpdateScale(FrameworkElement shape, MapView inputMapView, UpdateMode updateMode)
         {
-            var mapShape = shape as MapShape;
-            if (mapShape != null)
+            if (shape is MapShape mapShape)
             {
                 mapShape.UpdateShape(inputMapView, updateMode, lazyUpdate);
             }
@@ -396,8 +385,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
                     var scale = inputMapView.CurrentScale;
                     double lsf = GetScaleFactor(shape);
                     double elementScale = GetScale(shape);
-                    const double TOLERANCE = 0.0001;
-                    if (Math.Abs(lsf - 1) < TOLERANCE && Math.Abs(elementScale - 1) < TOLERANCE)
+                    if (lsf == 1 && elementScale == 1)
                     {
                         shape.RenderTransform = null;
                     }

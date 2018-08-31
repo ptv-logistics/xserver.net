@@ -30,8 +30,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         /// </summary>
         public bool IsBaseMapLayer
         {
-            set { CanvasCategories[0] = value ? CanvasCategory.BaseMap : CanvasCategory.Content; }
-            get { return CanvasCategories[0] == CanvasCategory.BaseMap; }
+            get => CanvasCategories[0] == CanvasCategory.BaseMap;
+            set => CanvasCategories[0] = value ? CanvasCategory.BaseMap : CanvasCategory.Content;
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
 
             this.tiledProvider = tiledProvider;
 
-            // initialize cache for re-usable writeable bitmaps
+            // initialize cache for re-usable writable bitmaps
 
             threadPool.Start();
         }
@@ -226,8 +226,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             {
                 foreach (TileParam tile in GetVisibleTiles(mapParam))
                 {
-                    byte[] buffer;
-                    GetImage(tile, out buffer);
+                    GetImage(tile, out var buffer);
                     DisplayImage(buffer, tile, false, true);
                     RemoveRestOfTiles();
                 }
@@ -269,7 +268,6 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 return;
             }
 
-            // TODO: Stimmt dieser Kommentar???
             // remove all images at deeper level that contains the current level
             var tileZoom = GetTileZoom();
             var tmpList = new List<TileParam>();
@@ -414,15 +412,15 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
 
             int numTiles = 1 << mapParam.TileZoom; // number of tiles for a zoom level    
             double tileDif = mapParam.TileZoom - mapParam.MapZoom;
-            double dileFact = Math.Pow(2, tileDif);
+            double tileFact = Math.Pow(2, tileDif);
             double factor = (tiledProvider as ITilingOptions)?.Factor ?? 1;
             double logicalSize = MapView.LogicalSize / factor;
 
             // calculate the left upper tiles
-            var p0x = (int)((mapParam.MapX + (logicalSize / 2)) * (numTiles / logicalSize) - dileFact * mapParam.WpfWidth / 512);
-            var p0y = (int)(((logicalSize / 2) - mapParam.MapY) * (numTiles / logicalSize) - dileFact * mapParam.WpfHeight / 512);
-            var p1x = (int)((mapParam.MapX + (logicalSize / 2)) * (numTiles / logicalSize) + dileFact * mapParam.WpfWidth / 512);
-            var p1y = (int)(((logicalSize / 2) - mapParam.MapY) * (numTiles / logicalSize) + dileFact * mapParam.WpfHeight / 512);
+            var p0x = (int)((mapParam.MapX + (logicalSize / 2)) * (numTiles / logicalSize) - tileFact * mapParam.WpfWidth / 512);
+            var p0y = (int)(((logicalSize / 2) - mapParam.MapY) * (numTiles / logicalSize) - tileFact * mapParam.WpfHeight / 512);
+            var p1x = (int)((mapParam.MapX + (logicalSize / 2)) * (numTiles / logicalSize) + tileFact * mapParam.WpfWidth / 512);
+            var p1y = (int)(((logicalSize / 2) - mapParam.MapY) * (numTiles / logicalSize) + tileFact * mapParam.WpfHeight / 512);
 
             int numTilesX = p1x - p0x + 1;
             int numTilesY = p1y - p0y + 1;
@@ -456,10 +454,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         /// <param name="e"> Event parameters. </param>
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var tiles = e.Argument as IEnumerable<TileParam>;
-            if (tiles == null) return;
+            if (!(e.Argument is IEnumerable<TileParam> tileParams)) return;
 
-            foreach (TileParam tile in tiles)
+            foreach (var tileParam in tileParams)
             {
                 if (((BackgroundWorker)sender).CancellationPending)
                 {
@@ -471,11 +468,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 {
                     // new Thread(new ParameterizedThreadStart(LoadImage)).Start(tile);
                     // ThreadPool.QueueUserWorkItem(new WaitCallback(LoadImage), tile);
-                    threadPool.PostRequest(new Action<TileParam>(LoadImage), new object[] { tile });
+                    threadPool.PostRequest(new Action<TileParam>(LoadImage), new object[] { tileParam });
                 }
                 else
                 {
-                    LoadImage(tile); // single threaded for debugging
+                    LoadImage(tileParam); // single threaded for debugging
                 }
             }
         }
@@ -614,8 +611,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 return;
             }
 
-            byte[] buffer;
-            bool cached = GetImage(tileParam, out buffer);
+            bool cached = GetImage(tileParam, out var buffer);
 
             int x = tileParam.TileX;
             int y = tileParam.TileY;
@@ -728,21 +724,13 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
 
             public override bool Equals(Object obj)
             {
-                // If parameter cannot be cast to Point return false.
-                var p = obj as TileParam;
-                if (p == null) return false;
-
-                // Return true if the fields match:
-                return (TileX == p.TileX) && (TileY == p.TileY) && (Zoom == p.Zoom) && (CacheKey == p.CacheKey);
+                return (obj is TileParam p) && (TileX == p.TileX) && (TileY == p.TileY) && (Zoom == p.Zoom) && (CacheKey == p.CacheKey);
             }
 
             public bool Equals(TileParam p)
             {
-                // If parameter is null return false:
-                if (p == null) return false;
-
                 // Return true if the fields match:
-                return (TileX == p.TileX) && (TileY == p.TileX) && (Zoom == p.Zoom) && (CacheKey == p.CacheKey);
+                return (p != null) && (TileX == p.TileX) && (TileY == p.TileX) && (Zoom == p.Zoom) && (CacheKey == p.CacheKey);
             }
 
             public override int GetHashCode()

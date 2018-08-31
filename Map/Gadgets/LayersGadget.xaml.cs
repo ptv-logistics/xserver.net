@@ -105,8 +105,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
         void layers_LayerVisibilityChanged(object sender, LayerChangedEventArgs e)
         {
-            foreach (var uiElement in LayersStack.Children.Cast<object>().Where(uiElement => uiElement is CheckBox && Grid.GetColumn((CheckBox)uiElement) == 2 
-                                                                                             && ((CheckBox)uiElement).Tag.ToString() == e.LayerName))
+            foreach (var uiElement in LayersStack.Children.Cast<object>().Where(uiElement => uiElement is CheckBox box && Grid.GetColumn(box) == 2 
+                                                                                             && box.Tag.ToString() == e.LayerName))
             {
                 ((CheckBox)uiElement).IsChecked = layers.IsVisible(layers[e.LayerName]);
             }
@@ -114,8 +114,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
         void layers_LayerSelectabilityChanged(object sender, LayerChangedEventArgs e)
         {
-            foreach (var uiElement in LayersStack.Children.Cast<object>().Where(uiElement => uiElement is CheckBox && Grid.GetColumn((CheckBox)uiElement) == 3 
-                                                                                             && ((CheckBox)uiElement).Tag.ToString() == e.LayerName))
+            foreach (var uiElement in LayersStack.Children.Cast<object>().Where(uiElement => uiElement is CheckBox box && Grid.GetColumn(box) == 3 
+                                                                                             && box.Tag.ToString() == e.LayerName))
             {
                 ((CheckBox)uiElement).IsChecked = layers.IsSelectable(layers[e.LayerName]);
             }
@@ -157,7 +157,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <param name="e"> The event parameters. </param>
         private void Layers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            // unregister events for old layers
+            // Unregister events for old layers
             if (e.OldItems != null)
                 foreach (var layer in e.OldItems)
                     ((ILayer)layer).PropertyChanged -= layer_PropertyChanged;
@@ -187,7 +187,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             selection_Common(sender, true);
         }
 
-        /// <summary> Event handler for unchecking the selection checkbox. Updates the selection checkboxes. </summary>
+        /// <summary> Event handler for un-checking the selection checkbox. Updates the selection checkboxes. </summary>
         /// <param name="sender"> Sender of the Unchecked event. </param>
         /// <param name="e"> The event parameters. </param>
         private void selection_Unchecked(object sender, RoutedEventArgs e)
@@ -206,13 +206,12 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             UpdateSelection();
         }
 
-        /// <summary> Event handler for unchecking the visibility toggle button of the layer. Makes the layer invisible. </summary>
+        /// <summary> Event handler for un-checking the visibility toggle button of the layer. Makes the layer invisible. </summary>
         /// <param name="sender"> Sender of the Unchecked event. </param>
         /// <param name="e"> The event parameters. </param>
         private void visibility_Unchecked(object sender, RoutedEventArgs e)
         {
-            var toggleButton = sender as ToggleButton;
-            if (toggleButton == null) return;
+            if (!(sender is ToggleButton toggleButton)) return;
             toggleButton.Opacity = 0.7;
             layers.SetVisible(layers[toggleButton.Tag as string], false);
         }
@@ -222,8 +221,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <param name="e"> The event parameters. </param>
         private void visibility_Checked(object sender, RoutedEventArgs e)
         {
-            var toggleButton = sender as ToggleButton;
-            if (toggleButton == null) return;
+            if (!(sender is ToggleButton toggleButton)) return;
             toggleButton.Opacity = 1;
             layers.SetVisible(layers[toggleButton.Tag as string], true);
         }
@@ -289,10 +287,10 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
                 var label = new Label {Tag = layer.Name, Padding = new Thickness(-1), Margin = LayersStack.Margin};
 
-                // opacityBinding wird für das Image und den Layer-Namen benötigt -> einmal erzeugen und mehrfach binden
+                // opacityBinding is needed for the image and the layer name -> create once and bind it multiple times
                 var opacityBinding = new Binding("Opacity") {Source = label};
 
-                // Erst den TextBlock erzeugen, da die Image-Größe von der Schriftgröße abhängen soll.
+                // Create the text block first because the image size depends on the fond size.
                 var textBlock = new TextBlock
                 {
                     Tag = layer.Name,
@@ -358,8 +356,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                 LayersStack.Children.Add(slider);
 
                 if (layer is ILayerGeoSearch)
-                {   // IsChecked = null für den Fall der Existenz eines Exklusiv-selektierbaren Layers
-                    // und dieser Layer selbst nicht exklusiv-selektierbar ist.
+                {   // IsChecked = null for the existence of an exclusive selectable layer
+                    // and this layer itself is not exclusive selectable.
                     checkBox = new CheckBox
                     {
                         IsChecked = true,
@@ -367,7 +365,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                         Margin = new Thickness(3),
                         VerticalAlignment = VerticalAlignment.Center
                     };
-                    // checkBox.IsThreeState = true; Durch Anklicken wird durch alle drei Zustände geschaltet.
+                    // checkBox.IsThreeState = true; // By clicking it can be iterated through all three states.
 
                     checkBox.Checked += selection_Checked;
                     checkBox.Unchecked += selection_Unchecked;
@@ -386,10 +384,10 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
         void layer_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != "Opacity" || !(sender is ILayer)) return;
-            foreach (var uiElement in LayersStack.Children.Cast<object>().Where(uiElement => uiElement is Slider && ((Slider)uiElement).Tag.ToString() == ((ILayer)sender).Name))
+            if (e.PropertyName != "Opacity" || !(sender is ILayer layer)) return;
+            foreach (var uiElement in LayersStack.Children.Cast<object>().Where(uiElement => uiElement is Slider slider && slider.Tag.ToString() == layer.Name))
             {
-                ((Slider)uiElement).Value = ((ILayer)sender).Opacity * 100;
+                ((Slider)uiElement).Value = layer.Opacity * 100;
             }
         }
 
@@ -399,7 +397,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         private void selection_Common(object sender, bool selectable)
         {
             if (updateByExclusiveSelection)
-                return; // nichts zu tun, da das Setzen mittelbar erfolgt und zu Fehlern führen würde
+                return; // Nothing to do because the setting is applied indirectly und would cause errors.
 
             if (layers.ExclusiveSelectableLayer == null)
                 // No exclusive layer: Toggle the selectable flag according the CheckBox
@@ -421,8 +419,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                 if (Grid.GetColumn(element) != selectionColumn)
                     continue;
 
-                var checkBox = element as CheckBox;
-                if (checkBox != null)
+                if (element is CheckBox checkBox)
                 {
                     var layer = layers[checkBox.Tag as string];
 
@@ -485,7 +482,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <param name="e"> Event parameters. </param>
         private void LayersExpander_Loaded(object sender, RoutedEventArgs e)
         {
-            if (LayersExpander.IsExpanded && !(LayersExpander.Header is Grid) || !LayersExpander.IsExpanded && (LayersExpander.Header is Grid))
+            if (LayersExpander.IsExpanded != (LayersExpander.Header is Grid))
                 ExchangeLayersExpanderHeader();
         }
 
@@ -563,16 +560,15 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <param name="e"> Event parameters. </param>
         private void LayersExpander_LayoutUpdated(object sender, EventArgs e)
         {
-            const double TOLERANCE = 0.0001;
-            if (LayersExpander.Header is TextBlock && Math.Abs((LayersExpander.Header as TextBlock).FontSize - HeaderText.FontSize) > TOLERANCE)
+            if (LayersExpander.Header is TextBlock block && block.FontSize != HeaderText.FontSize)
             {
-                ((TextBlock) LayersExpander.Header).FontSize = HeaderText.FontSize;
-                ((TextBlock) LayersExpander.Header).Margin = new Thickness(0, 0, 4, 0);
+                block.FontSize = HeaderText.FontSize;
+                block.Margin = new Thickness(0, 0, 4, 0);
             }
 
-            if (LayersExpander.Header is TextBlock && Math.Abs((LayersExpander.Header as TextBlock).ActualHeight - HeaderText.ActualHeight) > TOLERANCE)
+            if (LayersExpander.Header is TextBlock textBlock && textBlock.ActualHeight != HeaderText.ActualHeight)
             {
-                ((TextBlock) LayersExpander.Header).Height = HeaderText.ActualHeight;
+                textBlock.Height = HeaderText.ActualHeight;
             }
         }
         #endregion

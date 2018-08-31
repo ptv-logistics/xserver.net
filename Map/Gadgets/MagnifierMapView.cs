@@ -48,10 +48,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                     MouseWheel += MagnifierMap_MouseWheel;
                 }
             }
-            get
-            {
-                return parentMapView;
-            }
+            get => parentMapView;
         }
 
         /// <summary> Gets a value indicating whether animation is used for map actions. </summary>

@@ -43,7 +43,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
             };
 
             BackgroundLayer.TiledProvider = tiledProvider;
-            BackgroundLayer.IsBaseMapLayer = true; // set to the basemap category -> cannot be moved on top of overlays
+            BackgroundLayer.IsBaseMapLayer = true; // set to the base map category -> cannot be moved on top of overlays
 
             BackgroundThemes.CollectionChanged += (sender, e) =>
             {
@@ -101,8 +101,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// <summary>Collection of themes which determine the geographical content for the <see cref="ForegroundLayer"/>,
         /// for example themes like <c>labels</c> or <c>PTV_TruckAttributes</c>. The major intention of this layer
         /// is to avoid blurred objects like texts or traffic signs when fractional rendering is applied. Fractional rendering
-        /// is provided by the <see cref="Map"/> object allowing seemless zooming. In most mapping frameworks there are only
-        /// zoom levels available according the classification of tile sizes. Only in such environments a tile-based redering is
+        /// is provided by the <see cref="Map"/> object allowing seamless zooming. In most mapping frameworks there are only
+        /// zoom levels available according the classification of tile sizes. Only in such environments a tile-based rendering is
         /// recommended. </summary>
         public ObservableCollection<string> ForegroundThemes { get; } = new ObservableCollection<string>();
 

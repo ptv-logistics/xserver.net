@@ -33,29 +33,20 @@ namespace Ptv.XServer.Demo.Geocoding
         /// <param name="e"> Event parameters. </param>
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            var geocoder = Resources["Geocoder"] as GeocoderDemo;
+            if ((!(Resources["Geocoder"] is GeocoderDemo geocoder)) || !(sender is UserControl userControl)) return;
 
-            // subsequent null checks keep the designer working
-            if ((geocoder == null) || !(sender is UserControl)) return;
-
-            switch (((UserControl) sender).Visibility)
+            switch (userControl.Visibility)
             {
                 case Visibility.Collapsed:
                 {
-                    var mainWindow = Application.Current.MainWindow as MainWindow;
-                    if (mainWindow != null)
-                    {
+                    if (Application.Current.MainWindow is MainWindow mainWindow)
                         geocoder.Remove(mainWindow.FindName("wpfMap") as WpfMap, false);
-                    }
                     break;
                 }
                 case Visibility.Visible:
                 {
-                    var mainWindow = Application.Current.MainWindow as MainWindow;
-                    if (mainWindow != null)
-                    {
+                    if (Application.Current.MainWindow is MainWindow mainWindow)
                         geocoder.AddTo(mainWindow.FindName("wpfMap") as WpfMap, "MultiFieldGC", false);
-                    }
                     break;
                 }
             }
@@ -67,9 +58,8 @@ namespace Ptv.XServer.Demo.Geocoding
         private void box_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Enter) return;
-
-            if (   ((sender as TextBox) == countrybox) || ((sender as TextBox) == statebox) || ((sender as TextBox) == countrycodebox)
-                || ((sender as TextBox) == citybox) || ((sender as TextBox) == streetbox))
+            var textBox = sender as TextBox;
+            if (textBox == countrybox || textBox == statebox || textBox == countrycodebox || textBox == citybox || textBox == streetbox)
             {
                 locateButton.Focus();
                 LocateButton_Click(this, null);

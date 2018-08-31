@@ -40,7 +40,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         public int BlockSize { get; set; }
 
         /// <summary>
-        /// Specifies, if not null and > 1, that multithreading should be used during reprojection.
+        /// Specifies, if not null and > 1, that multi-threading should be used during reprojection.
         /// </summary>
         public int? DegreeOfParallelism { get; set; }
     }
@@ -90,7 +90,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             var source = ArgbImage.FromImage(image, ReprojectionOptions.InterpolationMode);
             var target = new ArgbImage(size);
 
-            // divide into blocks and reproject each block
+            // divide into blocks and re-project each block
             GetBlocks(size).ForEach(ReprojectionOptions.DegreeOfParallelism, block =>
             {
                 Reproject(source, target, block, targetToSource, scale);
@@ -161,7 +161,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             var ny = Math.Max(1, (size.Height + (blockSize >> 1)) / blockSize);
 
             // lambda for determining an end coordinate, given the start coordinate, the size and the remainder
-            Func<int, int, int, int> c1 = (c0, sz, rmndr) => c0 + sz + Math.Max(0, Math.Min(1, rmndr)) - 1;
+            Func<int, int, int, int> c1 = (startCoordinate, partialSize, remainder) => startCoordinate + partialSize + Math.Max(0, Math.Min(1, remainder)) - 1;
 
             // knowing the number of blocks to build, we can determine the effective block size 
             // (sx and sy below) and the remaining pixels that must be equally spread among the 
@@ -305,7 +305,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <param name="transformTargetToSource">Mapping function that maps target to source pixels.</param>
         private static void UnscaledReprojection(ArgbImage source, ArgbImage target, ReprojectionBlock block, Func<PointD, PointD> transformTargetToSource)
         {
-            // interpolators for upper and lower line of block
+            // Interpolators for upper and lower line of block
             var upper = InterpolationData.Create(transformTargetToSource(block.LeftTop), transformTargetToSource(block.RightTop), block.X1 - block.X0);
             var lower = InterpolationData.Create(transformTargetToSource(block.LeftBottom), transformTargetToSource(block.RightBottom), block.X1 - block.X0);
 
@@ -336,7 +336,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             var nx = (block.X1 - block.X0);
             var ny = (block.Y1 - block.Y0 + 1) * scaleY - 1;
 
-            // interpolators for upper and lower line of block
+            // Interpolators for upper and lower line of block
             var upper = InterpolationData.Create(transformTargetToSource(block.LeftTop), transformTargetToSource(block.RightTop), nx);
             var lower = InterpolationData.Create(transformTargetToSource(block.LeftBottom), transformTargetToSource(block.RightBottom), nx);
 
@@ -355,7 +355,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                     uint a, r, g, b;
                     a = r = g = b = colorBlockSize >> 2;
 
-                    // collect color components of subpixels. 
+                    // collect color components of sub pixels. 
                     // In the inner loop, we'll step our sourcePoint interpolators.
                     for (var ysub = 0; ysub < scaleY; ++ysub, ++sourcePoint)
                     {
@@ -395,7 +395,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             var nx = (block.X1 - block.X0 + 1)*scale.Width - 1;
             var ny = (block.Y1 - block.Y0 + 1)*scale.Height - 1;
 
-            // interpolators for upper and lower line of block
+            // Interpolators for upper and lower line of block
             var upper = InterpolationData.Create(transformTargetToSource(block.LeftTop), transformTargetToSource(block.RightTop), nx);
             var lower = InterpolationData.Create(transformTargetToSource(block.LeftBottom), transformTargetToSource(block.RightBottom), nx);
 
@@ -490,8 +490,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <param name="t">A transformation function to call with each point before drawing the actual lines.</param>
         public void Render(Graphics g, Pen p, Func<PointD, PointD> t)
         {
-            Func<PointD, PointF> pointF = 
-                pointD => new PointF((float) pointD.X, (float) pointD.Y);
+            Func<PointD, PointF> pointF = pointD => new PointF((float) pointD.X, (float) pointD.Y);
 
             g.DrawLines(p, new[] { LeftTop, RightTop, RightBottom, LeftBottom, LeftTop }.Select(pointF).ToArray());
         }

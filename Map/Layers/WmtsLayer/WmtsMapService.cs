@@ -55,7 +55,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
         /// The url template is expected to contain the placeholders "{x}", "{y}" and "{z}", e.g. 
         /// "http://mywmts.service.de/wmts/mylayer/mymatrixset/{z}/{x}/{y}.png". The placeholders will be 
         /// replaced when requesting tiles; the value of "{z}" will be taken from the identifier of the tile 
-        /// matrix acutally returned by the given SelectTileMatrixDelegate. Each web request created will be
+        /// matrix actually returned by the given SelectTileMatrixDelegate. Each web request created will be
         /// passed to a delegate that allows additional modifications.
         /// </remarks>
         public WmtsMapService(string urlTemplate, string crs, SelectTileMatrixDelegate selectTileMatrix, IBoundingBox limits = null)
@@ -75,7 +75,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
         public RequestCreatedHandler OnRequestCreated = null;
 
         /// <summary>
-        /// Gets the function that determins the best matching tile matrix for a given rendering request.
+        /// Gets the function that determines the best matching tile matrix for a given rendering request.
         /// </summary>
         private SelectTileMatrixDelegate SelectTileMatrix { get; }
 
@@ -93,7 +93,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
             /// <summary>
             /// Creates and initializes an instance of BlockBuilder.
             /// </summary>
-            /// <param name="blockSize">Target blocksize.</param>
+            /// <param name="blockSize">Target block size.</param>
             private BlockBuilder(int blockSize) : base(new ReprojectionOptions() { BlockSize = blockSize })
             {
             }
@@ -239,7 +239,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
 
         /// <summary>
         /// Due to limitations of certain CRS the given bounding box a/o size may be invalid. 
-        /// This happens when transforming Meractor tile bounds to the CRS. This helper checks 
+        /// This happens when transforming Mercator tile bounds to the CRS. This helper checks 
         /// the bounds and size.
         /// </summary>
         /// <param name="boundingBox"></param>
@@ -247,12 +247,8 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
         /// <returns>True, if bounds and size are valid.</returns>
         private static bool ParamsValid(IBoundingBox boundingBox, Size size)
         {
-            Func<double, bool> notInfinityAndANumber =
-                dbl => !(double.IsInfinity(dbl) || double.IsNaN(dbl));
-
-            return
-                boundingBox.Stream().All(notInfinityAndANumber) &&
-                size.Width > 0 && size.Width <= SizeLimit && size.Height > 0 && size.Height <= SizeLimit;
+            return size.Width > 0 && size.Width <= SizeLimit && size.Height > 0 && size.Height <= SizeLimit
+                && boundingBox.Stream().All(dbl => !(double.IsInfinity(dbl) || double.IsNaN(dbl)));
         }
 
         /// <inheritdoc/>
@@ -347,7 +343,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
                         // test, if the tile image fully covers the bounding box that has initially been requested.
                         // 
                         // if that is the case, we'll extract the requested bounding box from that image (unscaled) and 
-                        // return that. This avoids an additonal drawing operation that scales the image and decreases quality.
+                        // return that. This avoids an additional drawing operation that scales the image and decreases quality.
                         
                         if (boundingBox.MinX >= logicalTileRect.MinX && boundingBox.MaxX <= logicalTileRect.MaxX && boundingBox.MinY >= logicalTileRect.MinX && boundingBox.MaxY <= logicalTileRect.MaxY)
                         {

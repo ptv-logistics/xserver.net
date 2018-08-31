@@ -144,7 +144,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                         layers.Add(new StaticPoiLayer {name = "background", visible = false, category = -1, detailLevel = 0});
                         break;
 
-                    case XMapMode.Background: // only streets and polygones
+                    case XMapMode.Background: // only streets and polygons
                         profile = "ajax-bg";
                         layers.Add(new StaticPoiLayer {name = "town", visible = false, category = -1, detailLevel = 0});
                         break;

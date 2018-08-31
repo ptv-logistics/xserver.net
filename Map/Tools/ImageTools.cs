@@ -9,11 +9,11 @@ using System.Drawing;
 
 namespace Ptv.XServer.Controls.Map.Tools
 {
-    /// <summary> Tool class for handling writeable bitmaps. </summary>
+    /// <summary> Tool class for handling writable bitmaps. </summary>
     public static class ImageTools
     {
         #region public methods
-        /// <summary> Creates a writeable bitmap. </summary>
+        /// <summary> Creates a writable bitmap. </summary>
         /// <param name="width"> The width of the bitmap. </param>
         /// <param name="height"> The height of the bitmap. </param>
         /// <returns> The created bitmap. </returns>
@@ -33,26 +33,26 @@ namespace Ptv.XServer.Controls.Map.Tools
             }
         }
 
-        /// <summary> Writes an image into an existing writeable bitmap. </summary>
+        /// <summary> Writes an image into an existing writable bitmap. </summary>
         /// <param name="image"> The image to write. </param>
-        /// <param name="writeableBitmap"> The writeable bitmap. </param>
-        public static void WriteImageIntoBitmap(Image image, WriteableBitmap writeableBitmap)
+        /// <param name="writableBitmap"> The writable bitmap. </param>
+        public static void WriteImageIntoBitmap(Image image, WriteableBitmap writableBitmap)
         {
-            writeableBitmap.Lock();
-            using (var bmp = new Bitmap(writeableBitmap.PixelWidth, writeableBitmap.PixelHeight,
-                                     writeableBitmap.BackBufferStride,
+            writableBitmap.Lock();
+            using (var bmp = new Bitmap(writableBitmap.PixelWidth, writableBitmap.PixelHeight,
+                                     writableBitmap.BackBufferStride,
                                      System.Drawing.Imaging.PixelFormat.Format32bppPArgb,
-                                     writeableBitmap.BackBuffer))
+                                     writableBitmap.BackBuffer))
             {
                 using (var g = Graphics.FromImage(bmp)) // Good old Graphics
                 {
                     g.Clear(System.Drawing.Color.Transparent);
-                    g.DrawImageUnscaledAndClipped(image, new Rectangle(0, 0, writeableBitmap.PixelWidth, writeableBitmap.PixelHeight));
+                    g.DrawImageUnscaledAndClipped(image, new Rectangle(0, 0, writableBitmap.PixelWidth, writableBitmap.PixelHeight));
 
-                    writeableBitmap.AddDirtyRect(new Int32Rect(0, 0, writeableBitmap.PixelWidth, writeableBitmap.PixelHeight));
+                    writableBitmap.AddDirtyRect(new Int32Rect(0, 0, writableBitmap.PixelWidth, writableBitmap.PixelHeight));
                 }
             }
-            writeableBitmap.Unlock();
+            writableBitmap.Unlock();
         }
 
         //public static ImageSource LoadImage(byte[] buffer)

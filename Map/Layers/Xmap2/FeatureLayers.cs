@@ -32,8 +32,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// </summary>
         public Func<string> TimeConsiderationScenarioFunc
         {
-            get { return ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).TimeConsiderationScenarioFunc; }
-            set { ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).TimeConsiderationScenarioFunc = value; }
+            get => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).TimeConsiderationScenarioFunc;
+            set => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).TimeConsiderationScenarioFunc = value;
         }
 
         /// <summary>For <em>SnapshotTimeConsideration</em> and <em>TimeSpanConsideration</em> it is necessary to define a reference
@@ -42,23 +42,23 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// <c>yyyy-MM-ddTHH:mm:ss[+-]HH:mm</c>, for example <c>2018-08-05T04:00:00+02:00</c>. </summary>
         public Func<string> ReferenceTimeFunc
         {
-            get { return ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).ReferenceTimeFunc; }
-            set { ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).ReferenceTimeFunc = value; }
+            get => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).ReferenceTimeFunc;
+            set => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).ReferenceTimeFunc = value;
         }
 
         /// <summary>Function which defines the time span (in seconds) which is added to the reference time 
         /// and needed for the <em>TimeSpanConsideration</em> scenario. </summary>
         public Func<double> TimeSpanFunc
         {
-            get { return ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).TimeSpanFunc; }
-            set { ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).TimeSpanFunc = value; }
+            get => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).TimeSpanFunc;
+            set => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).TimeSpanFunc = value;
         }
 
         /// <summary>Function which indicates if the non-relevant Features should be shown or not.</summary>
         public Func<bool> ShowOnlyRelevantByTimeFunc
         {
-            get { return ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).ShowOnlyRelevantByTimeFunc; }
-            set { ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).ShowOnlyRelevantByTimeFunc = value; }
+            get => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).ShowOnlyRelevantByTimeFunc;
+            set => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).ShowOnlyRelevantByTimeFunc = value;
         }
 
         /// <summary>Function which returns the used language, commonly needed for the language of textual messages provided
@@ -66,8 +66,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// for example <em>en</em>, <em>fr</em> or <em>de</em>. </summary>
         public Func<string> LanguageFunc
         {
-            get { return ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).UserLanguageFunc; }
-            set { ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).UserLanguageFunc = value; }
+            get => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).UserLanguageFunc;
+            set => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).UserLanguageFunc = value;
         }
     }
 }

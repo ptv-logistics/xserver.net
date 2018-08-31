@@ -58,8 +58,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <value> Orientation of the zoom slider. </value>
         public Orientation Orientation
         {
-            get { return orientation; }
-            
+            get => orientation;
+
             set
             {
                 orientation = value;
@@ -132,7 +132,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <value> Zoom factor of the map. </value>
         public int MapZoom
         {
-            get { return (int)GetValue(MapZoomProperty); }
+            get => (int)GetValue(MapZoomProperty);
             set
             {
                 selfNotify = true;
@@ -152,8 +152,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             if (selfNotify)
                 return;
 
-            const double TOLERANCE = 0.0001;
-            if (Math.Abs(MapView.FinalZoom * 10 - MapZoom) > TOLERANCE)
+            if (MapView.FinalZoom * 10 != MapZoom)
                 MapView.SetZoom((double)MapZoom / 10, Map.UseAnimation);
         }
 

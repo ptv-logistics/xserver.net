@@ -19,10 +19,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public WrappingStream(Stream streamBase)
         {
             // check parameters
-            if (streamBase == null)
-                throw new ArgumentNullException(nameof(streamBase));
-
-            m_streamBase = streamBase;
+            m_streamBase = streamBase ?? throw new ArgumentNullException(nameof(streamBase));
         }
 
         /// <summary>

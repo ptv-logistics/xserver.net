@@ -44,12 +44,18 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <summary> Initializes a new instance of the <see cref="XMapTiledProviderBase"/> class. </summary>
         protected XMapTiledProviderBase()
         {
-            // factor for scaling of the MSI
+            // parameters for scaling of the MSI
             Factor = 1;
-            OverlapFactor = 1.0 / 64;
-            Border = 6;
+
+            // overlap tiles if InifiteZoom is disabled
+            if (!GlobalOptions.InfiniteZoom)
+            {
+                OverlapFactor = 1.0 / 64;
+                Border = 6;
+            }
+
             MinZoom = 0;
-            MaxZoom = 18;
+            MaxZoom = 19;
         }
         #endregion
 
@@ -250,8 +256,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <inheritdoc/>
         public virtual Stream GetImageStream(int tileX, int tileY, int zoom)
         {
-            double xMin, yMin, xMax, yMax;
-            TileToPtvMercatorAtZoom(tileX, tileY, zoom, out xMin, out yMin, out xMax, out yMax);
+            TileToPtvMercatorAtZoom(tileX, tileY, zoom, out var xMin, out var yMin, out var xMax, out var yMax);
 
             return GetStream(xMin, yMin, xMax, yMax,
                 256 + (int)Math.Round(256 * OverlapFactor), 256 + (int)Math.Round(256 * OverlapFactor), Border);

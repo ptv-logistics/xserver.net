@@ -5,7 +5,7 @@ using Ptv.XServer.Controls.Map.Layers.Tiled;
 namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
 {
     /// <summary>A layer which draws geographic content based on Web Map Tile Services (WMTS)
-    /// by means of pre-rendered or run-time computed georeferenced map tiles. For its major object
+    /// by means of pre-rendered or run-time computed geo-referenced map tiles. For its major object
     /// only two resources are needed: An URL template for addressing each individual tile and a
     /// customized classification of the different zoom levels for which tiles have to be generated for.
     /// </summary>
@@ -67,7 +67,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
         /// </summary>
         public string UrlTemplate
         {
-            get { return urlTemplate; }
+            get => urlTemplate;
             set
             {
                 WmtsMapService service = new WmtsMapService(

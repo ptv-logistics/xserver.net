@@ -75,7 +75,7 @@ namespace Ptv.XServer.Controls.Map.Tools
 
             yield return BuildPathFigure(CreateWKBLinearRing(reader, byteOrder, transform));
 
-            // Create a new array of linearrings for the interior rings.
+            // Create a new array of linear rings for the interior rings.
             for (int i = 0; i < (numRings - 1); i++)
                 yield return BuildPathFigure(CreateWKBLinearRing(reader, byteOrder, transform));
         }
@@ -108,12 +108,11 @@ namespace Ptv.XServer.Controls.Map.Tools
                     // Here we check the coordinates of the figures to skip invalid once and return the valid figures.
                     foreach (var seg in figure.Segments)
                     {
-                        if (seg is PolyLineSegment)
+                        if (seg is PolyLineSegment segment)
                         {
-                            foreach (var p in ((PolyLineSegment) seg).Points)
+                            foreach (var p in segment.Points)
                             {
                                 skip = (double.IsInfinity(p.X) || double.IsInfinity(p.Y));
-
                                 if (skip)
                                     break;
                             }
@@ -168,10 +167,10 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns> The <see cref="System.Windows.Media.Geometry"/> object. </returns>
         public static Geometry Parse(byte[] bytes, Func<Point, Point> transform)
         {
-            // Create a memory stream using the suppiled byte array.
+            // Create a memory stream using the supplied byte array.
             using (var memoryStream = new MemoryStream(bytes))
             {
-                // Create a new binary reader using the newly created memorystream.
+                // Create a new binary reader using the newly created memory stream.
                 using (var reader = new BinaryReader(memoryStream))
                 {
                     // Call the main create function.

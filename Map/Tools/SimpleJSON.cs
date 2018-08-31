@@ -153,8 +153,7 @@ namespace TinyJson
                         }
                         if (json[i + 1] == 'u' && i + 5 < json.Length - 1)
                         {
-                            UInt32 c = 0;
-                            if (UInt32.TryParse(json.Substring(i + 2, 4), System.Globalization.NumberStyles.AllowHexSpecifier, null, out c))
+                            if (UInt32.TryParse(json.Substring(i + 2, 4), System.Globalization.NumberStyles.AllowHexSpecifier, null, out var c))
                             {
                                 stringBuilder.Append((char)c);
                                 i += 5;
@@ -173,8 +172,7 @@ namespace TinyJson
             }
             if (type == typeof(decimal))
             {
-                decimal result;
-                decimal.TryParse(json, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out result);
+                decimal.TryParse(json, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var result);
                 return result;
             }
             if (json == "null")
@@ -201,7 +199,7 @@ namespace TinyJson
                     return null;
 
                 List<string> elems = Split(json);
-                var list = (IList)type.GetConstructor(new Type[] { typeof(int) }).Invoke(new object[] { elems.Count });
+                var list = (IList)type.GetConstructor(new[] { typeof(int) })?.Invoke(new object[] { elems.Count });
                 foreach (var elem in elems)
                     list.Add(ParseValue(listType, elem));
 
@@ -228,7 +226,7 @@ namespace TinyJson
                 if (elems.Count % 2 != 0)
                     return null;
 
-                var dictionary = (IDictionary)type.GetConstructor(new Type[] { typeof(int) }).Invoke(new object[] { elems.Count / 2 });
+                var dictionary = (IDictionary)type.GetConstructor(new[] { typeof(int) })?.Invoke(new object[] { elems.Count / 2 });
                 for (int i = 0; i < elems.Count; i += 2)
                 {
                     if (elems[i].Length <= 2)
@@ -281,14 +279,12 @@ namespace TinyJson
             {
                 if (json.Contains("."))
                 {
-                    double result;
-                    double.TryParse(json, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out result);
+                    double.TryParse(json, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var result);
                     return result;
                 }
                 else
                 {
-                    int result;
-                    int.TryParse(json, out result);
+                    int.TryParse(json, out var result);
                     return result;
                 }
             }
@@ -322,15 +318,13 @@ namespace TinyJson
             if (elems.Count % 2 != 0)
                 return instance;
 
-            Dictionary<string, FieldInfo> nameToField;
-            Dictionary<string, PropertyInfo> nameToProperty;
-            if (!fieldInfoCache.TryGetValue(type, out nameToField))
+            if (!fieldInfoCache.TryGetValue(type, out var nameToField))
             {
                 FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
                 nameToField = CreateMemberNameDictionary(fields);
                 fieldInfoCache.Add(type, nameToField);
             }
-            if (!propertyInfoCache.TryGetValue(type, out nameToProperty))
+            if (!propertyInfoCache.TryGetValue(type, out var nameToProperty))
             {
                 PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
                 nameToProperty = CreateMemberNameDictionary(properties);
@@ -344,11 +338,9 @@ namespace TinyJson
                 string key = elems[i].Substring(1, elems[i].Length - 2);
                 string value = elems[i + 1];
 
-                FieldInfo fieldInfo;
-                PropertyInfo propertyInfo;
-                if (nameToField.TryGetValue(key, out fieldInfo))
+                if (nameToField.TryGetValue(key, out var fieldInfo))
                     fieldInfo.SetValue(instance, ParseValue(fieldInfo.FieldType, value));
-                else if (nameToProperty.TryGetValue(key, out propertyInfo))
+                else if (nameToProperty.TryGetValue(key, out var propertyInfo))
                     propertyInfo.SetValue(instance, ParseValue(propertyInfo.PropertyType, value), null);
             }
 
@@ -399,7 +391,7 @@ namespace TinyJson
             }
             else if (type == typeof(byte) || type == typeof(int))
             {
-                stringBuilder.Append(item.ToString());
+                stringBuilder.Append(item);
             }
             else if (type == typeof(float))
             {
@@ -413,11 +405,10 @@ namespace TinyJson
             {
                 stringBuilder.Append(((bool)item) ? "true" : "false");
             }
-            else if (item is IList)
+            else if (item is IList list)
             {
                 stringBuilder.Append('[');
                 bool isFirst = true;
-                IList list = (IList) item;
                 foreach (var element in list)
                 {
                     if (isFirst)
@@ -443,7 +434,7 @@ namespace TinyJson
                 IDictionary dict = item as IDictionary;
                 bool isFirst = true;
                 if (dict?.Keys != null)
-                    foreach (object key in dict?.Keys)
+                    foreach (object key in dict.Keys)
                     {
                         if (isFirst)
                             isFirst = false;

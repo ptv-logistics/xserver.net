@@ -33,7 +33,7 @@ namespace Ptv.XServer.Controls.Map
 
         public string AdjustedUrl(string moduleName = "xmap")
         {
-            // Devide URL into scheme, host and port. The values can be found in match.Groups
+            // Divide URL into scheme, host and port. The values can be found in match.Groups
             var regex = new Regex(@"^(https?://)?([^\:\/]+)(:\d+)?", RegexOptions.IgnoreCase);
             var match = regex.Match(baseUrl);
             if (!match.Success)
@@ -87,7 +87,7 @@ namespace Ptv.XServer.Controls.Map
                 case "xroute": return 50030;
                 case "xmapmatch": return 50040;
                 case "xtour": return 50090;
-                default: return 50010; // All addons are currently associated to the xMap
+                default: return 50010; // All add-ons are currently associated to the xMap
             }
         }
 
@@ -130,8 +130,8 @@ namespace Ptv.XServer.Controls.Map
             var xmapMetaInfo = new XMapMetaInfo(adjustedUrl);
             if (xmapCredentials?.Contains(":") ?? false)
             {
-                var usrpwd = xmapCredentials.Split(':');
-                xmapMetaInfo.SetCredentials(usrpwd[0], usrpwd[1]);
+                var userPassword = xmapCredentials.Split(':');
+                xmapMetaInfo.SetCredentials(userPassword[0], userPassword[1]);
             }
             map.Layers.InsertXMapBaseLayers(xmapMetaInfo);
         }

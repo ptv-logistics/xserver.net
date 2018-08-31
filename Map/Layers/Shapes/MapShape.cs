@@ -14,8 +14,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <summary> Gets or sets the  scale factor. See <see cref="ShapeCanvas.ScaleFactorProperty"/>. </summary>
         public double ScaleFactor
         {
-            get { return (double)GetValue(ShapeCanvas.ScaleFactorProperty); }
-            set { SetValue(ShapeCanvas.ScaleFactorProperty, value); }
+            get => (double)GetValue(ShapeCanvas.ScaleFactorProperty);
+            set => SetValue(ShapeCanvas.ScaleFactorProperty, value);
         }
 
         #region properties
@@ -37,8 +37,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <summary> Gets or sets the map stroke thickness. </summary>
         public double MapStrokeThickness
         {
-            get { return (double)GetValue(MapStrokeThicknessProperty); }
-            set { SetValue(MapStrokeThicknessProperty, value); }
+            get => (double)GetValue(MapStrokeThicknessProperty);
+            set => SetValue(MapStrokeThicknessProperty, value);
         }
 
         #region private methods

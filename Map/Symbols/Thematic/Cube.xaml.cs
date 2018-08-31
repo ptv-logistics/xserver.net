@@ -25,8 +25,8 @@ namespace Ptv.XServer.Controls.Map.Symbols
         /// </summary>
 		public Color Color
         {
-            get { return (Color)GetValue(ColorProperty); }
-            set { SetValue(ColorProperty, value); }
+            get => (Color)GetValue(ColorProperty);
+            set => SetValue(ColorProperty, value);
         }
 
         /// <summary>
@@ -34,8 +34,8 @@ namespace Ptv.XServer.Controls.Map.Symbols
         /// </summary>
         public Color Stroke
         {
-            get { return (Color)GetValue(StrokeProperty); }
-            set { SetValue(StrokeProperty, value); }
+            get => (Color)GetValue(StrokeProperty);
+            set => SetValue(StrokeProperty, value);
         }
 
         /// <summary> Documentation in progress... </summary>

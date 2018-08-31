@@ -60,8 +60,8 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Gets or sets the current zoom scale value. </summary>
         public double ZoomScale
         {
-            get { return (double)GetValue(ScaleProperty); }
-            set { SetValue(ScaleProperty, value); }
+            get => (double)GetValue(ScaleProperty);
+            set => SetValue(ScaleProperty, value);
         }
 
         /// <summary> Gets or sets a value indicating whether the map should be fitted in the window or not. </summary>
@@ -71,7 +71,7 @@ namespace Ptv.XServer.Controls.Map
         /// detail level (see <see cref="FinalZoom"/> property) is corrected, if it is higher than the new maximum value. </summary>
         public int MaxZoom
         {
-            get { return maxZoom; }
+            get => maxZoom;
             set
             {
                 maxZoom = value;
@@ -97,9 +97,11 @@ namespace Ptv.XServer.Controls.Map
         /// detail level (see <see cref="FinalZoom"/> property) is corrected, if it is lower than the new minimum value. </summary>
         public int MinZoom
         {
-            get { return minZoom; }
+            get => minZoom;
             set
             {
+                minZoom = value;
+
                 if (FinalZoom < minZoom)
                     SetZoom(minZoom, false);
             }
@@ -149,8 +151,8 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Gets or sets the center of the map. </summary>
         public Point Center
         {
-            get { return (Point)GetValue(CenterProperty); }
-            set { SetValue(CenterProperty, value); }
+            get => (Point)GetValue(CenterProperty);
+            set => SetValue(CenterProperty, value);
         }
         #endregion
 
@@ -377,12 +379,9 @@ namespace Ptv.XServer.Controls.Map
         /// <param name="e"> Event parameters. </param>
         private static void OnZoomScaleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var mapView = d as MapView;
-            var zoomScale = (double)e.NewValue;
+            if (!(d is MapView mapView)) return;
 
-            mapView.zoomTransform.ScaleX = zoomScale;
-            mapView.zoomTransform.ScaleY = zoomScale;
-
+            mapView.zoomTransform.ScaleX = mapView.zoomTransform.ScaleY = (double)e.NewValue;
             mapView.FireViewportWhileChanged();
         }
 
@@ -391,9 +390,9 @@ namespace Ptv.XServer.Controls.Map
         /// <param name="args"> Event parameters. </param>
         private static void OnCenterChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
         {
-            var mapView = obj as MapView;
-            var center = (Point)args.NewValue;
+            if (!(obj is MapView mapView)) return;
 
+            var center = (Point)args.NewValue;
             mapView.translateTransform.X = center.X - mapView.canvasOffset.X;
             mapView.translateTransform.Y = center.Y - mapView.canvasOffset.Y;
 
@@ -475,8 +474,7 @@ namespace Ptv.XServer.Controls.Map
         /// <param name="maxAutoZoom"> Maximum automatic zoom. </param>
         private void SetEnvelopeHelper(MapRectangle rect, bool animate, double maxAutoZoom)
         {
-            const double TOLERANCE = 0.0001;
-            if (Math.Abs(ActualHeight) < TOLERANCE || Math.Abs(ActualWidth) < TOLERANCE)
+            if (ActualHeight == 0 || ActualWidth == 0)
             {
                 envMapRectangle = new MapRectangle(rect);
                 return;
@@ -486,7 +484,7 @@ namespace Ptv.XServer.Controls.Map
             double dy = rect.Height;
 
             double zoomX;
-            if (Math.Abs(dx) < TOLERANCE)
+            if (dx == 0)
                 zoomX = MaxZoom;
             else
             {
@@ -495,7 +493,7 @@ namespace Ptv.XServer.Controls.Map
             }
 
             double zoomY;
-            if (Math.Abs(dy) < TOLERANCE)
+            if (dy == 0)
                 zoomY = MaxZoom;
             else
             {
@@ -559,9 +557,8 @@ namespace Ptv.XServer.Controls.Map
                 }
             }
 
-            const double TOLERANCE = 0.0001;
-            bool doPan = (Math.Abs(FinalX - xCenter) > TOLERANCE || Math.Abs(FinalY - yCenter) > TOLERANCE);
-            bool doZoom = (Math.Abs(z - zoom) > TOLERANCE);
+            bool doPan = (FinalX != xCenter || FinalY != yCenter);
+            bool doZoom = (z != zoom);
 
             x = xCenter + canvasOffset.X / ZoomAdjust / ReferenceSize * LogicalSize;
             y = yCenter - canvasOffset.Y / ZoomAdjust / ReferenceSize * LogicalSize;

@@ -27,8 +27,8 @@ namespace Ptv.XServer.Controls.Map.Symbols
         /// </summary>
 		public Color Color
         {
-            get { return (Color)GetValue(ColorProperty); }
-            set { SetValue(ColorProperty, value); }
+            get => (Color)GetValue(ColorProperty);
+            set => SetValue(ColorProperty, value);
         }
 		
         /// <summary> Documentation in progress... </summary>

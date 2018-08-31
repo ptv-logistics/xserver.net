@@ -97,7 +97,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns> Value of the item to find. </returns>
         public TValue this[TKey key]
         {
-            get { return dictionary[key]; }
+            get => dictionary[key];
             set
             {
                 var oldItem = new KeyValuePair<TKey, TValue>(key, dictionary[key]);
@@ -131,8 +131,8 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns> True if the item has been found and removed successfully. </returns>
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            bool bTmp = (dictionary as IDictionary<TKey, TValue>).Remove(item);
-            if (!bTmp || (CollectionChanged == null)) return bTmp;
+            bool isRemoved = (dictionary as IDictionary<TKey, TValue>).Remove(item);
+            if (!isRemoved || (CollectionChanged == null)) return isRemoved;
 
             CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
             return true;

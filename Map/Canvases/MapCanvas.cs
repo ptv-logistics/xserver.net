@@ -10,7 +10,7 @@ using Ptv.XServer.Controls.Map.Tools;
 
 namespace Ptv.XServer.Controls.Map.Canvases
 {
-    /// <summary> The main canvas which holds paintable elements for a map. </summary>
+    /// <summary> The main canvas which holds viewable elements for a map. </summary>
     public abstract class MapCanvas : Canvas, IWeakEventListener
     {
         #region constructor

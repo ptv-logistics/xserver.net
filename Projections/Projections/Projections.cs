@@ -615,6 +615,7 @@ namespace Ptv.Components.Projections
                 // add some core transformations
                 Add(CoordinateReferenceSystem.Parse("EPSG:4326", "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs", true));
                 Add(CoordinateReferenceSystem.Parse("EPSG:31467", "+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs", true));
+                Add(CoordinateReferenceSystem.Parse("EPSG:3857", "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs", true));
                 Add(CoordinateReferenceSystem.Parse("EPSG:900913", "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs", true));
                 Add(CoordinateReferenceSystem.Parse("PTV_GEODECIMAL", "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs", new ShiftScaleTransformation(0, 0.00001), true));
                 Add(CoordinateReferenceSystem.Parse("EPSG:76131", "+proj=merc +a=6371000 +b=6371000 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs", true));

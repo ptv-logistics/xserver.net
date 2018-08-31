@@ -193,7 +193,7 @@ namespace Ptv.XServer.Controls.Map
         /// </summary> 
         public double Width 
         {
-            get { return East - West; }
+            get => East - West;
             set
             {
                 double centerX = Center.X;
@@ -207,7 +207,7 @@ namespace Ptv.XServer.Controls.Map
         /// </summary> 
         public double Height
         {
-            get { return North - South; }
+            get => North - South;
             set
             {
                 double centerY = Center.Y;
@@ -223,8 +223,8 @@ namespace Ptv.XServer.Controls.Map
         /// </summary>
         public Point Center
         {
-            get { return new Point(Width < 0 ? Double.NaN : West / 2 + East / 2, 
-                                   Height < 0 ? Double.NaN : South / 2 + North / 2); }
+            get => new Point(Width < 0 ? Double.NaN : West / 2 + East / 2, 
+                Height < 0 ? Double.NaN : South / 2 + North / 2);
             set 
             {
                 if (IsEmpty)
@@ -510,12 +510,7 @@ namespace Ptv.XServer.Controls.Map
                 return false;
             if (rect1.IsEmpty && rect2.IsEmpty)
                 return true;
-
-            const double TOLERANCE = 0.0001;
-            return (Math.Abs(rect1.West - rect2.West) < TOLERANCE) 
-                   && (Math.Abs(rect1.East - rect2.East) < TOLERANCE) 
-                   && (Math.Abs(rect1.South - rect2.South) < TOLERANCE) 
-                   && (Math.Abs(rect1.North - rect2.North) < TOLERANCE);
+            return (rect1.West == rect2.West) && (rect1.East == rect2.East) && (rect1.South == rect2.South) && (rect1.North == rect2.North);
         }
 
         /// <summary>

@@ -33,38 +33,20 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <summary> Gets or sets Documentation in progress... </summary>
         public double From
         {
-            get
-            {
-                return (double)GetValue(FromProperty);
-            }
-            set
-            {
-                SetValue(FromProperty, value);
-            }
+            get => (double)GetValue(FromProperty);
+            set => SetValue(FromProperty, value);
         }
         /// <summary> Gets or sets Documentation in progress... </summary>
         public double To
         {
-            get
-            {
-                return (double)GetValue(ToProperty);
-            }
-            set
-            {
-                SetValue(ToProperty, value);
-            }
+            get => (double)GetValue(ToProperty);
+            set => SetValue(ToProperty, value);
         }
         /// <summary> Gets or sets Documentation in progress... </summary>
         public IEasingFunction EasingFunction
         {
-            get
-            {
-                return (IEasingFunction)GetValue(EasingFunctionProperty);
-            }
-            set
-            {
-                SetValue(EasingFunctionProperty, value);
-            }
+            get => (IEasingFunction)GetValue(EasingFunctionProperty);
+            set => SetValue(EasingFunctionProperty, value);
         }
         #endregion
 
@@ -110,8 +92,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
 
             double min = Math.Min(From, To), max = To;
 
-            const double TOLERANCE = 0.0001;
-            if (Math.Abs(To - min) < TOLERANCE)
+            if (To == min)
             {
                 max = From;
                 f = 1 - f;

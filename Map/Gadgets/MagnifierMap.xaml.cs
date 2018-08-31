@@ -78,8 +78,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <value> Magnifier size. </value>
         public double BaseSize
         {
-            get { return (double)GetValue(BaseSizeProperty); }
-            set { SetValue(BaseSizeProperty, value); }
+            get => (double)GetValue(BaseSizeProperty);
+            set => SetValue(BaseSizeProperty, value);
         }
 
         /// <summary> The base size of the magnifier. </summary>
@@ -89,8 +89,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <summary> Gets or sets the magnifier radius.</summary>
         private double MagnifierRadius
         {
-            get { return (double)GetValue(MagnifierRadiusProperty); }
-            set { SetValue(MagnifierRadiusProperty, value); }
+            get => (double)GetValue(MagnifierRadiusProperty);
+            set => SetValue(MagnifierRadiusProperty, value);
         }
 
         /// <summary> The radius of the magnifier. This property is calculated on the basis of the BaseSize property.
@@ -101,8 +101,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <summary> Gets or sets the content size (height and width of the magnifier).</summary>
         private double ContentSize
         {
-            get { return (double)GetValue(ContentSizeProperty); }
-            set { SetValue(ContentSizeProperty, value); }
+            get => (double)GetValue(ContentSizeProperty);
+            set => SetValue(ContentSizeProperty, value);
         }
 
         /// <summary> The content height and width of the magnifier. This property is calculated on the basis of the
@@ -113,8 +113,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <summary> Gets or sets the magnifier center point. </summary>
         private Point MagnifierCenter
         {
-            get { return (Point)GetValue(MagnifierCenterProperty); }
-            set { SetValue(MagnifierCenterProperty, value); }
+            get => (Point)GetValue(MagnifierCenterProperty);
+            set => SetValue(MagnifierCenterProperty, value);
         }
 
         /// <summary> The center point of the magnifier. This property is calculated on the basis of the BaseSize
@@ -125,8 +125,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <summary> Gets or sets the magnifier margin.</summary>
         private Thickness MagnifierMargin
         {
-            get { return (Thickness)GetValue(MagnifierMarginProperty); }
-            set { SetValue(MagnifierMarginProperty, value); }
+            get => (Thickness)GetValue(MagnifierMarginProperty);
+            set => SetValue(MagnifierMarginProperty, value);
         }
 
         /// <summary> The margin of the magnifier. This property is calculated on the basis of the BaseSize property.
@@ -137,8 +137,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <summary> Gets or sets the background path size.</summary>
         private double BackgroundPathSize
         {
-            get { return (double)GetValue(BackgroundPathSizeProperty); }
-            set { SetValue(BackgroundPathSizeProperty, value); }
+            get => (double)GetValue(BackgroundPathSizeProperty);
+            set => SetValue(BackgroundPathSizeProperty, value);
         }
 
         /// <summary> The size of the background paths. This property is calculated on the basis of the BaseSize
@@ -204,8 +204,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <inheritdoc/>
         public override bool Visible
         {
-            get { return visible; }
-            set { visible = value; }
+            get => visible;
+            set => visible = value;
         }
         #endregion
 

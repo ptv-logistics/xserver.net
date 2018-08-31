@@ -24,7 +24,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <param name="urlTemplate">URL needed for retrieving images from the corresponding Web Map Service. The layout of this URL must
         /// achieve the requirements according the OpenGIS Specification, details can be found in http://www.opengeospatial.org/standards/wms .
         /// <br />
-        /// Because the visible region of a map control changes during a user session, and the size in pixel may vary, some parameters in the URL's
+        /// Because the visible region of a map control changes during a user session, and the size in pixel may vary, some parameters in the URL
         /// query string have to be parameterized. I.e. the parameters 'BBOX', 'WIDTH' and 'HEIGHT' must be used in a parameterized way: They have to
         /// look like: ..&amp;BBOX=${boundingbox}&amp;WIDTH=${width}&amp;HEIGHT=${height}.."
         /// </param>
@@ -47,13 +47,25 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <inheritdoc/>
         public string Name => layer.Name;
         /// <inheritdoc/>
-        public int Priority { get { return layer.Priority; } set { layer.Priority = value; } }
+        public int Priority {
+            get => layer.Priority;
+            set => layer.Priority = value;
+        }
         /// <inheritdoc/>
-        public string Caption { get { return layer.Caption; } set { layer.Caption = value; } }
+        public string Caption {
+            get => layer.Caption;
+            set => layer.Caption = value;
+        }
         /// <inheritdoc/>
-        public ImageSource Icon { get { return layer.Icon; } set { layer.Icon = value; } }
+        public ImageSource Icon {
+            get => layer.Icon;
+            set => layer.Icon = value;
+        }
         /// <inheritdoc/>
-        public double Opacity { get { return layer.Opacity; } set { layer.Opacity = value; } }
+        public double Opacity {
+            get => layer.Opacity;
+            set => layer.Opacity = value;
+        }
         /// <inheritdoc/>
         public void AddToMapView(MapView mapView) { layer.AddToMapView(mapView); }
         /// <inheritdoc/>
@@ -67,7 +79,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <inheritdoc/>
         public CanvasCategory[] CanvasCategories => layer.CanvasCategories;
 
-        /// <summary> Provider used for retrieving images from the specified URL and reprojecting it if necessary. </summary>
+        /// <summary> Provider used for retrieving images from the specified URL and re-projecting it if necessary. </summary>
         public readonly ReprojectionProvider ReprojectionProvider;
     }
 
@@ -87,7 +99,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <param name="urlTemplate">URL needed for retrieving images from the corresponding Web Map Service. The layout of this URL must
         /// achieve the requirements according the OpenGIS Specification, details can be found in http://www.opengeospatial.org/standards/wms .
         /// <br />
-        /// Because the visible region of a map controls changes during a user session, and the size in pixel may vary, some parameters in the URL's
+        /// Because the visible region of a map controls changes during a user session, and the size in pixel may vary, some parameters in the URL
         /// query string have to be parameterized. I.e. the parameters 'BBOX', 'WIDTH' and 'HEIGHT' must used in a parameterized way: They have to
         /// look like: ..&amp;BBOX=${boundingbox}&amp;WIDTH=${width}&amp;HEIGHT=${height}.."
         /// </param>
@@ -102,8 +114,7 @@ namespace Ptv.XServer.Controls.Map.Layers
             {
                 request.Timeout = 8000;
 
-                var httpWebRequest = request as HttpWebRequest;
-                if (httpWebRequest != null)
+                if (request is HttpWebRequest httpWebRequest)
                 {
                     httpWebRequest.UserAgent = UserAgent;
                     if (Proxy != null)
@@ -121,7 +132,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <inheritdoc/>
         public Stream GetImageStream(int x, int y, int z)
         {
-            var rect = TileToSphereMercator(x, y, z, 6371000); // PTV mercator, gibt's wahrscheinlich auch irgendwo im Core :)
+            var rect = TileToSphereMercator(x, y, z, 6371000); // PTV mercator, exists somewhere in core :)
             return reprojectionService.GetImageStream(new Tools.Reprojection.MapRectangle(rect.Left, rect.Bottom, rect.Right, rect.Top), new System.Drawing.Size(256, 256));
         }
 
@@ -167,8 +178,8 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <summary> Gets or sets the value of the user agent HTTP header. </summary>
         public string UserAgent
         {
-            get { return userAgent; }
-            set { userAgent = Clean(value); }
+            get => userAgent;
+            set => userAgent = Clean(value);
         }
 
         /// <summary> Gets or sets the proxy used for a web request. Especially for setting the proxy URI

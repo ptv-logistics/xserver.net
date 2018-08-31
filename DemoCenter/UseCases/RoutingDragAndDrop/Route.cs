@@ -561,8 +561,8 @@ namespace Ptv.XServer.Controls.Routing
                             for (int i = 0; i < routeSnapshot.Indices.Length; ++i)
                                 if ((i == 0) || (i == routeSnapshot.Indices.Length - 1))
                                 {
-                                    if (req.OriginalWayPoints[i] is Stop)
-                                        ((Stop) req.OriginalWayPoints[i]).LinkPoint = routeSnapshot.Points[Math.Min(routeSnapshot.Points.Length - 1, routeSnapshot.Indices[i])];
+                                    if (req.OriginalWayPoints[i] is Stop stopWayPoint)
+                                        stopWayPoint.LinkPoint = routeSnapshot.Points[Math.Min(routeSnapshot.Points.Length - 1, routeSnapshot.Indices[i])];
                                 }
                                 else
                                     Via[i - 1].PolyIndex = routeSnapshot.Indices[i];
@@ -960,7 +960,7 @@ namespace Ptv.XServer.Controls.Routing
 
             // get and store the full list of way points and its labels
             RequestWaypoints = Waypoints = wayPoints.Select(s => s.Waypoint).ToArray();
-            Labels = wayPoints.Select(s => (s is Stop) ? (s as Stop).Label : "").ToArray();
+            Labels = wayPoints.Select(s => (s is Stop stop) ? stop.Label : "").ToArray();
 
             // if the specified snapshot is valid and the hash matches the hash of previous
             // updates then we only need to update a portion of the route. 

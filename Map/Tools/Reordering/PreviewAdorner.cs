@@ -22,10 +22,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <summary> Gets or sets the current offset. </summary>
         public Vector Offset
         {
-            get
-            {
-                return offset;
-            }
+            get => offset;
             set
             {
                 offset = value;

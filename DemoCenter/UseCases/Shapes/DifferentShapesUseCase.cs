@@ -490,8 +490,8 @@ namespace Ptv.XServer.Demo.UseCases.Shapes
         {
             if (frameworkElement is Border)
                 frameworkElement.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
-            else if (frameworkElement is StackPanel)
-                foreach (var f in ((StackPanel) frameworkElement).Children)
+            else if (frameworkElement is StackPanel panel)
+                foreach (var f in panel.Children)
                     SetLabelVisible((f as FrameworkElement), visible);
         }
         #endregion

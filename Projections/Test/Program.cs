@@ -15,7 +15,7 @@ namespace Ptv.Components.Projections
     {        
         public static CoreProjectionInfo[] rawProjectionData = new CoreProjectionInfo[] {
             new CoreProjectionInfo() { code = 76131, proj4 = "+proj=merc +a=6371000 +b=6371000 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs", esri = "PROJCS[\"WGS 84 / Pseudo-Mercator\",GEOGCS[\"Popular Visualisation CRS\",DATUM[\"D_Popular_Visualisation_Datum\",SPHEROID[\"Popular_Visualisation_Sphere\",6371000,0]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",0],PARAMETER[\"scale_factor\",1],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"Meter\",1]]" },
-            new CoreProjectionInfo() { code = 900913, proj4 = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs", esri = "PROJCS[\"WGS 84 / Pseudo-Mercator\",GEOGCS[\"Popular Visualisation CRS\",DATUM[\"D_Popular_Visualisation_Datum\",SPHEROID[\"Popular_Visualisation_Sphere\",6378137,0]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",0],PARAMETER[\"scale_factor\",1],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"Meter\",1]]" },
+            new CoreProjectionInfo() { code = 3857, proj4 = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs", esri = "PROJCS[\"WGS 84 / Pseudo-Mercator\",GEOGCS[\"Popular Visualisation CRS\",DATUM[\"D_Popular_Visualisation_Datum\",SPHEROID[\"Popular_Visualisation_Sphere\",6378137,0]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",0],PARAMETER[\"scale_factor\",1],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"Meter\",1]]" },
             new CoreProjectionInfo() { code = 25833, proj4 = "+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs", esri="PROJCS[\"ETRS89 / UTM zone 33N\",GEOGCS[\"ETRS89\",DATUM[\"D_ETRS_1989\",SPHEROID[\"GRS_1980\",6378137,298.257222101]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",15],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"Meter\",1]]" },
             new CoreProjectionInfo() { code = 4326, proj4 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs", esri="GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]" },
             new CoreProjectionInfo() { code = 31467, proj4 = "+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs", esri="PROJCS[\"DHDN / Gauss-Kruger zone 3\",GEOGCS[\"DHDN\",DATUM[\"D_Deutsches_Hauptdreiecksnetz\",SPHEROID[\"Bessel_1841\",6377397.155,299.1528128]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",9],PARAMETER[\"scale_factor\",1],PARAMETER[\"false_easting\",3500000],PARAMETER[\"false_northing\",0],UNIT[\"Meter\",1]]" },
@@ -36,7 +36,7 @@ namespace Ptv.Components.Projections
             new TestPoint() { epsgCode = 76131, p = new Location(1401229, 7297586) },
             new TestPoint() { epsgCode = 76131, p = new Location(1565661, 7199672) },
             new TestPoint() { epsgCode = 4326, p = new Location(8, 49) },
-            new TestPoint() { epsgCode = 900913, p = new Location(1567415, 7207737) },
+            new TestPoint() { epsgCode = 3857, p = new Location(1567415, 7207737) },
             new TestPoint() { epsgCode = 31467, p = new Location(3831498, 6019443) }
         };
 
@@ -511,10 +511,10 @@ namespace Ptv.Components.Projections
 
             foreach (System.Reflection.MethodInfo mi in t.GetType().GetMethods())
             {
-                object[] attribs = mi.GetCustomAttributes(typeof(TestAttribute), true);
+                object[] customAttributes = mi.GetCustomAttributes(typeof(TestAttribute), true);
 
-                if (attribs != null && attribs.Length == 1)
-                    t.Run(mi, attribs[0] as TestAttribute);
+                if (customAttributes.Length == 1)
+                    t.Run(mi, customAttributes[0] as TestAttribute);
             }
         }
 

@@ -24,9 +24,9 @@ namespace Ptv.XServer.Controls.Map.Symbols
         /// </param>
         /// <returns> Lit color. </returns>
         /// <remarks>
-        ///   This routine is very fast. Even when using it in tight loops, I (Markus) have not been able to 
-        ///   measure a significant amount of time spent in this routine (always less than 1 millisecond). I was originally
-        ///   concerned about the performance of this, so I added a caching mechanism, but that slowed things down
+        ///   This routine is very fast. Even when using it in tight loops, it is not possible to 
+        ///   measure a significant amount of time spent in this routine (always less than 1 millisecond). Originally
+        ///   concerned about the performance of this, a caching mechanism was added, but that slowed things down
         ///   by 2 orders of magnitude.
         /// </remarks>
         public static Color Lighten(this Color originalColor, float lightFactor)

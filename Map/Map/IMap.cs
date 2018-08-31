@@ -31,7 +31,7 @@ namespace Ptv.XServer.Controls.Map
 
         /// <summary> Gets or sets the url pointing to where the xMapServer is located (e.g. http://127.0.0.1:50010/xmap/ws/XMap). </summary>
         string XMapUrl { get; set; }
-        /// <summary> Gets or sets the coyright text. </summary>
+        /// <summary> Gets or sets the copyright text. </summary>
         string XMapCopyright { get; set; }
         /// <summary> Gets or sets the credentials for xMapServer basic HTTP authentication.
         /// The format of the credential string is "&lt;user&gt;:&lt;password&gt;". </summary>

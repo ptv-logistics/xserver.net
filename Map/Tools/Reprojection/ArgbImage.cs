@@ -101,10 +101,10 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// image into a 32bpp ARGB bitmap.</remarks>
         public static ArgbImage FromImage(Image image, InterpolationMode mode = InterpolationMode.Bicubic)
         {
-            if ((image is Bitmap) && (((Bitmap) image).PixelFormat == PixelFormat.Format32bppArgb))
-                return FromImage(image as Bitmap);
+            if ((image is Bitmap bitmap) && (bitmap.PixelFormat == PixelFormat.Format32bppArgb))
+                return FromImage(bitmap);
 
-            var bitmap = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppArgb);
+            bitmap = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppArgb);
 
             using (var g = Graphics.FromImage(bitmap))
                 g.DrawImage(image, 0, 0);
@@ -125,7 +125,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             if (bmp.PixelFormat != PixelFormat.Format32bppArgb)
                 return FromImage((Image)bmp);
 
-            // Lock the bitmap's bits.  
+            // Lock the bitmap bits.  
             var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
             var bmpData = bmp.LockBits(rect, ImageLockMode.ReadOnly, bmp.PixelFormat);
 
@@ -282,7 +282,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <param name="floorX">Conveniently specifies the value of Math.Floor(x).</param>
         /// <param name="floorY">Conveniently specifies the value of Math.Floor(y).</param>
         /// <returns>The color of the pixel or "transparent white" if the location is invalid.</returns>
-        /// <remarks>Uses either bicubic interpolation, bilinear interpolation or nearest color interpolation, 
+        /// <remarks>Uses either bicubic interpolation, bi-linear interpolation or nearest color interpolation, 
         /// depending on the given coordinates.<br/>
         /// <see href="http://www.engr.mun.ca/~baxter/Publications/ImageZooming.pdf"/> 
         /// was very helpful to make the color interpolation produce proper results.</remarks>
@@ -307,16 +307,16 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                 );
             }
 
-            // test pixel location for bilinear interpolation
+            // test pixel location for bi-linear interpolation
             if (interpolationLevel < 1 || floorX < 0 || floorY < 0 || floorX >= (Width - 1) || floorY >= (Height - 1))
                 // simply do nearest color
                 return GetNearestColor(x, y);
             
-            // bilinear interpolation it is
-            var fracX = x - floorX;
-            var fracY = y - floorY;
+            // bi-linear interpolation it is
+            var fractionalX = x - floorX;
+            var fractionalY = y - floorY;
 
-            return Interpolate(GetIndex(floorX, floorY), new[] { 1 - fracX, fracX }, new[] { 1 - fracY, fracY });
+            return Interpolate(GetIndex(floorX, floorY), new[] { 1 - fractionalX, fractionalX }, new[] { 1 - fractionalY, fractionalY });
         }
 
         /// <summary> Reads or writes the color of a pixel. </summary>
@@ -326,8 +326,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <remarks>Uses bicubic interpolation when reading colors. When settings colors, changes the nearest pixel.</remarks>
         public uint this[double x, double y]
         {
-            get { return GetColor(x, y, (int)Math.Floor(x), (int)Math.Floor(y)); }
-            set { SetNearestColor(x, y, value); }
+            get => GetColor(x, y, (int)Math.Floor(x), (int)Math.Floor(y));
+            set => SetNearestColor(x, y, value);
         }
 
         /// <summary>
@@ -338,8 +338,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <remarks>Uses bicubic interpolation when reading colors. When settings colors, changes the nearest pixel.</remarks>
         public uint this[PointF p]
         {
-            get { return this[p.X, p.Y]; }
-            set { this[p.X, p.Y] = value; }
+            get => this[p.X, p.Y];
+            set => this[p.X, p.Y] = value;
         }
 
         /// <summary>
@@ -350,8 +350,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <remarks>Uses bicubic interpolation when reading colors. When settings colors, changes the nearest pixel.</remarks>
         public uint this[PointD p]
         {
-            get { return this[p.X, p.Y]; }
-            set { this[p.X, p.Y] = value; }
+            get => this[p.X, p.Y];
+            set => this[p.X, p.Y] = value;
         }
 
         /// <summary> Returns an image stream for further processing. </summary>
@@ -421,7 +421,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                 // write pre-calculated length of IDAT chunk. Formula explained:
                 //
                 // - we're writing Width*4+1 bytes per scan line, and Height lines altogether. Note that every line is 
-                //   prefixed by one additional byte set to 0 (thisis PNG specific). This is why it's Width*4+1 and not 
+                //   prefixed by one additional byte set to 0 (this is PNG specific). This is why it's Width*4+1 and not 
                 //   Width *4.
                 // 
                 // - for the zlib lib stream, the pixel bytes have to be divided into block of max. 65535 bytes in size. 
@@ -499,7 +499,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 
                         // The adler checksum is calculated for the data only, no header or other fixed 
                         // bytes are included. Begin update block now.
-                        using (var update = mem.GetAdlerUpdateRegion(adler))
+                        using (mem.GetAdlerUpdateRegion(adler))
                         {
                             // loop through the lines we're going to write into the current block
                             for (int i = h, j = Math.Min(Height, h + linesPerBlock); i < j; ++i)

@@ -167,10 +167,8 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <inheritdoc />
         public virtual Stream GetImageStream(MapRectangle targetMapRectangle, Size targetSize)
         {
-            MapRectangle covered;
-
             // determine coverage, render accordingly
-            switch (DetermineCovering(targetMapRectangle, out covered))
+            switch (DetermineCovering(targetMapRectangle, out var coveredMapRectangle))
             {
                 // MapService is only partially visible in the requested map
                 case Covering.Partial:
@@ -181,17 +179,17 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                             // determine the pixel rectangle corresponding to 
                             // the rectangle defined through covered
 
-                            var scaleX = (double)targetSize.Width / (targetMapRectangle.MaxX - targetMapRectangle.MinX);
-                            var scaleY = (double)targetSize.Height / (targetMapRectangle.MaxY - targetMapRectangle.MinY);
+                            var scaleX = targetSize.Width / (targetMapRectangle.MaxX - targetMapRectangle.MinX);
+                            var scaleY = targetSize.Height / (targetMapRectangle.MaxY - targetMapRectangle.MinY);
 
-                            var x0 = (int)Math.Round(scaleX * (covered.MinX - targetMapRectangle.MinX));
-                            var y0 = (int)Math.Round(scaleY * (targetMapRectangle.MaxY - covered.MaxY));
-                            var x1 = (int)Math.Round(scaleX * (covered.MaxX - targetMapRectangle.MinX));
-                            var y1 = (int)Math.Round(scaleY * (targetMapRectangle.MaxY - covered.MinY));
+                            var x0 = (int)Math.Round(scaleX * (coveredMapRectangle.MinX - targetMapRectangle.MinX));
+                            var y0 = (int)Math.Round(scaleY * (targetMapRectangle.MaxY - coveredMapRectangle.MaxY));
+                            var x1 = (int)Math.Round(scaleX * (coveredMapRectangle.MaxX - targetMapRectangle.MinX));
+                            var y1 = (int)Math.Round(scaleY * (targetMapRectangle.MaxY - coveredMapRectangle.MinY));
 
-                            // using the pixel rectange from above, 
+                            // using the pixel rectangle from above, 
                             // request the visible portion and render it into the result image
-                            using (var stm = GetImageStream(covered, new Size(x1 - x0, y1 - y0)))
+                            using (var stm = GetImageStream(coveredMapRectangle, new Size(x1 - x0, y1 - y0)))
                             {
                                 if (stm == null)
                                     return null;
@@ -296,7 +294,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             // Get original stream
             var originalStream = SourceMapService.GetImageStream(sourceBoundingBox, sourceSize, out sourceSize);
 
-            // depending on the parameterization we can directly pass through inner image
+            // depending on the parametrization we can directly pass through inner image
             if ((!reproject && !includeGrid) || originalStream == null)
                 return originalStream;
 

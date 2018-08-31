@@ -73,7 +73,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
         /// <param name="sourceCrs">The CRS of the tile matrix set.</param>
         /// <param name="targetCrs">The CRS of the bounding box to return.</param>
         /// <param name="nSupportingPoints">Number of supporting points to use.</param>
-        /// <param name="resizeFactor">An addtional factor for resizing the resulting bounding box to be on the safe side.</param>
+        /// <param name="resizeFactor">An additional factor for resizing the resulting bounding box to be on the safe side.</param>
         /// <returns>Bounding box.</returns>
         /// <remarks>Refer to MapServiceExtensions.ApproximateBoundingBox for further documentation.</remarks>
         public static IBoundingBox ApproximateBoundingBox(this IEnumerable<ITileMatrix> matrixSet, string sourceCrs, string targetCrs, int nSupportingPoints, double resizeFactor)

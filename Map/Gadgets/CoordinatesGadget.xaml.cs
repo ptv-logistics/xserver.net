@@ -125,7 +125,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <inheritdoc/>
         public override bool Visible
         {
-            get { return base.Visible; }
+            get => base.Visible;
             set
             {
                 base.Visible = value;

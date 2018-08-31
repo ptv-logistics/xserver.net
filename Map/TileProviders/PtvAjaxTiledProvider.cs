@@ -93,8 +93,8 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                 double topClipped = Math.Max(top, minY);
                 double bottomClipped = Math.Min(bottom, maxY);
 
-                double rWidth = width * ((rightClipped - leftClipped) / (double)(right - left));
-                double rHeight = height * ((bottomClipped - topClipped) / (double)(bottom - top));
+                double rWidth = width * ((rightClipped - leftClipped) / (right - left));
+                double rHeight = height * ((bottomClipped - topClipped) / (bottom - top));
 
                 if (rWidth < 32 || rHeight < 32)
                 {
@@ -114,8 +114,8 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                 {
                     using (Graphics g = Graphics.FromImage(bmp))
                     {
-                        double offsetX = (leftClipped - left) / (double)(right - left) * width;
-                        double offsetY = (bottomClipped - bottom) / (double)(top - bottom) * height;
+                        double offsetX = (leftClipped - left) / (right - left) * width;
+                        double offsetY = (bottomClipped - bottom) / (top - bottom) * height;
                         g.DrawImageUnscaled(img, (int)Math.Ceiling(offsetX), (int)Math.Ceiling(offsetY));
                     }
 

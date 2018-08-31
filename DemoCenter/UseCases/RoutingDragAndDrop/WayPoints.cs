@@ -219,7 +219,7 @@ namespace Ptv.XServer.Controls.Routing
         /// </summary>
         public String Label
         {
-            get { return (Children[1] as TextBlock)?.Text; }
+            get => (Children[1] as TextBlock)?.Text;
 
             set
             {

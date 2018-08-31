@@ -1,6 +1,5 @@
-﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -67,7 +66,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <summary> Gets or sets the copyright text of the layer. </summary>
         public string Copyright
         {
-            get { return copyright; }
+            get => copyright;
             set
             {
                 if (value == copyright) return;
@@ -119,7 +118,7 @@ namespace Ptv.XServer.Controls.Map.Layers
                 mapCanvas.CanvasCategory = CanvasCategories[i];
                 mapCanvas.Opacity = opacity;
                 // Her: In previous versions the name of the baseLayer is used for the MapCanvas' name. Because this name 
-                // may contain any characters, but the name of mapCanvas has to be conformant to a C#-identifier (MapCanvas is a UIElement!),
+                // may contain any characters, but the name of mapCanvas has to be conform to a C#-identifier (MapCanvas is a UIElement!),
                 // a generic naming of MapCanvases is used.
                 mapCanvas.Name = "Canvas" + (++UniqueCanvasID);
                 mapCanvas.Update(UpdateMode.Refresh);
@@ -132,6 +131,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <param name="mapView"> The map from which the layer is to be removed. </param>
         public virtual void RemoveFromMapView(MapView mapView)
         {
+            // ReSharper disable once PossibleUnintendedReferenceComparison
             foreach (var canvas in (from canvas in canvasInstances where canvas.MapView == mapView select canvas).ToList())
             {
                 canvas.Dispose();
@@ -145,7 +145,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <summary> Gets or sets the zIndex of the layer. </summary>
         public int Priority
         {
-            get { return priority; }
+            get => priority;
             set
             {
                 if (priority == value)
@@ -161,8 +161,8 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <summary> Gets or sets the caption of the layer. </summary>
         public string Caption
         {
-            get { return caption ?? Name; }
-            set { caption = value; }
+            get => caption ?? Name;
+            set => caption = value;
         }
 
         /// <summary> Gets or sets the icon of the layer. </summary>
@@ -171,11 +171,10 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <summary> Gets or sets the opacity of the layer. </summary>
         public double Opacity
         {
-            get { return opacity; }
+            get => opacity;
             set
             {
-                const double TOLERANCE = 0.0001;
-                if (Math.Abs(opacity - value) < TOLERANCE)
+                if (opacity == value)
                     return;
 
                 opacity = value;

@@ -51,9 +51,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
     ///   xMap content requested you may want to change this behavior. <see cref="ToolTipHitTest"/> can be overridden in 
     ///   derived classes.
     /// 
-    /// - <see cref="GetToolTipFromLayerObject" /> transforms a <see cref="xserver.LayerObject"/> information object into 
-    ///   a tool tip text. By default, <see cref="GetToolTipFromLayerObject" /> returns the xMap Server description as it 
-    ///   is. Usually this description needs further formatting; <see cref="GetToolTipFromLayerObject" /> can be overridden 
+    /// - <see cref="GetToolTipFromMapObject" /> transforms a <see cref="xserver.LayerObject"/> information object into 
+    ///   a tool tip text. By default, <see cref="GetToolTipFromMapObject" /> returns the xMap Server description as it 
+    ///   is. Usually this description needs further formatting; <see cref="GetToolTipFromMapObject" /> can be overridden 
     ///   in derived classes.
     /// </remarks>
     public class UntiledLayer : BaseLayer, IToolTips
@@ -65,7 +65,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// <summary> Gets or sets the maximum size of the bitmaps in pixels. </summary>
         public Size MaxRequestSize { get; set; }
 
-        /// <summary> Gets or sets the maximum leve up to which images are requested. </summary>
+        /// <summary> Gets or sets the maximum level up to which images are requested. </summary>
         public double MinLevel { get; set; }
         #endregion
 
@@ -100,12 +100,10 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
                 mapView.ViewportBeginChanged += ViewportBeginChanged;
             }
 
-            var objectInfoProvider = UntiledProvider as IObjectInfoProvider;
-            if (objectInfoProvider != null)
+            if (UntiledProvider is IObjectInfoProvider objectInfoProvider)
                 objectInfoProvider.MapUdpate += UdpateOjectInfos;
 
-            var xmap2objectInfoProvider = UntiledProvider as IXmap2ObjectInfos;
-            if (xmap2objectInfoProvider != null)
+            if (UntiledProvider is IXmap2ObjectInfos xmap2objectInfoProvider)
                 xmap2objectInfoProvider.Update = UpdateXmap2ObjectInfos;
 
             base.AddToMapView(mapView);
@@ -151,7 +149,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// Provides a hook to generate tool tips for map objects.
         /// </summary>
         /// <returns>
-        /// Method that returns a tool tip for a map object. The defualt implementation returns the stringified map object.
+        /// Method that returns a tool tip for a map object. The default implementation returns the stringified map object.
         /// </returns>
         public Func<IMapObject, string> GetToolTipFromMapObject = mapObject => mapObject.ToString(); 
         
@@ -247,7 +245,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// <summary> Delay for updating the overlay. </summary>
         private const int updateDelay = 150;
 
-        private int index = 0;
+        private int index;
 
         #endregion
 
@@ -283,7 +281,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// <value>  Maximum map request size in pixels. </value>
         public Size MaxRequestSize { get; set; }
 
-        /// <summary> Gets or sets the maximum leve up to which images are requested. </summary>
+        /// <summary> Gets or sets the maximum level up to which images are requested. </summary>
         public double MinLevel { get; set; }
         
         #endregion
@@ -332,8 +330,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
                     break;
                 case UpdateMode.WhileTransition:
                     // fade out for big scale differences
-                    const double TOLERANCE = 0.0001;
-                    if (mapImage != null && Math.Abs(lastZoom) > TOLERANCE)
+                    if (mapImage != null && lastZoom != 0)
                         mapImage.Opacity = 1.0 - Math.Min(1, .25 * Math.Abs(MapView.CurrentZoom - lastZoom));
 
                     break;
@@ -358,8 +355,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             MapRectangle rect = MapView.FinalEnvelope;
             var mapParam = new MapParam(rect.West, rect.South, rect.East, rect.North, MapView.ActualWidth, MapView.ActualHeight);
 
-            const double TOLERANCE = 0.0001;
-            if (Math.Abs(mapParam.Width) < TOLERANCE || Math.Abs(mapParam.Height) < TOLERANCE)
+            if (mapParam.Width == 0 || mapParam.Height == 0)
                 return mapParam;
 
             // clip the rectangle to the maximum rectangle
@@ -571,13 +567,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             /// <returns> Boolean value showing if the map parameters are equal. </returns>
             public static bool operator ==(MapParam a, MapParam b)
             {
-                const double TOLERANCE = 0.0001;
-
                 // Return true if the fields match:
                 return
-                    Math.Abs(a.Left - b.Left) < TOLERANCE && Math.Abs(a.Top - b.Top) < TOLERANCE &&
-                    Math.Abs(a.Right - b.Right) < TOLERANCE && Math.Abs(a.Bottom - b.Bottom) < TOLERANCE &&
-                    Math.Abs(a.Width - b.Width) < TOLERANCE && Math.Abs(a.Height - b.Height) < TOLERANCE;
+                    a.Left == b.Left && a.Top == b.Top &&
+                    a.Right == b.Right && a.Bottom == b.Bottom &&
+                    a.Width == b.Width && a.Height == b.Height;
             }
 
             /// <summary> Compares two map parameters and returns a boolean value showing if the map parameters are not
@@ -756,7 +750,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
                 line.Append(' ').Append(word);
             }
 
-            // finally concat all lines using Environment.NewLine as the delimeter and return the string
+            // finally concat all lines using Environment.NewLine as the delimiter and return the string
             return string.Join(Environment.NewLine, lines.Select(l => l.ToString()).ToArray());
         }
     }

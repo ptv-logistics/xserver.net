@@ -296,12 +296,10 @@ namespace Ptv.XServer.Demo.UseCases.FeatureLayer
         /// <returns> All needed information for an update of the map window content.</returns>
         private IEnumerable<RefreshInfo> RefreshInfos()
         {
-            var backgroundLayer = map.Layers["Background"] as TiledLayer;
-            if (backgroundLayer != null)
+            if (map.Layers["Background"] is TiledLayer backgroundLayer)
                 yield return new RefreshInfo { provider = (XMapTiledProvider) backgroundLayer.TiledProvider, layer = backgroundLayer };
 
-            var foregroundLayer = map.Layers["Labels"] as UntiledLayer;
-            if (foregroundLayer != null)
+            if (map.Layers["Labels"] is UntiledLayer foregroundLayer)
                 yield return new RefreshInfo { provider = (XMapTiledProvider) foregroundLayer.UntiledProvider, layer = foregroundLayer };
         }
 

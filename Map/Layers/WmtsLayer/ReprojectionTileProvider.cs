@@ -21,18 +21,17 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
             Color.FromArgb(0, 255, 255, 255).CreateImage(256, 256).StreamPng().ToArray();
 
         /// <summary>
-        /// Creates and intializes an instance of ReprojectionTileProvider. The given map service will internally be wrapped in a ReprojectionService which is capable
+        /// Creates and initializes an instance of ReprojectionTileProvider. The given map service will internally be wrapped in a ReprojectionService which is capable
         /// to map any source CRS to our EPSG:76131 using image reprojection.
         /// </summary>
         /// <param name="mapService">A map service that is capable to render map images, given the bounding box and the pixel size of the map section to render.</param>
         /// <param name="reprojectionServiceOptions">Additional options that are passed to the ReprojectionService. Optional, defaults to null.</param>
         public ReprojectionTileProvider(MapService mapService, ReprojectionServiceOptions reprojectionServiceOptions = null)
         {
-            // intialize zoom values
             MinZoom = 0;
             MaxZoom = 19;
 
-            // initialize CacheId, create a uniqe identifier
+            // initialize CacheId, create a unique identifier
             CacheId = $"{GetType().FullName}.{Guid.NewGuid().ToString()}";
 
             // wrap MapService in a ReprojectionService. 
@@ -62,9 +61,9 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
             var mapRect = new Tools.Reprojection.MapRectangle(rect.Left, rect.Bottom, rect.Right, rect.Top);
 
             // Request the map tile from the ReprojectionService. The returned image stream may be 
-            // null, e.g. when the requested tile is out of bounds regarding the inner's MapServer configuration. 
+            // null, e.g. when the requested tile is out of bounds regarding the inner MapServer configuration. 
             // In that case return a default  tile preventing the map from displaying enlarged images from other 
-            // zoom levels (> avoids "zoom artefacts").
+            // zoom levels (> avoids "zoom artifacts").
             return (ReprojectionService.GetImageStream(mapRect, new Size(256, 256)) ?? new MemoryStream(defaultTile)).Reset();
         }
     }

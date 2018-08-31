@@ -108,8 +108,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <value> Flag showing whether the gadget is visible.</value>
         public virtual bool Visible
         {
-            get { return (Visibility == Visibility.Visible); }
-            set { Visibility = (value ? Visibility.Visible : Visibility.Collapsed); }
+            get => (Visibility == Visibility.Visible);
+            set => Visibility = (value ? Visibility.Visible : Visibility.Collapsed);
         }
         #endregion
 

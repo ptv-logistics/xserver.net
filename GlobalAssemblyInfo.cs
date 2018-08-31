@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
+
+using System.Reflection;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information

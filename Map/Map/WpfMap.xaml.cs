@@ -41,8 +41,8 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Gets or sets a value indicating whether the scale gadget is shown or made invisible. </summary>
         public bool ShowScale
         {
-            get { return (bool)GetValue(ShowScaleProperty); }
-            set { SetValue(ShowScaleProperty, value); }
+            get => (bool)GetValue(ShowScaleProperty);
+            set => SetValue(ShowScaleProperty, value);
         }
 
         /// <summary> Property to show the zoom slider gadget. </summary>
@@ -50,8 +50,8 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Gets or sets a value indicating whether the zoom slider gadget is shown or made invisible. </summary>
         public bool ShowZoomSlider
         {
-            get { return (bool)GetValue(ShowZoomSliderProperty); }
-            set { SetValue(ShowZoomSliderProperty, value); }
+            get => (bool)GetValue(ShowZoomSliderProperty);
+            set => SetValue(ShowZoomSliderProperty, value);
         }
 
         /// <summary> Property to show the coordinates gadget. </summary>
@@ -59,8 +59,8 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Gets or sets a value indicating whether the coordinates gadget is shown or made invisible. </summary>
         public bool ShowCoordinates
         {
-            get { return (bool)GetValue(ShowCoordinatesProperty); }
-            set { SetValue(ShowCoordinatesProperty, value); }
+            get => (bool)GetValue(ShowCoordinatesProperty);
+            set => SetValue(ShowCoordinatesProperty, value);
         }
 
         /// <summary> Property to show the overview map. </summary>
@@ -68,8 +68,8 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Gets or sets a value indicating whether the overview map is shown or made invisible. </summary>
         public bool ShowOverview
         {
-            get { return (bool)GetValue(ShowOverviewProperty); }
-            set { SetValue(ShowOverviewProperty, value); }
+            get => (bool)GetValue(ShowOverviewProperty);
+            set => SetValue(ShowOverviewProperty, value);
         }
 
         /// <summary> Property to show the layers gadget. </summary>
@@ -77,8 +77,8 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Gets or sets a value indicating whether the layers gadget is shown or made invisible. </summary>
         public bool ShowLayers
         {
-            get { return (bool)GetValue(ShowLayersProperty); }
-            set { SetValue(ShowLayersProperty, value); }
+            get => (bool)GetValue(ShowLayersProperty);
+            set => SetValue(ShowLayersProperty, value);
         }
 
         /// <summary> Property to show the magnifier gadget. </summary>
@@ -86,8 +86,8 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Gets or sets a value indicating whether the magnifier gadget is shown or made invisible. </summary>
         public bool ShowMagnifier
         {
-            get { return (bool)GetValue(ShowMagnifierProperty); }
-            set { SetValue(ShowMagnifierProperty, value); }
+            get => (bool)GetValue(ShowMagnifierProperty);
+            set => SetValue(ShowMagnifierProperty, value);
         }
 
         /// <summary> Property to show the navigation gadget. </summary>
@@ -95,8 +95,8 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Gets or sets a value indicating whether the layers gadget is shown or made invisible. </summary>
         public bool ShowNavigation
         {
-            get { return (bool)GetValue(ShowNavigationProperty); }
-            set { SetValue(ShowNavigationProperty, value); }
+            get => (bool)GetValue(ShowNavigationProperty);
+            set => SetValue(ShowNavigationProperty, value);
         }
         #endregion
 

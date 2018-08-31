@@ -56,7 +56,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// initializing the <see cref="CopyrightText"/> and <see cref="MaxRequestSize"/>, if this file could be requested.
         /// The <see cref="User"/> and <see cref="Password"/> remains empty.
         /// </summary>
-        /// <param name="baseUrl"> The base url for the xMapServer. It consists of the first part of the complete XMapserver URL,
+        /// <param name="baseUrl"> The base url for the xMapServer. It consists of the first part of the complete XMapServer URL,
         /// for example eu-n-test.</param>
         public XMapMetaInfo(string baseUrl) : this()
         {
@@ -70,33 +70,49 @@ namespace Ptv.XServer.Controls.Map.Tools
                 var jspFound = false;
                 try
                 {
-                    var request = WebRequest.Create(baseUrl + "/server-info.jsp") as HttpWebRequest;
-                    request.Timeout = 10000;
-
-                    using (var response = request.GetResponse())
-                    using (var reader = new StreamReader(response.GetResponseStream(), Encoding.ASCII))
+                    if (WebRequest.Create(baseUrl + "/server-info.jsp") is HttpWebRequest request)
                     {
-                        var content = reader.ReadToEnd();
+                        request.Timeout = 10000;
 
-                        var copyrightResult = content;
-                        jspFound = SearchValueInJSON(new[] { "\"modules\"", "\"xmap\"", "\"map\"", "\"copyright\" : \"" }, ref copyrightResult);
-                        if (!jspFound)
+                        using (var response = request.GetResponse())
+                        using (var reader =
+                            new StreamReader(response.GetResponseStream() ?? throw new InvalidOperationException(),
+                                Encoding.ASCII))
                         {
-                            copyrightResult = content;
-                            jspFound = SearchValueInJSON(new[] { "\"modules\"", "\"xmap\"", "\"profiles\"", "\"default\"", "\"map\"", "\"copyright\" : \"" }, ref copyrightResult);
-                        }
+                            var content = reader.ReadToEnd();
 
-                        if (jspFound)
-                            CopyrightText = copyrightResult;
+                            var copyrightResult = content;
+                            jspFound = SearchValueInJSON(
+                                new[] {"\"modules\"", "\"xmap\"", "\"map\"", "\"copyright\" : \""},
+                                ref copyrightResult);
+                            if (!jspFound)
+                            {
+                                copyrightResult = content;
+                                jspFound = SearchValueInJSON(
+                                    new[]
+                                    {
+                                        "\"modules\"", "\"xmap\"", "\"profiles\"", "\"default\"", "\"map\"",
+                                        "\"copyright\" : \""
+                                    }, ref copyrightResult);
+                            }
 
-                        ///////
+                            if (jspFound)
+                                CopyrightText = copyrightResult;
 
-                        var maxSizeResult = content;
-                        if (SearchValueInJSON(new[] { "\"modules\"", "\"xmap\"", "\"profiles\"", "\"default\"", "\"image\"", "\"maxSize\" : \"" }, ref maxSizeResult))
-                        {
-                            var values = maxSizeResult.Split(',');
-                            MaxRequestSize = new Size(Int32.Parse(values[0]), Int32.Parse(values[1]));
-                            jspFound = true;
+                            ///////
+
+                            var maxSizeResult = content;
+                            if (SearchValueInJSON(
+                                new[]
+                                {
+                                    "\"modules\"", "\"xmap\"", "\"profiles\"", "\"default\"", "\"image\"",
+                                    "\"maxSize\" : \""
+                                }, ref maxSizeResult))
+                            {
+                                var values = maxSizeResult.Split(',');
+                                MaxRequestSize = new Size(Int32.Parse(values[0]), Int32.Parse(values[1]));
+                                jspFound = true;
+                            }
                         }
                     }
                 }
@@ -150,7 +166,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         }
 
         /// <summary>
-        /// Searchs for a value in a json string at the given path step by step.
+        /// Searches for a value in a json string at the given path step by step.
         /// </summary>
         /// <param name="path">Path description to the wanted value.</param>
         /// <param name="result">Stores the json string at the beginning and will be set every step.</param>

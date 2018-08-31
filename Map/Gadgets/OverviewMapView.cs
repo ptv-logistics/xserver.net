@@ -79,10 +79,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                     SetZoom(false);
                 }
             }
-            get
-            {
-                return parentMapView;
-            }
+            get => parentMapView;
         }
 
         /// <summary> Updates the rectangle showing the currently visible part of the parent map. </summary>

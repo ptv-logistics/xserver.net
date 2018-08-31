@@ -13,7 +13,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         PtvMercator,
         /// <summary> PTV/Esri Spheric Mercator with inverted Y axis. </summary>
         PtvMercatorInvertedY,
-        /// <summary> Google/MS Spheric Mercator (SRID 3785/900913). </summary>
+        /// <summary> Google/MS Spheric Mercator (SRID 3857/900913). </summary>
         WebMercator,
         /// <summary> Google/MS Spheric Mercator with inverted Y axis. </summary>
         WebMercatorInvertedY

@@ -20,8 +20,8 @@ namespace Ptv.XServer.Controls.Map.Symbols
         /// <summary> Gets or sets the color of this truck. </summary>
         public Color Color
         {
-            get { return (Color)GetValue(ColorProperty); }
-            set { SetValue(ColorProperty, value); }
+            get => (Color)GetValue(ColorProperty);
+            set => SetValue(ColorProperty, value);
         }
 
         /// <summary> Event handling a change of the truck color. </summary>

@@ -240,11 +240,6 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         private readonly MemoryStream stm;
         private readonly Func<byte[], int, int, uint> update;
 
-        /// <summary>
-        /// C'tor, private. Use one of the static factory methods instead.
-        /// </summary>
-        /// <param name="stm"></param>
-        /// <param name="update"></param>
         private ChecksumUpdateRegion(MemoryStream stm, Func<byte[], int, int, uint> update)
         {
             this.stm = stm;

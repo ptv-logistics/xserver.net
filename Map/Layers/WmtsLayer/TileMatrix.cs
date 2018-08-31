@@ -72,7 +72,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
         /// For the bottom right corner to be correct, it is crucial to have a proper pixel span. However,
         /// the formula above incorporates additional resolution parameters (both device and CRS) that are not 
         /// entirely clear or seem to provide fixed values in any circumstances. We therefore decided to 
-        /// explicitely include the BottomRightCorner as a property in the interface in order to make 
+        /// explicitly include the BottomRightCorner as a property in the interface in order to make 
         /// implementations robust against misinterpretations. As the ScaleDenominator within a single matrix 
         /// set is solely used to calculate the bottom right corner, we also decided to drop that property.
         /// </remarks>
@@ -296,7 +296,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
         /// <param name="sourceCrs">The CRS of the tile matrix set.</param>
         /// <param name="targetCrs">The CRS of the bounding box to return.</param>
         /// <param name="nSupportingPoints">Number of supporting points to use.</param>
-        /// <param name="resizeFactor">An addtional factor for resizing the resulting bounding box to be on the safe side.</param>
+        /// <param name="resizeFactor">An additional factor for resizing the resulting bounding box to be on the safe side.</param>
         /// <returns>Bounding box.</returns>
         /// <remarks>Refer to MapServiceExtensions.ApproximateBoundingBox for further documentation.</remarks>
         public IBoundingBox ApproximateBoundingBox(string sourceCrs, string targetCrs, int nSupportingPoints, double resizeFactor)

@@ -7,7 +7,7 @@
                  MouseEnter="Navigation_MouseEnter"
                  MouseLeave="Navigation_MouseLeave">
   <local:MapGadget.Resources>
-    <!-- see http://msdn.microsoft.com/de-de/library/ms752293.aspx for short notation of pathes -->
+    <!-- see http://msdn.microsoft.com/de-de/library/ms752293.aspx for short notation of paths -->
     <GeometryGroup x:Key="menuCenter">
       <EllipseGeometry Center="15,15" RadiusX="12" RadiusY="12"></EllipseGeometry>
     </GeometryGroup>

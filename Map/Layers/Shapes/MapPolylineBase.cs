@@ -24,8 +24,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <summary> Gets or sets the points of the polyline. </summary>
         public PointCollection Points
         {
-            get { return (PointCollection)GetValue(PointsProperty); }
-            set { SetValue(PointsProperty, value); }
+            get => (PointCollection)GetValue(PointsProperty);
+            set => SetValue(PointsProperty, value);
         }
 
         /// <summary> Gets or sets the transformed points. The transformed points are a collection of points which have
@@ -48,8 +48,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         private static void OnPointCollectionChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
         {
             var shape = obj as MapShape;
-            if ((shape?.GeoTransform != null) && (shape.Parent is ShapeCanvas))
-                shape.UpdateShape(((ShapeCanvas) shape.Parent).MapView, UpdateMode.Refresh, false);
+            if ((shape?.GeoTransform != null) && (shape.Parent is ShapeCanvas shapeCanvas))
+                shape.UpdateShape(shapeCanvas.MapView, UpdateMode.Refresh, false);
         }
 
         #region constructor

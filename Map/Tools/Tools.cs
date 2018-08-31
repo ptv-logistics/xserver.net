@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -177,16 +178,10 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns> The instance of the object or null if not found. </returns>
         public static T FindRelative<T>(this FrameworkElement fe) where T : DependencyObject
         {
-            var variable = fe.Parent as T;
-            if (variable != null)
+            if (fe.Parent is T variable)
                 return variable;
 
-            var child = FindChild<T>(fe.Parent);
-            if (child != null)
-                return child;
-
-            var element = fe.Parent as FrameworkElement;
-            return (element != null) ? FindRelative<T>(element) : null;
+            return FindChild<T>(fe.Parent) ?? (fe.Parent is FrameworkElement element ? FindRelative<T>(element) : null);
         }
 
         /// <summary> Finds an object of type T for a framework element which is a parent in the visual tree. </summary>
@@ -195,12 +190,9 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns> The instance of the object or null if not found. </returns>
         public static T FindParent<T>(FrameworkElement fe) where T : DependencyObject
         {
-            var variable = fe.Parent as T;
-            if (variable != null)
-                return variable;
-
-            var element = fe.Parent as FrameworkElement;
-            return (element != null) ? FindParent<T>(element) : null;
+            return (fe.Parent is T variable) 
+                ? variable
+                : fe.Parent is FrameworkElement element ? FindParent<T>(element) : null;
         }
 
         /// <summary> Gets whether a control and all its parents are visible. </summary>
@@ -231,13 +223,11 @@ namespace Ptv.XServer.Controls.Map.Tools
 
             foreach(object o in LogicalTreeHelper.GetChildren(depObj))
             {
-                if (!(o is DependencyObject))
+                if (!(o is DependencyObject child))
                     continue;
 
-                var child = o as DependencyObject;
-
-                if (child is T)
-                    return (T)child;
+                if (child is T variable)
+                    return variable;
 
                 foreach (T childOfChild in FindChildren<T>(child))
                     return childOfChild;
@@ -256,14 +246,12 @@ namespace Ptv.XServer.Controls.Map.Tools
 
             foreach (object o in LogicalTreeHelper.GetChildren(depObj))
             {
-                if (!(o is DependencyObject))
+                if (!(o is DependencyObject child))
                     yield break;
 
-                var child = o as DependencyObject;
-
-                if (child is T)
+                if (child is T variable)
                 {
-                    yield return (T)child;
+                    yield return variable;
                 }
 
                 foreach (T childOfChild in FindChildren<T>(child))
@@ -282,15 +270,15 @@ namespace Ptv.XServer.Controls.Map.Tools
         #region public methods
         /// <summary> Byte wise copy of a stream. </summary>
         /// <param name="src"> Source stream. </param>
-        /// <param name="trgt"> Destination stream. </param>
+        /// <param name="destinationStream"> Destination stream. </param>
         /// <returns>Destination stream.</returns>
-        public static System.IO.Stream CopyTo(this System.IO.Stream src, System.IO.Stream trgt)
+        public static System.IO.Stream CopyTo(this System.IO.Stream src, System.IO.Stream destinationStream)
         {
             var buffer = new byte[4096];
             int bytesRead;
             while ((bytesRead = src.Read(buffer, 0, buffer.Length)) > 0)
-                trgt.Write(buffer, 0, bytesRead);
-            return trgt;
+                destinationStream.Write(buffer, 0, bytesRead);
+            return destinationStream;
         }
 
         /// <summary>
@@ -301,13 +289,11 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns>Bytes read.</returns>
         public static byte[] GetBytes(this System.IO.Stream stm, bool forceNullIfEmpty = false)
         {
-            var ms = stm as System.IO.MemoryStream;
+            if (stm is MemoryStream memoryStream)
+                return memoryStream.Length == 0 && forceNullIfEmpty ? null : memoryStream.ToArray();
 
-            if (ms != null)
-                return ms.Length == 0 && forceNullIfEmpty ? null : ms.ToArray();
-
-            using (ms = new System.IO.MemoryStream())
-                return stm.CopyTo(ms).GetBytes(forceNullIfEmpty);
+            using (memoryStream = new System.IO.MemoryStream())
+                return stm.CopyTo(memoryStream).GetBytes(forceNullIfEmpty);
         }
         
         #endregion
@@ -324,7 +310,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public static void AppendWithSeparator(this System.Text.StringBuilder stringBuilder, string text, string separator=",")
         {
             if (stringBuilder.Length > 0)
-                stringBuilder.Append(System.Environment.NewLine);
+                stringBuilder.Append(Environment.NewLine);
             stringBuilder.Append(text);
         }
     }
@@ -361,7 +347,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <summary>Service implementation of the xMap server. It is implemented as a static variable to make
         /// it possible to modify it for mocking (see XMapToolsTest.cs).</summary>
         [ThreadStatic]
-        private static IXMapWSBinding Service; 
+        private static IXMapWSBinding Service;
 
         /// <summary>
         /// Checks if one or n certain layers are available or not.
@@ -374,9 +360,11 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// SoapExceptions carrying this error code will be caught and the return value of the method will be false.
         /// SoapExceptions carrying another error code will not be caught and thus be thrown by this API.
         /// </param>
+        /// <param name="xServerUser">User name needed for Azure Cloud.</param>
+        /// <param name="xServerPassword">Password needed for Azure Cloud.</param>
         /// <returns>True if one or n layers are available, false if at least one layer is not available. 
         /// May throw exceptions in case of malformed url or wrong contextKey definition.</returns>
-        public static bool AreXMapLayersAvailable(string url, string contextKey, Layer[] layers, string profile, string expectedErrorCode, string xserverUser = null, string xServerPassword = null)
+        public static bool AreXMapLayersAvailable(string url, string contextKey, Layer[] layers, string profile, string expectedErrorCode, string xServerUser = null, string xServerPassword = null)
         {
             string key = url + profile;
 
@@ -389,10 +377,10 @@ namespace Ptv.XServer.Controls.Map.Tools
             {
                 Service = Service ?? new XMapWSServiceImpl(url);
 
-                if (!string.IsNullOrEmpty(xserverUser) && !string.IsNullOrEmpty(xServerPassword))
+                if (!string.IsNullOrEmpty(xServerUser) && !string.IsNullOrEmpty(xServerPassword))
                 {
                     ((SoapHttpClientProtocol)Service).PreAuthenticate = true;
-                    ((SoapHttpClientProtocol)Service).Credentials = new CredentialCache { { new Uri(url), "Basic", new NetworkCredential(xserverUser, xServerPassword) } };
+                    ((SoapHttpClientProtocol)Service).Credentials = new CredentialCache { { new Uri(url), "Basic", new NetworkCredential(xServerUser, xServerPassword) } };
                 }
 
                 var mapParams = new MapParams { showScale = false, useMiles = false };
@@ -417,7 +405,7 @@ namespace Ptv.XServer.Controls.Map.Tools
                 {
                     Service.renderMapBoundingBox(bbox, mapParams, imageInfo, layers, true, cc);
                 }
-                catch (System.Web.Services.Protocols.SoapException se)
+                catch (SoapException se)
                 {
                     if (!se.Code.Name.Equals(expectedErrorCode)) throw;
 
@@ -568,13 +556,12 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <param name="baseUrl">Eventually partial specified URL needed for XServer's web services, for example 'eu-n-test' or 'http://localhost:50010'.</param>
         /// <param name="moduleName">Name of the XServer module, like XMap or XRoute. The casing is corrected according the internal requirements.</param>
         /// <returns></returns>
-        [Obsolete("Use XServerVersion class instead, especially method WithServicePath(). ")]
         public static string Complete(string baseUrl, string moduleName)
         {
             string lowerModuleName = moduleName.ToLower();
             string camelModuleName = moduleName.Substring(0, 2).ToUpper() + moduleName.Substring(2).ToLower();
 
-            // Devide URL into scheme, host and port. The values can be found in match.Groups
+            // Divide URL into scheme, host and port. The values can be found in match.Groups
             var regex = new Regex(@"^(https?://)?([^\:\/]+)(:\d+)?", RegexOptions.IgnoreCase);
             var match = regex.Match(baseUrl);
             if (!match.Success)
@@ -626,7 +613,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         }
 
         /// <summary>
-        /// Checks if the provided URL addresses uses a deCarta backend.
+        /// Checks if the provided URL addresses uses a DeCarta backend.
         /// </summary>
         /// <param name="url">URL to check for xServer internet deployment.</param>
         /// <returns></returns>
@@ -650,7 +637,7 @@ namespace Ptv.XServer.Controls.Map.Tools
                 case "xroute": return 50030;
                 case "xmapmatch": return 50040;
                 case "xtour": return 50090;
-                default: return 50010; // All addons are currently associated to the xMap
+                default: return 50010; // All add-ons are currently associated to the xMap
             }
         }
     }

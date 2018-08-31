@@ -119,7 +119,7 @@ namespace Ptv.Components.Projections.Direct
         /// <summary>
         /// CRSID: Google Mercator
         /// </summary>
-        private const string GOOGLE_MERCATOR = "EPSG:900913";
+        private const string GOOGLE_MERCATOR = "EPSG:3857";
 
         /// <summary>
         /// CRSID: PTV GeoMinSec

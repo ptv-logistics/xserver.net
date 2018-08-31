@@ -27,7 +27,7 @@ namespace Ptv.XServer.Controls.Map
     {
         #region private variables
         /// <summary> Dictionary of visibility settings for each layer. </summary>
-        private readonly Dictionary<ILayer, bool> visiblities = new Dictionary<ILayer, bool>();
+        private readonly Dictionary<ILayer, bool> visibilities = new Dictionary<ILayer, bool>();
         /// <summary> Dictionary of selectability settings for each layer. </summary>
         private readonly Dictionary<ILayer, bool> selectabilities = new Dictionary<ILayer, bool>();
         /// <summary> List of maps in which the layers can be shown. </summary>
@@ -111,7 +111,7 @@ namespace Ptv.XServer.Controls.Map
         /// <returns> True, if the layer exists and it is set to visible, otherwise false. </returns>
         public bool IsVisible(ILayer layer)
         {
-            return visiblities.ContainsKey(layer) && visiblities[layer];
+            return visibilities.ContainsKey(layer) && visibilities[layer];
         }
 
         /// <summary> Set the visibility of the specified layer. </summary>
@@ -124,7 +124,7 @@ namespace Ptv.XServer.Controls.Map
             if (IsVisible(layer) == visible)
                 return;
 
-            visiblities[layer] = visible;
+            visibilities[layer] = visible;
             foreach (var mapView in mapViews.Where(mapView => mapView.IsVisible))
                 if (visible)
                     layer.AddToMapView(mapView);
@@ -169,7 +169,7 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Gets or sets the layer which is the one-and-only selectable layer. </summary>
         public ILayer ExclusiveSelectableLayer
         {
-            get { return exclusiveSelectableLayer; }
+            get => exclusiveSelectableLayer;
             set
             {
                 if (value != null && !selectabilities.ContainsKey(value))
@@ -212,10 +212,10 @@ namespace Ptv.XServer.Controls.Map
             {
                 case NotifyCollectionChangedAction.Reset:
                     foreach (var mapView in mapViews.Where(mapView => mapView.IsVisible))
-                        foreach (var layer in visiblities.Keys.Where(IsVisible))
+                        foreach (var layer in visibilities.Keys.Where(IsVisible))
                             layer.RemoveFromMapView(mapView);
 
-                    foreach (var layer in visiblities.Keys.ToList())
+                    foreach (var layer in visibilities.Keys.ToList())
                         LayerRemoved?.Invoke(sender, new LayerChangedEventArgs(layer));
 
                     break;
@@ -249,22 +249,21 @@ namespace Ptv.XServer.Controls.Map
         private void Layer_Added(object sender, LayerChangedEventArgs e)
         {
             selectabilities[e.Layer] = true;
-            visiblities[e.Layer] = true;
+            visibilities[e.Layer] = true;
             e.Layer.PropertyChanged += layer_PropertyChanged;
         }
 
         private void Layer_Removed(object sender, LayerChangedEventArgs e)
         {
             selectabilities.Remove(e.Layer);
-            visiblities.Remove(e.Layer);
+            visibilities.Remove(e.Layer);
             e.Layer.PropertyChanged -= layer_PropertyChanged;
         }
 
         private void layer_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != "Priority" || !(sender is ILayer)) return;
+            if (e.PropertyName != "Priority" || !(sender is ILayer layer)) return;
 
-            var layer = (ILayer) sender;
             if (IndexOf(layer) != layer.Priority)
                 Move(IndexOf(layer), layer.Priority);
         }
@@ -291,7 +290,7 @@ namespace Ptv.XServer.Controls.Map
         /// <returns> Flag which shows if the layer name already exists. </returns>
         private bool LayerNameIsUnique(ILayer layer, int newStartingIndex, int newItemCount)
         {
-            int occurranceCounter = 0;
+            int occurrenceCounter = 0;
             // Iterates all layers.
             for (int index = 0; index < Count; index++)
             {
@@ -299,10 +298,10 @@ namespace Ptv.XServer.Controls.Map
                 if ((index >= newStartingIndex) && (index < newStartingIndex + newItemCount))
                 {
                     if (this[index].Name == layer.Name)
-                        occurranceCounter++;
+                        occurrenceCounter++;
 
-                    // Only one occurrance in the new layers is allowed.
-                    if (occurranceCounter > 1)
+                    // Only one occurrence in the new layers is allowed.
+                    if (occurrenceCounter > 1)
                         return false;
                 }
                 else
@@ -344,7 +343,7 @@ namespace Ptv.XServer.Controls.Map
     /// <summary>Additional argument class for events concerning some changes in the context of an individual layer. </summary>
     public class LayerChangedEventArgs : EventArgs
     {
-        /// <summary>Constructor needed for defining which layer is addressed concering its changes. </summary>
+        /// <summary>Constructor needed for defining which layer is addressed concerning its changes. </summary>
         /// <param name="layer">Layer which changes its properties or is added to/removed from the layer collection.</param>
         public LayerChangedEventArgs(ILayer layer)
         {
@@ -352,7 +351,7 @@ namespace Ptv.XServer.Controls.Map
             LayerName = layer.Name;
         }
 
-        /// <summary>Legacy contructor containing only the name of the layer. </summary>
+        /// <summary>Legacy constructor containing only the name of the layer. </summary>
         /// <remarks>The property <see cref="Layer"/> remains uninitialized.</remarks>
         /// <param name="layerName">Name of the layer which was changed one of its properties or is added to /removed from the
         /// collection list.</param>

@@ -166,9 +166,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <inheritdoc />
         public virtual Stream GetImageStream(IBoundingBox boundingBox, Size size)
         {
-            Size effectiveSize;
-
-            var stm = GetImageStream(boundingBox, size, out effectiveSize);
+            var stm = GetImageStream(boundingBox, size, out var effectiveSize);
 
             if (stm == null || effectiveSize == size)
                 return stm;
@@ -176,14 +174,14 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             try
             {
                 using (var src = Image.FromStream(stm))
-                using (var trgt = new Bitmap(size.Width, size.Height))
-                using (var g = Graphics.FromImage(trgt))
+                using (var bitmap = new Bitmap(size.Width, size.Height))
+                using (var g = Graphics.FromImage(bitmap))
                 {
                     g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    g.DrawImage(src, new Rectangle(0, 0, trgt.Width, trgt.Height), new Rectangle(0, 0, src.Width, src.Height), GraphicsUnit.Pixel);
+                    g.DrawImage(src, new Rectangle(0, 0, bitmap.Width, bitmap.Height), new Rectangle(0, 0, src.Width, src.Height), GraphicsUnit.Pixel);
 
                     var memoryStream = new MemoryStream();
-                    trgt.Save(memoryStream, ImageFormat.Png);
+                    bitmap.Save(memoryStream, ImageFormat.Png);
 
                     memoryStream.Seek(0, SeekOrigin.Begin);
 
@@ -272,7 +270,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="enumT">Elements to process.</param>
-        /// <param name="nDegreeOfParallelism">Requested degree of parallelism. Multithreading applies for values >= 2.</param>
+        /// <param name="nDegreeOfParallelism">Requested degree of parallelism. Multi-threading applies for values >= 2.</param>
         /// <param name="actionT">Action that processes an element.</param>
         public static void ForEach<T>(this IEnumerable<T> enumT, int? nDegreeOfParallelism, Action<T> actionT)
         {
@@ -290,7 +288,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                     {
                         while (true)
                         {
-                            var t = default(T);
+                            T t;
 
                             lock (enumeratorT)
                             {
@@ -406,7 +404,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <param name="sourceCrs">The source CRS.</param>
         /// <param name="targetCrs">The target CRS.</param>
         /// <param name="nSupportingPoints">Number of supporting points to use.</param>
-        /// <returns>BoundingLines structure that correpsonds to the bounding box in the target CRS.</returns>
+        /// <returns>BoundingLines structure that corresponds to the bounding box in the target CRS.</returns>
         public static BoundingLines TransformBoundingBox(this IBoundingBox boundingBox, string sourceCrs, string targetCrs, int nSupportingPoints)
         {
             return TransformBoundingBox(boundingBox, CoordinateTransformation.Get(sourceCrs, targetCrs), nSupportingPoints);
@@ -418,7 +416,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <param name="boundingBox">Bounding box to transform.</param>
         /// <param name="transformation">The transformation that transforms points from the source CRS to the target CRS.</param>
         /// <param name="nSupportingPoints">Number of supporting points to use.</param>
-        /// <returns>BoundingLines structure that correpsonds to the bounding box in the target CRS.</returns>
+        /// <returns>BoundingLines structure that corresponds to the bounding box in the target CRS.</returns>
         public static BoundingLines TransformBoundingBox(this IBoundingBox boundingBox, ICoordinateTransformation transformation, int nSupportingPoints)
         {
             return new BoundingLines
@@ -434,7 +432,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// Utility extension that provides an approximation of a bounding box given a BoundingLines structure.
         /// </summary>
         /// <param name="boundingLines">BoundingLines structure to determine the bounding box for.</param>
-        /// <param name="resizeFactor">An addtional factor for resizing the resulting bounding box; &lt;0 for adding an offset based on side line deviations, &gt;0 for simply resizing the resulting box.</param>
+        /// <param name="resizeFactor">An additional factor for resizing the resulting bounding box; &lt;0 for adding an offset based on side line deviations, &gt;0 for simply resizing the resulting box.</param>
         /// <returns>The transformed bounding box.</returns>
         /// <remarks>This is extension does not only transform the corner points of a given bounding box but takes into 
         /// account that the bounds may be distorted when being transformed to another CRS.</remarks>
@@ -451,7 +449,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             if (Math.Abs(resizeFactor) > 1e-4)
             {
                 // if resize factor is negative, resize the bounds
-                // based on the side lide deviations 
+                // based on the side deviations 
 
                 if (resizeFactor < 0)
                 {
@@ -491,7 +489,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <param name="boundingBox">Bounding box to transform.</param>
         /// <param name="transformation">The transformation that transforms points from the source CRS to the target CRS.</param>
         /// <param name="nSupportingPoints">Number of supporting points to use.</param>
-        /// <param name="resizeFactor">An addtional factor for resizing the resulting bounding box; &lt;0 for adding an offset based on side line deviations, &gt;0 for simply resizing the resulting box.</param>
+        /// <param name="resizeFactor">An additional factor for resizing the resulting bounding box; &lt;0 for adding an offset based on side line deviations, &gt;0 for simply resizing the resulting box.</param>
         /// <returns>The transformed bounding box.</returns>
         /// <remarks>This is extension does not only transform the corner points of a given bounding box but takes into 
         /// account that the bounds may be distorted when being transformed to another CRS.</remarks>
@@ -507,7 +505,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <param name="sourceCrs">The source CRS.</param>
         /// <param name="targetCrs">The target CRS.</param>
         /// <param name="nSupportingPoints">Number of supporting points to use.</param>
-        /// <param name="resizeFactor">An addtional factor for resizing the resulting bounding box; &lt;0 for adding an offset based on side line deviations, &gt;0 for simply resizing the resulting box.</param>
+        /// <param name="resizeFactor">An additional factor for resizing the resulting bounding box; &lt;0 for adding an offset based on side line deviations, &gt;0 for simply resizing the resulting box.</param>
         /// <returns>The transformed bounding box.</returns>
         /// <remarks>This is extension does not only transform the corner points of a given bounding box but takes into 
         /// account that the bounds may be distorted when being transformed to another CRS.</remarks>
@@ -548,19 +546,16 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         {
             get
             {
-                Func<IEnumerable<Location>, IEnumerable<double>> enumC =
-                    locs =>
+                Func<IEnumerable<Location>, IEnumerable<double>> enumCoordinates =
+                    locations =>
                     {
-                        var enumerable = locs.ToList();
+                        var enumerable = locations.ToList();
                         return enumerable.Select(loc => loc.X).Concat(enumerable.Select(loc => loc.Y));
                     };
 
-                Func<double, bool> valid = 
-                    d => !double.IsInfinity(d) && !double.IsNaN(d);
-
                 return new[] {Left, Top, Right, Bottom}
-                    .SelectMany(enumC)
-                    .All(valid);
+                    .SelectMany(enumCoordinates)
+                    .All(d => !double.IsInfinity(d) && !double.IsNaN(d));
             }
         }
 

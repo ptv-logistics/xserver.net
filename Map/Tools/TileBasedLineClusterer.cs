@@ -257,8 +257,7 @@ namespace Ptv.XServer.Controls.Map.Tools
 
                 // try to get the cluster from the dictionary.
                 // If not, create a new one
-                LineCluster<T> cluster;
-                if (!(baseClusters.TryGetValue(tmpTile, out cluster)))
+                if (!(baseClusters.TryGetValue(tmpTile, out var cluster)))
                 {
                     cluster = new LineCluster<T>(tmpTile.X1, tmpTile.Y1, tmpTile.X2, tmpTile.Y2);
                     baseClusters[tmpTile] = cluster;
@@ -287,8 +286,7 @@ namespace Ptv.XServer.Controls.Map.Tools
 
                     // try to get the cluster from the dictionary.
                     // If not, create a new one
-                    LineCluster<T> childCluster;
-                    if (!(childClusters.TryGetValue(tmpTile, out childCluster)))
+                    if (!(childClusters.TryGetValue(tmpTile, out var childCluster)))
                     {
                         childCluster = new LineCluster<T>(tmpTile.X1, tmpTile.Y1, tmpTile.X2, tmpTile.Y2);
                         childClusters[tmpTile] = childCluster;
@@ -360,8 +358,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             for (int i = xMinTile; i < xMaxTile; i++)
                 for (int j = yMinTile; j < yMaxTile; j++)
                 {
-                    List<LineCluster<T>> clusterList;
-                    if (clusters1.TryGetValue(new Tile { X = i, Y = j }, out clusterList))
+                    if (clusters1.TryGetValue(new Tile { X = i, Y = j }, out var clusterList))
                         clusterList.ForEach(cluster => result.Add(cluster));
                     if (clusters2.TryGetValue(new Tile { X = i, Y = j }, out clusterList))
                         clusterList.ForEach(cluster => result.Add(cluster));
@@ -423,8 +420,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             for (int i = xMinTile; i < xMaxTile; i++)
                 for (int j = yMinTile; j < yMaxTile; j++)
                 {
-                    List<LineCluster<T>> clusterList;
-                    if (clusters1.TryGetValue(new Tile { X = i, Y = j }, out clusterList))
+                    if (clusters1.TryGetValue(new Tile { X = i, Y = j }, out var clusterList))
                     {
                         var cluster = new Cluster<T>(i, j) {Level = level};
                         result.Add(cluster);
@@ -496,8 +492,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             for (int i = xMinTile; i < xMaxTile; i++)
                 for (int j = yMinTile; j < yMaxTile; j++)
                 {
-                    List<LineCluster<T>> clusterList;
-                    if (!clusters2.TryGetValue(new Tile {X = i, Y = j}, out clusterList)) continue;
+                    if (!clusters2.TryGetValue(new Tile {X = i, Y = j}, out var clusterList)) continue;
 
                     var cluster = new Cluster<T>(i, j) {Level = level};
                     result.Add(cluster);

@@ -24,7 +24,6 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         {
             InitializeComponent();
             Loaded += CopyrightGadget_Loaded;
-            IsVisibleChanged += CopyrightGadget_IsVisibleChanged;
         }
         #endregion
 
@@ -52,14 +51,6 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         #endregion
 
         #region event handling
-        /// <summary> Event handler for a change of the visibility property. This method prevents the gadget from
-        /// being hidden. It always sets the visibility property to visible. </summary>
-        /// <param name="sender"> Sender of the IsVisibleChanged event. </param>
-        /// <param name="e"> The event parameters. </param>
-        private void CopyrightGadget_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            Visibility = Visibility.Visible;
-        }
 
         /// <summary> Event handler for having loaded the gadget successfully. Initializes the layer collection and updates the copyright text. </summary>
         /// <param name="sender"> Sender of the Loaded event. </param>
@@ -106,8 +97,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <inheritdoc/>
         public override bool Visible
         {
-            get { return false; }
-            set { base.Visible = false; }
+            get => false;
+            set {  } // do not allow to hide the copyright gadget
         }
         #endregion
 

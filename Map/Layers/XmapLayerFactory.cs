@@ -53,7 +53,7 @@ namespace Ptv.XServer.Controls.Map.Layers
                 BaseLayerSuccessor = null;
             }
 
-            // don't add overlay layer for decarta-powered maps (basemap is completely rendered on tiles)
+            // don't add overlay layer for Decarta-powered maps (basemap is completely rendered on tiles)
             if (XServerUrl.IsDecartaBackend(meta.Url)) return;
 
             var labelLayer = new UntiledLayer(LabelsLayerName)
@@ -81,13 +81,13 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// Updates the copyright text for the XMapServer layers.
         /// </summary>
         /// <param name="layers"> The LayerCollection instance. </param>
-        /// <param name="copyrightText"> The new copyight text</param>
+        /// <param name="copyrightText"> The new copyright text</param>
         public static void UpdateXMapCoprightText(this LayerCollection layers, string copyrightText)
         {
-            if (layers[BackgroundLayerName] != null)
-                (layers[BackgroundLayerName] as TiledLayer).Copyright = copyrightText;
-            if (layers[LabelsLayerName] != null)
-                (layers[LabelsLayerName] as UntiledLayer).Copyright = copyrightText;
+            if (layers[BackgroundLayerName] is TiledLayer tiledLayer)
+                tiledLayer.Copyright = copyrightText;
+            if (layers[LabelsLayerName] is UntiledLayer untiledLayer)
+                untiledLayer.Copyright = copyrightText;
         }
 
         /// <summary>
@@ -103,15 +103,13 @@ namespace Ptv.XServer.Controls.Map.Layers
         {
             // helper that tries to cast a provider object to 
             // XMapTiledProvider in order to set the maximum zoom value.
-            Action<object, int> setMaxZoom = (provider, value) =>
+            void SetMaxZoom(object provider, int value)
             {
-                var tiledProvider = provider as XMapTiledProvider;
-                if (tiledProvider != null)
-                    tiledProvider.MaxZoom = value;
-            };
+                if (provider is XMapTiledProvider tiledProvider) tiledProvider.MaxZoom = value;
+            }
 
-            setMaxZoom((layers[BackgroundLayerName] as TiledLayer)?.TiledProvider, maxZoom);
-            setMaxZoom((layers[LabelsLayerName] as UntiledLayer)?.UntiledProvider, maxZoomLabels.GetValueOrDefault(maxZoom));
+            SetMaxZoom((layers[BackgroundLayerName] as TiledLayer)?.TiledProvider, maxZoom);
+            SetMaxZoom((layers[LabelsLayerName] as UntiledLayer)?.UntiledProvider, maxZoomLabels.GetValueOrDefault(maxZoom));
         }
 
         /// <summary>
@@ -127,15 +125,13 @@ namespace Ptv.XServer.Controls.Map.Layers
         {
             // helper that tries to cast a provider object to 
             // XMapTiledProvider in order to set the minimum zoom value.
-            Action<object, int> setMinZoom = (provider, value) =>
+            void SetMinZoom(object provider, int value)
             {
-                var tiledProvider = provider as XMapTiledProvider;
-                if (tiledProvider != null)
-                    tiledProvider.MinZoom = value;
-            };
+                if (provider is XMapTiledProvider tiledProvider) tiledProvider.MinZoom = value;
+            }
 
-            setMinZoom((layers[BackgroundLayerName] as TiledLayer)?.TiledProvider, minZoom);
-            setMinZoom((layers[LabelsLayerName] as UntiledLayer)?.UntiledProvider, minZoomLabels.GetValueOrDefault(minZoom));
+            SetMinZoom((layers[BackgroundLayerName] as TiledLayer)?.TiledProvider, minZoom);
+            SetMinZoom((layers[LabelsLayerName] as UntiledLayer)?.UntiledProvider, minZoomLabels.GetValueOrDefault(minZoom));
         }
 
         /// <summary>
@@ -148,15 +144,13 @@ namespace Ptv.XServer.Controls.Map.Layers
         {
             // helper that tries to cast a provider object to 
             // XMapTiledProvider in order to set the custom profile.
-            Action<object, string> setProfile = (provider, value) =>
+            void SetProfile(object provider, string value)
             {
-                var tiledProvider = provider as XMapTiledProvider;
-                if (tiledProvider != null)
-                    tiledProvider.CustomProfile = value;
-            };
+                if (provider is XMapTiledProvider tiledProvider) tiledProvider.CustomProfile = value;
+            }
 
-            setProfile((layers[BackgroundLayerName] as TiledLayer)?.TiledProvider, profileBackground);
-            setProfile((layers[LabelsLayerName] as UntiledLayer)?.UntiledProvider, profileLabels);
+            SetProfile((layers[BackgroundLayerName] as TiledLayer)?.TiledProvider, profileBackground);
+            SetProfile((layers[LabelsLayerName] as UntiledLayer)?.UntiledProvider, profileLabels);
         }
 
 

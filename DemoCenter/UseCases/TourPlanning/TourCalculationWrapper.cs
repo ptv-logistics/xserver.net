@@ -57,20 +57,19 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
                 var job = e.UserState as Job;
                 if (job?.progress == null)
                     ProgressMessage = job.status.ToString();
-                else if (job.progress is PlanProgress)
+                else if (job.progress is PlanProgress planProgress)
                 {
-                    var pp = (PlanProgress) job.progress;
-                    if (pp.action == "DistanceMatrix.Calculation")
+                    if (planProgress.action == "DistanceMatrix.Calculation")
                     {
-                        var dimaProgress = pp.distanceMatrixCalculationProgress.currentDistanceMatrixProgress;
+                        var dimaProgress = planProgress.distanceMatrixCalculationProgress.currentDistanceMatrixProgress;
                         var currentRowIndex = dimaProgress.currentRowIndex;
                         var lastRowIndex = dimaProgress.lastRowIndex;
                         ProgressPercent = 50 * currentRowIndex / lastRowIndex;
                         ProgressMessage = $"Calculating Distance Matrix: {currentRowIndex}/{lastRowIndex}";
                     }
-                    else if (pp.action == "Optimization.Improvement")
+                    else if (planProgress.action == "Optimization.Improvement")
                     {
-                        var improvementProgress = pp.improvementProgress;
+                        var improvementProgress = planProgress.improvementProgress;
                         var availableMachineTime = improvementProgress.availableMachineTime;
                         var usedMachineTime = improvementProgress.usedMachineTime;
                         var iterationIndex = improvementProgress.iterationIndex;
@@ -79,7 +78,7 @@ namespace Ptv.XServer.Demo.UseCases.TourPlanning
                     }
                     else
                     {
-                        ProgressMessage = pp.action;
+                        ProgressMessage = planProgress.action;
                     }
                 }
                 else

@@ -208,8 +208,7 @@ namespace Ptv.XServer.Controls.Routing
         /// <param name="e">Event arguments</param>
         private static void OnEnableDragDrop(DependencyObject depObj, DependencyPropertyChangedEventArgs e)
         {
-            var elem = depObj as FrameworkElement;
-            if (elem == null) return;
+            if (!(depObj is FrameworkElement elem)) return;
 
             if (e.NewValue is bool)
             {
@@ -241,7 +240,7 @@ namespace Ptv.XServer.Controls.Routing
         {
             var state = new InProcessDragDropBehavior { Target = (sender as FrameworkElement) };
 
-            if (state.Target.Parent != null)
+            if (state.Target?.Parent != null)
             {
                 state.Target.SetValue(DragDropState, state);
                 state.PreviewMouseLeftButtonDown(e);

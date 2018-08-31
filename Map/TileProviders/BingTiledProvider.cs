@@ -194,29 +194,29 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             var url = $@"http://dev.virtualearth.net/REST/v1/Imagery/Metadata/{Enum.GetName(typeof(BingImagerySet), imagerySet)}?mapVersion={Enum.GetName(typeof(BingMapVersion), mapVersion)}&o=xml&key={key}";
 
             // parse xml using linq
-            XNamespace restns = "http://schemas.microsoft.com/search/local/ws/rest/v1";
+            XNamespace restNamespace = "http://schemas.microsoft.com/search/local/ws/rest/v1";
             var metaXml = XDocument.Load(url);
-            var resourceSets = from resourceSet in metaXml.Descendants(restns + "ResourceSets")
+            var resourceSets = from resourceSet in metaXml.Descendants(restNamespace + "ResourceSets")
                                select new
                                {
-                                   Resource = from resource in resourceSet.Descendants(restns + "Resources")
+                                   Resource = from resource in resourceSet.Descendants(restNamespace + "Resources")
                                               select new
                                               {
-                                                  ImageryMetaData = from meta in resource.Descendants(restns + "ImageryMetadata")
+                                                  ImageryMetaData = from meta in resource.Descendants(restNamespace + "ImageryMetadata")
                                                                     select new
                                                                     {
-                                                                        ImagerUrl = meta.Element(restns + "ImageUrl")?.Value,
-                                                                        MinZoom = Convert.ToInt32(meta.Element(restns + "ZoomMin")?.Value),
-                                                                        MaxZoom = Convert.ToInt32(meta.Element(restns + "ZoomMax")?.Value),
-                                                                        SubDomains = from subDomain in meta.Descendants(restns + "ImageUrlSubdomains")
-                                                                                     select subDomain.Elements(restns + "string")
+                                                                        ImagerUrl = meta.Element(restNamespace + "ImageUrl")?.Value,
+                                                                        MinZoom = Convert.ToInt32(meta.Element(restNamespace + "ZoomMin")?.Value),
+                                                                        MaxZoom = Convert.ToInt32(meta.Element(restNamespace + "ZoomMax")?.Value),
+                                                                        SubDomains = from subDomain in meta.Descendants(restNamespace + "ImageUrlSubdomains")
+                                                                                     select subDomain.Elements(restNamespace + "string")
                                                                     }
                                               }
                                };
 
             // initialize properties
             var imageMeta = resourceSets.First().Resource.First().ImageryMetaData.First();
-            var logoUriMeta = from brandLogoUri in metaXml.Descendants(restns + "BrandLogoUri")
+            var logoUriMeta = from brandLogoUri in metaXml.Descendants(restNamespace + "BrandLogoUri")
                           select new
                           {
                               URI = brandLogoUri.Value

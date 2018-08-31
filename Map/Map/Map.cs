@@ -93,22 +93,22 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public event EventHandler ViewportBeginChanged
         {
-            add { mapView.ViewportBeginChanged += value; }
-            remove { mapView.ViewportBeginChanged -= value; }
+            add => mapView.ViewportBeginChanged += value;
+            remove => mapView.ViewportBeginChanged -= value;
         }
 
         /// <inheritdoc/>  
         public event EventHandler ViewportEndChanged
         {
-            add { mapView.ViewportEndChanged += value; }
-            remove { mapView.ViewportEndChanged -= value; }
+            add => mapView.ViewportEndChanged += value;
+            remove => mapView.ViewportEndChanged -= value;
         }
 
         /// <inheritdoc/>  
         public event EventHandler ViewportWhileChanged
         {
-            add { mapView.ViewportWhileChanged += value; }
-            remove { mapView.ViewportWhileChanged -= value; }
+            add => mapView.ViewportWhileChanged += value;
+            remove => mapView.ViewportWhileChanged -= value;
         }
         #endregion //events
 
@@ -116,7 +116,7 @@ namespace Ptv.XServer.Controls.Map
 
         /// <summary> The style profile of the xMapServer base map. </summary>
         private string xmapStyle = "";
-        /// <summary> The textblock which displays the hint for the missing xMap url. </summary>
+        /// <summary> The text block which displays the hint for the missing xMap url. </summary>
         protected TextBlock copyrightHintText;
 
         private string xMapCopyright;
@@ -176,22 +176,22 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>
         bool IToolTipManagement.IsEnabled
         {
-            get { return ToolTipManagement.IsEnabled; }
-            set { ToolTipManagement.IsEnabled = value; }
+            get => ToolTipManagement.IsEnabled;
+            set => ToolTipManagement.IsEnabled = value;
         }
 
         /// <inheritdoc/>
         public int ToolTipDelay
         {
-            get { return ToolTipManagement.ToolTipDelay;  }
-            set { ToolTipManagement.ToolTipDelay = value;  }
+            get => ToolTipManagement.ToolTipDelay;
+            set => ToolTipManagement.ToolTipDelay = value;
         }
 
         /// <inheritdoc/>
         public double MaxPixelDistance
         {
-            get { return ToolTipManagement.MaxPixelDistance; }
-            set { ToolTipManagement.MaxPixelDistance = value; }
+            get => ToolTipManagement.MaxPixelDistance;
+            set => ToolTipManagement.MaxPixelDistance = value;
         }
 
 
@@ -200,7 +200,7 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Gets or sets a value indicating whether the scale is displayed in miles or it is displayed in km. </summary>
         public bool UseMiles
         {
-            get { return useMiles; }
+            get => useMiles;
             set
             {
                 useMiles = value;
@@ -217,7 +217,7 @@ namespace Ptv.XServer.Controls.Map
         /// <para> See the <conceptualLink target="5e97e57f-ad50-4dda-af0b-e117af8c4fcd"/> topic for an example. </para></summary>
         public bool UseDefaultTheme
         {
-            get { return bUseDefaultTheme; }
+            get => bUseDefaultTheme;
             set
             {
                 bUseDefaultTheme = value;
@@ -236,7 +236,7 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public string XMapUrl
         {
-            get { return xmapUrl; }
+            get => xmapUrl;
             set
             {
                 if (xmapUrl == value) return;
@@ -261,7 +261,7 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public string XMapCredentials
         {
-            get { return xmapCredentials; }
+            get => xmapCredentials;
             set
             {
                 if (xmapCredentials == value) return;
@@ -287,34 +287,33 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public string XMapStyle
         {
-            get { return xmapStyle; }
+            get => xmapStyle;
             set
             {
                 xmapStyle = value;
 
-                TiledLayer tiledLayer = Layers["Background"] as TiledLayer;
-                var xMapTiledProvider = tiledLayer?.TiledProvider as XMapTiledProvider;
-                if (xMapTiledProvider != null)
-                    xMapTiledProvider.CustomProfile = xmapStyle != null ? xmapStyle + "-bg" : null;
-                tiledLayer?.Refresh();
+                if (Layers["Background"] is TiledLayer tiledLayer)
+                {
+                    if (tiledLayer.TiledProvider is XMapTiledProvider xMapTiledProvider)
+                        xMapTiledProvider.CustomProfile = xmapStyle != null ? xmapStyle + "-bg" : null;
+                    tiledLayer.Refresh();
+                }
 
-                var untiledLayer = Layers["Labels"] as UntiledLayer;
-                xMapTiledProvider = untiledLayer?.UntiledProvider as XMapTiledProvider;
-                if (xMapTiledProvider != null)
-                    xMapTiledProvider.CustomProfile = xmapStyle != null ? xmapStyle + "-fg" : null;
-                untiledLayer?.Refresh();
+                if (Layers["Labels"] is UntiledLayer untiledLayer)
+                {
+                    if (untiledLayer.UntiledProvider is XMapTiledProvider xMapTiledProvider)
+                        xMapTiledProvider.CustomProfile = xmapStyle != null ? xmapStyle + "-fg" : null;
+                    untiledLayer.Refresh();
+                }
             }
         }
 
         /// <inheritdoc/>  
         public string XMapCopyright
         {
-            get
-            {
-                return (string.IsNullOrEmpty(xMapCopyright) || xMapCopyright.Length < 3)
-                    ? "Please configure a valid copyright text!"
-                    : xMapCopyright;
-            }
+            get => (string.IsNullOrEmpty(xMapCopyright) || xMapCopyright.Length < 3)
+                ? "Please configure a valid copyright text!"
+                : xMapCopyright;
             set
             {
                 xMapCopyright = value;
@@ -328,8 +327,8 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public bool FitInWindow
         {
-            get { return mapView.FitInWindow; }
-            set { mapView.FitInWindow = value; }
+            get => mapView.FitInWindow;
+            set => mapView.FitInWindow = value;
         }
 
         /// <inheritdoc/>  
@@ -338,15 +337,15 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public int MaxZoom
         {
-            get { return mapView.MaxZoom; }
-            set { mapView.MaxZoom = value; }
+            get => mapView.MaxZoom;
+            set => mapView.MaxZoom = value;
         }
 
         /// <inheritdoc/>  
         public int MinZoom
         {
-            get { return mapView.MinZoom; }
-            set { mapView.MinZoom = value; }
+            get => mapView.MinZoom;
+            set => mapView.MinZoom = value;
         }
 
         /// <inheritdoc/>  
@@ -383,8 +382,8 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Gets or sets the zoom level of the map. </summary>
         public double Zoom
         {
-            get { return mapView.FinalZoom; }
-            set { mapView.SetZoom(value, UseAnimation); }
+            get => mapView.FinalZoom;
+            set => mapView.SetZoom(value, UseAnimation);
         }
 
         /// <inheritdoc/>  
@@ -546,8 +545,8 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public double ZoomLevel
         {
-            get { return mapView.FinalZoom; }
-            set { mapView.SetZoom(value, UseAnimation); }
+            get => mapView.FinalZoom;
+            set => mapView.SetZoom(value, UseAnimation);
         }
 
         /// <inheritdoc/>  
@@ -556,7 +555,7 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public Point Center
         {
-            get { return GeoTransform.PtvMercatorToWGS(new Point(mapView.FinalX, mapView.FinalY)); }
+            get => GeoTransform.PtvMercatorToWGS(new Point(mapView.FinalX, mapView.FinalY));
             set
             {
                 var p = GeoTransform.WGSToPtvMercator(value);
@@ -579,17 +578,16 @@ namespace Ptv.XServer.Controls.Map
     /// <summary> Provides extensions for VisualTreeHelper. </summary>
     public static class VisualTreeHelperExtensions
     {
-        /// <summary> Gets the parent of a depedency object </summary>
+        /// <summary> Gets the parent of a dependency object </summary>
         /// <param name="obj">The dependency object to get the parent for</param>
         /// <returns>Parent of the dependency object</returns>
         public static DependencyObject GetParent(this DependencyObject obj)
         {
             if (obj == null) return null;
 
-            var ce = obj as ContentElement;
-            return (ce == null) 
-                ? VisualTreeHelper.GetParent(obj)
-                : ContentOperations.GetParent(ce) ?? (ce as FrameworkContentElement)?.Parent;
+            return (obj is ContentElement contentElement)
+                ? ContentOperations.GetParent(contentElement) ?? (contentElement as FrameworkContentElement)?.Parent
+                : VisualTreeHelper.GetParent(obj);
         }
 
         /// <summary> Finds a specific ancestor of a dependency object. </summary>
@@ -600,8 +598,7 @@ namespace Ptv.XServer.Controls.Map
         {
             for (; obj != null; obj = GetParent(obj))
             {
-                var objTest = obj as T;
-                if (objTest != null) return objTest;
+                if (obj is T objTest) return objTest;
             }
 
             return null;

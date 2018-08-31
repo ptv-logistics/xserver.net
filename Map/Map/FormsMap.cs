@@ -26,22 +26,22 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public event EventHandler ViewportBeginChanged
         {
-            add { wpfMap.ViewportBeginChanged += value; }
-            remove { wpfMap.ViewportBeginChanged -= value; }
+            add => wpfMap.ViewportBeginChanged += value;
+            remove => wpfMap.ViewportBeginChanged -= value;
         }
 
         /// <inheritdoc/>  
         public event EventHandler ViewportEndChanged
         {
-            add { wpfMap.ViewportEndChanged += value; }
-            remove { wpfMap.ViewportEndChanged -= value; }
+            add => wpfMap.ViewportEndChanged += value;
+            remove => wpfMap.ViewportEndChanged -= value;
         }
 
         /// <inheritdoc/>  
         public event EventHandler ViewportWhileChanged
         {
-            add { wpfMap.ViewportWhileChanged += value; }
-            remove { wpfMap.ViewportWhileChanged -= value; }
+            add => wpfMap.ViewportWhileChanged += value;
+            remove => wpfMap.ViewportWhileChanged -= value;
         }
         #endregion //events
 
@@ -97,50 +97,50 @@ namespace Ptv.XServer.Controls.Map
         /// <summary> Gets or sets a value indicating whether the coordinates gadget is shown or made invisible. </summary>
         public bool ShowCoordinates
         {
-            get { return wpfMap.ShowCoordinates; }
-            set { wpfMap.ShowCoordinates = value; }
+            get => wpfMap.ShowCoordinates;
+            set => wpfMap.ShowCoordinates = value;
         }
 
         /// <summary> Gets or sets a value indicating whether the layers gadget is shown or made invisible. </summary>
         public bool ShowLayers
         {
-            get { return wpfMap.ShowLayers; }
-            set { wpfMap.ShowLayers = value; }
+            get => wpfMap.ShowLayers;
+            set => wpfMap.ShowLayers = value;
         }
 
         /// <summary> Gets or sets a value indicating whether the magnifier gadget is shown or made invisible. </summary>
         public bool ShowMagnifier
         {
-            get { return wpfMap.ShowMagnifier; }
-            set { wpfMap.ShowMagnifier = value; }
+            get => wpfMap.ShowMagnifier;
+            set => wpfMap.ShowMagnifier = value;
         }
 
         /// <summary> Gets or sets a value indicating whether the layers gadget is shown or made invisible. </summary>
         public bool ShowNavigation
         {
-            get { return wpfMap.ShowNavigation; }
-            set { wpfMap.ShowNavigation = value; }
+            get => wpfMap.ShowNavigation;
+            set => wpfMap.ShowNavigation = value;
         }
 
         /// <summary> Gets or sets a value indicating whether the overview map is shown or made invisible. </summary>
         public bool ShowOverview
         {
-            get { return wpfMap.ShowOverview; }
-            set { wpfMap.ShowOverview = value; }
+            get => wpfMap.ShowOverview;
+            set => wpfMap.ShowOverview = value;
         }
 
         /// <summary> Gets or sets a value indicating whether the scale gadget is shown or made invisible. </summary>
         public bool ShowScale
         {
-            get { return wpfMap.ShowScale; }
-            set { wpfMap.ShowScale = value; }
+            get => wpfMap.ShowScale;
+            set => wpfMap.ShowScale = value;
         }
 
         /// <summary> Gets or sets a value indicating whether the zoom slider gadget is shown or made invisible. </summary>
         public bool ShowZoomSlider
         {
-            get { return wpfMap.ShowZoomSlider; }
-            set { wpfMap.ShowZoomSlider = value; }
+            get => wpfMap.ShowZoomSlider;
+            set => wpfMap.ShowZoomSlider = value;
         }
 
         /// <summary> Gets or sets a value indicating whether the built-in PTV theme should be used, and thus overriding an optionally set
@@ -148,8 +148,8 @@ namespace Ptv.XServer.Controls.Map
         /// theme is not used either, the UI will look like the current Windows theme. </summary>
         public bool UseDefaultTheme
         {
-            get { return wpfMap.UseDefaultTheme; }
-            set { wpfMap.UseDefaultTheme = value; }
+            get => wpfMap.UseDefaultTheme;
+            set => wpfMap.UseDefaultTheme = value;
         }
 
         /// <summary>
@@ -167,37 +167,37 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>
         public string XMapUrl
         {
-            get { return wpfMap.XMapUrl; }
-            set { wpfMap.XMapUrl = value; }
+            get => wpfMap.XMapUrl;
+            set => wpfMap.XMapUrl = value;
         }
 
         /// <inheritdoc/>
         public string XMapCopyright
         {
-            get { return wpfMap.XMapCopyright; }
-            set { wpfMap.XMapCopyright = value; }
+            get => wpfMap.XMapCopyright;
+            set => wpfMap.XMapCopyright = value;
         }
 
         /// <inheritdoc/>
         public string XMapCredentials
         {
-            get { return wpfMap.XMapCredentials; }
-            set { wpfMap.XMapCredentials = value; }
+            get => wpfMap.XMapCredentials;
+            set => wpfMap.XMapCredentials = value;
         }
 
         /// <inheritdoc/>
         public string XMapStyle
         {
-            get { return wpfMap.XMapStyle; }
-            set { wpfMap.XMapStyle = value; }
+            get => wpfMap.XMapStyle;
+            set => wpfMap.XMapStyle = value;
         }
 
         
         /// <inheritdoc/>  
         public bool FitInWindow
         {
-            get { return wpfMap.FitInWindow; }
-            set { wpfMap.FitInWindow = value; }
+            get => wpfMap.FitInWindow;
+            set => wpfMap.FitInWindow = value;
         }
 
         /// <inheritdoc/>  
@@ -206,15 +206,15 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public int MaxZoom
         {
-            get { return wpfMap.MaxZoom; }
-            set { wpfMap.MaxZoom = value; }
+            get => wpfMap.MaxZoom;
+            set => wpfMap.MaxZoom = value;
         }
 
         /// <inheritdoc/>  
         public int MinZoom
         {
-            get { return wpfMap.MinZoom; }
-            set { wpfMap.MinZoom = value; }
+            get => wpfMap.MinZoom;
+            set => wpfMap.MinZoom = value;
         }
 
         /// <inheritdoc/>  
@@ -235,8 +235,8 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>
         public bool UseMiles
         {
-            get { return wpfMap.UseMiles; }
-            set { wpfMap.UseMiles = value; }
+            get => wpfMap.UseMiles;
+            set => wpfMap.UseMiles = value;
         }
 
         /// <inheritdoc/>
@@ -314,50 +314,50 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public bool UseAnimation
         {
-            get { return wpfMap.UseAnimation; }
-            set { wpfMap.UseAnimation = value; }
+            get => wpfMap.UseAnimation;
+            set => wpfMap.UseAnimation = value;
         }
 
         /// <inheritdoc/>  
         public bool InvertMouseWheel
         {
-            get { return wpfMap.InvertMouseWheel; }
-            set { wpfMap.InvertMouseWheel = value; }
+            get => wpfMap.InvertMouseWheel;
+            set => wpfMap.InvertMouseWheel = value;
         }
 
         /// <inheritdoc/>  
         public double MouseWheelSpeed
         {
-            get { return wpfMap.MouseWheelSpeed; }
-            set { wpfMap.MouseWheelSpeed = value; }
+            get => wpfMap.MouseWheelSpeed;
+            set => wpfMap.MouseWheelSpeed = value;
         }
 
         /// <inheritdoc/>
         public bool MouseDoubleClickZoom 
         {
-            get { return wpfMap.MouseDoubleClickZoom; }
-            set { wpfMap.MouseDoubleClickZoom = value; }
+            get => wpfMap.MouseDoubleClickZoom;
+            set => wpfMap.MouseDoubleClickZoom = value;
         }
 
         /// <inheritdoc/>
         public DragMode MouseDragMode
         {
-            get { return wpfMap.MouseDragMode; }
-            set { wpfMap.MouseDragMode = value; }
+            get => wpfMap.MouseDragMode;
+            set => wpfMap.MouseDragMode = value;
         }
 
         /// <inheritdoc/>
         public CoordinateDiplayFormat CoordinateDiplayFormat 
         {
-            get { return wpfMap.CoordinateDiplayFormat; }
-            set { wpfMap.CoordinateDiplayFormat = value; }
+            get => wpfMap.CoordinateDiplayFormat;
+            set => wpfMap.CoordinateDiplayFormat = value;
         }
 
         /// <inheritdoc/>  
         public double ZoomLevel
         {
-            get { return wpfMap.ZoomLevel; }
-            set { wpfMap.ZoomLevel = value; }
+            get => wpfMap.ZoomLevel;
+            set => wpfMap.ZoomLevel = value;
         }
 
         /// <inheritdoc/>  
@@ -366,8 +366,8 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public Point Center
         {
-            get { return wpfMap.Center; }
-            set { wpfMap.Center = value; }
+            get => wpfMap.Center;
+            set => wpfMap.Center = value;
         }
 
         /// <inheritdoc/>  
