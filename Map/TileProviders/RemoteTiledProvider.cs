@@ -20,7 +20,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         public RemoteTiledProvider()
         {
             MinZoom = 0;
-            MaxZoom = 18;
+            MaxZoom = 19;
         }
         #endregion
 

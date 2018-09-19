@@ -1,5 +1,6 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
+using System;
 using System.Linq;
 using Ptv.XServer.Controls.Map.Layers.Tiled;
 using Ptv.XServer.Controls.Map.Layers.Untiled;
@@ -105,6 +106,14 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// zoom levels available according the classification of tile sizes. Only in such environments a tile-based rendering is
         /// recommended. </summary>
         public ObservableCollection<string> ForegroundThemes { get; } = new ObservableCollection<string>();
+
+        /// <summary>Function which returns the language, used for  geographical objects in the map like names for town and streets. 
+        /// The language code is defined in BCP47, for example <em>en</em>, <em>fr</em> or <em>de</em>. </summary>
+        public Func<string> MapLanguageFunc
+        {
+            get => ((UntiledProvider)ForegroundLayer.UntiledProvider).MapLanguageFunc;
+            set => ((UntiledProvider)ForegroundLayer.UntiledProvider).MapLanguageFunc = value;
+        }
 
         /// <summary> Provides functionality all around Feature Layers. </summary>
         public FeatureLayers FeatureLayers { get; }

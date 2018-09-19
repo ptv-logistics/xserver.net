@@ -65,10 +65,15 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// <summary>Function which indicates if the non-relevant Features should be shown or not.</summary>
         public Func<bool> ShowOnlyRelevantByTimeFunc { get; set; }
 
-        /// <summary>Function which returns the used language, commonly needed for the language of textual messages provided
+        /// <summary>Function which returns the language used for textual messages provided
         /// by the theme <em>traffic incidents</em>. The language code is defined in BCP47, 
         /// for example <em>en</em>, <em>fr</em> or <em>de</em>. </summary>
         public Func<string> UserLanguageFunc { get; set; }
+
+        /// <summary>Function which returns the language used for geographical objects in the map like names
+        /// for town and streets. The language code is defined in BCP47,
+        /// for example <em>en</em>, <em>fr</em> or <em>de</em>. </summary>
+        public Func<string> MapLanguageFunc { get; set; }
 
         /// <inheritdoc/>
         public Action<IEnumerable<IMapObject>, Size> Update { get; set; }
@@ -122,7 +127,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
             {
                 requestProfile = new
                 {
-                    userLanguage = UserLanguageFunc?.Invoke() ?? "en"
+                    userLanguage = UserLanguageFunc?.Invoke() ?? "en",
+                    mapLanguage = MapLanguageFunc?.Invoke() ?? "x-ptv-DFT"
                 },
                 mapSection = new
                 {

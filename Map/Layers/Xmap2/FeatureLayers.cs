@@ -61,7 +61,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
             set => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).ShowOnlyRelevantByTimeFunc = value;
         }
 
-        /// <summary>Function which returns the used language, commonly needed for the language of textual messages provided
+        /// <summary>Function which returns the language, used for textual messages provided
         /// by the theme <em>traffic incidents</em>. The language code is defined in BCP47, 
         /// for example <em>en</em>, <em>fr</em> or <em>de</em>. </summary>
         public Func<string> LanguageFunc

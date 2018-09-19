@@ -69,20 +69,6 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             this.mode = mode;
 
             needsTransparency = mode != XMapMode.Background;
-
-            // TODO: REVIEW ME - DEEP ZOOM
-            //
-            // To support 'deep zoom', the UntiledLayer was modified to take MaxZoom defined by this 
-            // provider into consideration. As MaxZoom defaults to 18 (see XMapTiledProviderBase) this 
-            // change also affects the default rendering behavior as it restricts label rendering where 
-            // no restriction was before. We therefore change MaxZoom for the label layer at the least 
-            // to 19, which is also the default for the map control itself. This way all the changes are 
-            // considered to provide backward compatibility for the map's default configuration.
-            //  
-            // If this is ok, remove this comment. Otherwise find a better solution.
-
-            if (mode == XMapMode.Town)
-                MaxZoom = 19;
         }
 
         /// <summary> Initializes a new instance of the <see cref="XMapTiledProvider"/> class with the given connection
