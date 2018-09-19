@@ -45,7 +45,7 @@ First Steps
 -----------
 
 - For a first glance start our Demo Center that is provided in compiled form.
-  The Demo Center requires at least Microsoft .NET 3.5 and internet access to
+  The Demo Center requires at least Microsoft .NET 4.5.1 and internet access to
   run properly.
 
 - For developing applications using PTV xServer .NET, the source code of the
@@ -53,26 +53,6 @@ First Steps
   documentation may be a good source of information.
 
 - For details on PTV xServer, please refer to the PTV xServer documentation. 
-
-
-Visual Studio Toolbox
----------------------
-
-- Toolbox registration has to be done for every user separately.
-
-- Toolbox registration is done by the setup of PTV xServer .NET for Microsoft
-  Visual Studio 2008, 2010, 2012 and 2015 installations. Due to limitations of the
-  Microsoft Visual Studio Express editions the PTV xServer .NET Toolbox Installer 
-  is not capable of adding toolbox items in this case. 
-  You can add the toolbox items manually as follows:
-    * Open Microsoft Visual Studio Express
-    * If desired create a new tab
-    * Drag&Drop the 'Ptv.XServer.Controls.Map.dll' located in '<INSTALL_PATH>/lib'
-     into the desired tab.
-  To remove the toolbox items just delete the corresponding entries in the toolbox list.
-
-- If for any reason Toolbox registration must be updated or renewed, please use
-  our registration utility provided in the folder .\tools.
 
 
 Release Notes 
