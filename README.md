@@ -17,42 +17,19 @@ Important Notes
 For license details, please refer to the file LICENSE.TXT, which should have 
 been provided with this distribution.
 
-If you intend to install PTV xServer .NET into a path which requires administrative
-rights, you have to execute the setup with elevated permissions.
-
 
 Prerequisites
 -------------
 
 - At least Windows Vista, Windows 7 or Windows 8 is recommended.
 
-- At least Microsoft .NET 4.5.1 for running the demos provided through our 
-  Demo Center.
+- At least Microsoft .NET 4.6.2 for building the corresponding binaries.
 
 - At least Visual Studio C# 2008 Express Edition for developing applications
   based on PTV xServer .NET. With regards to the WPF integration and the 
   overall development experience we recommend at least Visual Studio 2010.
 
-- The demos provided require internet access as they make use of PTV xServer 
-  running on a PTV test system. Usually you'll set up your own servers when 
-  developing applications based on PTV xServer / PTV xServer .NET.
-
-- All third-party libraries used by the SDK and the Demo Center are included 
-  in the SDK package.
-
-
-First Steps
------------
-
-- For a first glance start our Demo Center that is provided in compiled form.
-  The Demo Center requires at least Microsoft .NET 4.5.1 and internet access to
-  run properly.
-
-- For developing applications using PTV xServer .NET, the source code of the
-  Demo Center, provided in the folder .\source, along with our use case 
-  documentation may be a good source of information.
-
-- For details on PTV xServer, please refer to the PTV xServer documentation. 
+- All third-party libraries used by the SDK are included in the SDK package.
 
 
 Release Notes 
@@ -74,17 +51,6 @@ Version 1.5.0.0 (2016/04/18)
   - Toolbox installer now also supports Visual Studio 2015.
   - Signing algorithm for SDK-Setup and DemoCenter.exe is now SHA256.
 
-  DemoCenter Updates: 
-  - Setting default map to World map.
-  - Updated FeatureLayer samples for DemoCenter to match the current situation.
-  - Added Gravelpit to profile selection.
-  - Added link-button to the xServer.NET forum.
-  - "Reset Use cases" button resets the DataManager and FeatureLayer use case too.
-  - Fix map&market .mdb-Path for ClickOnce demo.
-  - Fix swapped latitude/longitude in TourPlanning demo.
-  - Cleaned up TourPlanning demo code.
-  - FeatureLayer is only inserted at sample use case.
-
 
 Version 1.4.0.0 (2015/07/30)
 
@@ -97,24 +63,6 @@ Version 1.4.0.0 (2015/07/30)
     the Ptv.XServer.Controls.Map.dll. It allows re-projections of returned images to 
     achieve a matching of the content provided by accompanying layers.
 
-  New Demo Center use cases, which are also available by the click-once-demo 
-  from http://xserverinternet.azurewebsites.net/xserver.net/:
-  - Feature Layer: By means of this tool, street attributes can be activated for
-    route calculation and shown in the map. Five different types are integrated
-    by this use case, eventually restricted by the availability in the used map:
-    - Traffic incidents
-    - Truck attributes
-    - Preferred routes
-    - Restriction zones
-    - Speed patterns
-  
-  Demo Center:
-  - A short user introduction is shown at start-up time.
-  
-  - The user can open and manipulate multiple use cases concurrently, which may result
-    in a confusing GUI. By means of a new reset button, all these use cases can be 
-    converted into its initial state.
-
   
 
 Version 1.3.0.0 (2014/11/21)
@@ -123,19 +71,19 @@ Version 1.3.0.0 (2014/11/21)
   
   - The Map Controls are ready for access of PTV xServer internet, i.e. PTV xServer 
     functionality is available via Cloud.
-	
+
   - New property XMapStyle in interface IMap added. It determines the coloring 
     of the background layer containing the town, street and areas like seas, 
     forests, industrial areas and so on. Internally, the provided style name is 
     textually extended to meet the requirements of the xServer configuration.
-	
+
   - A new layer is implemented which shows the Here Satellite View. It is an 
     alternative to the still available, but no longer integrated Bing aerials 
     in DemoCenter.
-	
+
   - At some certain zoom levels, the map images appeared blurred in former 
     versions; this bug is fixed.
-	
+
   - The gadgets integrated in the Map Control (for example the layers gadget 
     or the zoom slider) do no longer raise any exception, when they are integrated 
     in a docking container, which may cause some re-initialization of these gadgets. 
@@ -147,36 +95,7 @@ Version 1.3.0.0 (2014/11/21)
   - For WinForms and WPF different Map Controls are provided. In former versions, 
     only the WinForms map is integrated into the toolbox of Visual Studio. In the 
     new version, also the WPF Map is integrated.
-	
-  New Demo Center use cases, which are also available by the click-once-demo 
-  from http://xserverinternet.azurewebsites.net/xserver.net/:
 
-  - XServer connection: At run-time a server URL and an optional token can be 
-    specified to demonstrate how different PTV xServers are addressed to achieve 
-    their functionality – especially the PTV xServer internet, which is provided via 
-    Azure currently. Because the latter needs a token, a time-limited one is provided 
-    for testing. The source code of the Demo Center enforces a programmer to specify 
-    the current test token or, if available, the purchased version.
-	
-  - To select geographical objects for further operations, a client-side selection 
-    mechanism is shown in the same-named use case.
-	
-  - The Tour Planning use case demonstrates via randomly generated tour points, 
-    depots and orders, how to access the xTour functionality in an asynchronous way. 
-    A progress bar and status quo texts are shown without blocking the user interface.
-	
-  - By positioning the way points of a route via drag & drop, the corresponding 
-    source code outlines the necessary steps.
-	
-  - The Shape Layer in the use case ‘Different Shapes’ is extended by pie-chart 
-    objects and each object can be underlined by textual labels.
-	
-  - The layer containing the Bing Aerials is still available, but in the Demo Center 
-    this layer is replaced by the Here Satellite View layer.
-	
-  - The previously available use cases Marker and Tours and Stops are removed because 
-    their functionality is part of the new use cases mentioned above.
-  
   
 Version 1.2.0.0 (2013/06/12)
 
@@ -221,7 +140,7 @@ Version 1.2.0.0 (2013/06/12)
   - Added a new property 'LazyUpdate' to the Shape Layer to improve performance for
     a large number of complex shapes
 
-	
+
 Version 1.1.0.0 (2013/03/11)
 
   Breaking Changes
@@ -250,10 +169,6 @@ Known Issues of Current Release
   once before running the PTV xServer .NET setup. Otherwise the toolbox installer
   which is integrated in the PTV xServer .Net setup will not work properly.
 
-- The provided Demo Center solution can only be opened with Visual Studio 2010 or
-  higher. All components can nevertheless be used together with Visual Studio 2008.
-  Using Visual Studio 2008, you can open the csproj file.
-
 - Printing the code samples of the documentation via the provided link currently
   does not work.
 
@@ -265,8 +180,3 @@ Known Issues of Current Release
   .NET's WPF layer that cannot be fixed to number. If you experience performance problems
   when using the shape layer we recommend to build an own rendering layer. Please refer
   to the documentation for additional information.
-
-
-
-
-
