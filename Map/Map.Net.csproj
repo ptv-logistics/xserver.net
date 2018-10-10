@@ -405,7 +405,7 @@
     <Resource Include="Resources\RoadEditor.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Projections\Projections\Projections.csproj">
+    <ProjectReference Include="..\Projections\Projections\Projections.Net.csproj">
       <Project>{5f7a6491-2f19-4d4c-9ee3-b5f6a884831e}</Project>
       <Name>Projections</Name>
     </ProjectReference>

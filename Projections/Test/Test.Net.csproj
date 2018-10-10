@@ -94,7 +94,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Projections\Projections.csproj">
+    <ProjectReference Include="..\Projections\Projections.Net.csproj">
       <Project>{5F7A6491-2F19-4D4C-9EE3-B5F6A884831E}</Project>
       <Name>Projections %28Projections\Projections%29</Name>
     </ProjectReference>
