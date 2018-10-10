@@ -33,42 +33,7 @@ namespace Ptv.XServer.Controls.Map
 
         public string AdjustedUrl(string moduleName = "xmap")
         {
-            // Divide URL into scheme, host and port. The values can be found in match.Groups
-            var regex = new Regex(@"^(https?://)?([^\:\/]+)(:\d+)?", RegexOptions.IgnoreCase);
-            var match = regex.Match(baseUrl);
-            if (!match.Success)
-                return baseUrl;
-
-            var scheme = match.Groups[1].ToString();
-            var host = match.Groups[2].ToString();
-            var port = match.Groups[3].ToString();
-
-            if (!string.IsNullOrEmpty(scheme))
-                return scheme + host + port; // Everything beyond the port has to be omitted
-
-            var lowerModuleName = moduleName.ToLower();
-
-            // if no scheme is specified, the host is examined for an xServer internet like name
-            if (Match($@"^(?:{lowerModuleName}-)?([a-z]+-[hnt](?:-test|-integration)?)(?:\.cloud\.ptvgroup\.com)?$", host, out match)) // eu-n style
-            {
-                scheme = "https://";
-                host = lowerModuleName + "-" + match.Groups[1] + ".cloud.ptvgroup.com";
-                port = string.Empty;
-            }
-            else if (Match(@"^(?:([a-z]+(?:-[a-z]{2})?(?:-test|-integration)?))(?:\.cloud\.ptvgroup\.com)?$", host, out match)) // api(-eu) style
-            {
-                scheme = "https://";
-                host = match.Groups[1] + ".cloud.ptvgroup.com";
-                port = string.Empty;
-            }
-            else // on-premise
-            {
-                scheme = "http://";
-                if (string.IsNullOrEmpty(port))
-                    port = ":" + Port(lowerModuleName).ToString(CultureInfo.InvariantCulture);
-            }
-
-            return scheme + host + port; // Everything beyond the port has to be omitted
+            return XServerUrl.Complete(baseUrl, moduleName);
         }
 
         private static bool Match(string pattern, string input, out Match match)
