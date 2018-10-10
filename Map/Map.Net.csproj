@@ -95,9 +95,12 @@
     <Compile Include="Layers\WmtsLayer\TileMatrix.cs" />
     <Compile Include="Layers\WmtsLayer\WmtsLayer.cs" />
     <Compile Include="Layers\WmtsLayer\WmtsMapService.cs" />
+    <Compile Include="Layers\Xmap2\ContentSnapshots.cs" />
     <Compile Include="Layers\Xmap2\DataInformation.cs" />
     <Compile Include="Layers\Xmap2\FeatureLayers.cs" />
     <Compile Include="Layers\Xmap2\LayerFactory.cs" />
+    <Compile Include="Layers\Xmap2\RequestBase.cs" />
+    <Compile Include="Layers\Xmap2\ServerConfiguration.cs" />
     <Compile Include="Layers\Xmap2\UntiledProvider.cs" />
     <Compile Include="Map\GlobalOptions.cs" />
     <Compile Include="Map\IMap.cs" />
