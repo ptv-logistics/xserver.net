@@ -33,10 +33,11 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// (= true), or only punctual information is shown (= false). This value influences the sequence order when the different layers are drawn. </param>
         /// <param name="name"> Name of the layer in the internal layer management. </param>
         /// <param name="copyRight">Copyright text visible in the lower right corner of the map control. </param>
-        public WmsLayer(string urlTemplate, bool isTiled, bool isBaseMap, string name, string copyRight = null)
+        /// <param name="timeout">Longest time waiting for WMS request.</param>
+        public WmsLayer(string urlTemplate, bool isTiled, bool isBaseMap, string name, string copyRight = null, int timeout = 8000)
         {
             var canvasCategories = new[] { isBaseMap ? CanvasCategory.BaseMap : CanvasCategory.Content };
-            ReprojectionProvider = new ReprojectionProvider(urlTemplate);
+            ReprojectionProvider = new ReprojectionProvider(urlTemplate, timeout);
             layer = isTiled
                 ? (ILayer)new TiledLayer(name) { TiledProvider = ReprojectionProvider, Copyright = copyRight, CanvasCategories = canvasCategories }
                 : new UntiledLayer(name) { UntiledProvider = ReprojectionProvider, Copyright = copyRight, CanvasCategories = canvasCategories };
@@ -103,7 +104,8 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// query string have to be parameterized. I.e. the parameters 'BBOX', 'WIDTH' and 'HEIGHT' must used in a parameterized way: They have to
         /// look like: ..&amp;BBOX=${boundingbox}&amp;WIDTH=${width}&amp;HEIGHT=${height}.."
         /// </param>
-        public ReprojectionProvider(string urlTemplate)
+        /// <param name="timeout">Longest time waiting for WMS request.</param>
+        public ReprojectionProvider(string urlTemplate, int timeout = 8000)
         {
             template = urlTemplate;
 
@@ -112,7 +114,7 @@ namespace Ptv.XServer.Controls.Map.Layers
             // hook event, customize timeout
             wmsService.OnRequestCreated += request =>
             {
-                request.Timeout = 8000;
+                request.Timeout = timeout;
 
                 if (request is HttpWebRequest httpWebRequest)
                 {

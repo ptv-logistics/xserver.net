@@ -14,6 +14,7 @@ using Ptv.XServer.Controls.Map.Layers;
 using Ptv.XServer.Controls.Map.Localization;
 using System.ComponentModel;
 using System.Collections.Specialized;
+using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 
 namespace Ptv.XServer.Controls.Map.Gadgets
@@ -105,31 +106,25 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
         void layers_LayerVisibilityChanged(object sender, LayerChangedEventArgs e)
         {
-            foreach (var uiElement in LayersStack.Children.Cast<object>().Where(uiElement => uiElement is CheckBox box && Grid.GetColumn(box) == 2 
-                                                                                             && box.Tag.ToString() == e.LayerName))
-            {
-                ((CheckBox)uiElement).IsChecked = layers.IsVisible(layers[e.LayerName]);
-            }
+            LayersStack.Children.Cast<UIElement>()
+                .OfType<CheckBox>()
+                .Where(checkBox => Grid.GetColumn(checkBox) == 2 && checkBox.Tag.ToString() == e.LayerName)
+                .ForEach(null, checkBox => checkBox.IsChecked = layers.IsVisible(layers[e.LayerName]));
         }
 
         void layers_LayerSelectabilityChanged(object sender, LayerChangedEventArgs e)
         {
-            foreach (var uiElement in LayersStack.Children.Cast<object>().Where(uiElement => uiElement is CheckBox box && Grid.GetColumn(box) == 3 
-                                                                                             && box.Tag.ToString() == e.LayerName))
-            {
-                ((CheckBox)uiElement).IsChecked = layers.IsSelectable(layers[e.LayerName]);
-            }
+            LayersStack.Children.Cast<UIElement>()
+                .OfType<CheckBox>()
+                .Where(checkBox => Grid.GetColumn(checkBox) == 3 && checkBox.Tag.ToString() == e.LayerName)
+                .ForEach(null, checkBox => checkBox.IsChecked = layers.IsSelectable(layers[e.LayerName]));
         }
 
         /// <inheritdoc/>
         protected override void UnInitialize()
         {
-            if (layers != null)
-            {
-                foreach (var layer in layers)
-                    layer.PropertyChanged -= layer_PropertyChanged;
-            }
-
+            layers?.ForEach(null, layer => layer.PropertyChanged -= layer_PropertyChanged);
+            
             if (!IsInDesignMode && (layers != null))
             {
                 layers.CollectionChanged -= Layers_CollectionChanged;
@@ -163,8 +158,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                     ((ILayer)layer).PropertyChanged -= layer_PropertyChanged;
 
             // unregister events for existing layers
-            foreach (var layer in layers.Where(layer => e.NewItems == null || !e.NewItems.Contains(layer)))
-                layer.PropertyChanged -= layer_PropertyChanged;
+            layers.Where(layer => e.NewItems == null || !e.NewItems.Contains(layer))
+                .ForEach(null, layer => layer.PropertyChanged -= layer_PropertyChanged);
 
             UpdateLayerList();
         }
@@ -267,34 +262,32 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             // by setting 'headerSizeSet' to false.
             headerSizeSet = false;
 
-            int idx = -1;
-            foreach (var layer in layers)
-            {
-                layer.PropertyChanged += layer_PropertyChanged;
+            layers.Select((layer, index) => new { layer, index })
+                .ForEach(null, item =>
+                {
+                    item.layer.PropertyChanged += layer_PropertyChanged;
 
-                idx++;
+                    if (LayerListReverted)
+                        layerIndices.Add(item.index);
+                    else
+                        layerIndices.Insert(0, item.index);
+                });
 
-                if (LayerListReverted)
-                    layerIndices.Add(idx);
-                else
-                    layerIndices.Insert(0, idx);
-            }
-
-            int cnt = 0;
-            foreach (var layer in layerIndices.Select(t => layers[t]))
+            layerIndices.Select((t, index) => new { layer = layers[t], index })
+                .ForEach(null, item => 
             {
                 LayersStack.RowDefinitions.Add(new RowDefinition());
 
-                var label = new Label {Tag = layer.Name, Padding = new Thickness(-1), Margin = LayersStack.Margin};
+                var label = new Label { Tag = item.layer.Name, Padding = new Thickness(-1), Margin = LayersStack.Margin };
 
                 // opacityBinding is needed for the image and the layer name -> create once and bind it multiple times
-                var opacityBinding = new Binding("Opacity") {Source = label};
+                var opacityBinding = new Binding("Opacity") { Source = label };
 
                 // Create the text block first because the image size depends on the fond size.
                 var textBlock = new TextBlock
                 {
-                    Tag = layer.Name,
-                    Text = layer.Caption,
+                    Tag = item.layer.Name,
+                    Text = item.layer.Caption,
                     Padding = new Thickness(2),
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     VerticalAlignment = VerticalAlignment.Center,
@@ -304,7 +297,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
                 textBlock.SetBinding(OpacityProperty, opacityBinding);
 
-                if (layer.HasSettingsDialog)
+                if (item.layer.HasSettingsDialog)
                 {
                     textBlock.MouseLeftButtonUp += textBlock_MouseLeftButtonUp;
                     textBlock.TextDecorations.Add(TextDecorations.Underline);
@@ -313,7 +306,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
                 var image = new Image
                 {
-                    Source = layer.Icon ?? DefaultImageSource,
+                    Source = item.layer.Icon ?? DefaultImageSource,
                     Width = textBlock.FontSize + 8,
                     Height = textBlock.FontSize + 8,
                     Margin = new Thickness(2),
@@ -325,17 +318,17 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
                 // Einfügen ins Grid
                 Grid.SetColumn(label, 0);
-                Grid.SetRow(label, cnt);
+                Grid.SetRow(label, item.index);
                 LayersStack.Children.Add(label);
 
                 Grid.SetColumn(textBlock, 1);
-                Grid.SetRow(textBlock, cnt);
+                Grid.SetRow(textBlock, item.index);
                 LayersStack.Children.Add(textBlock);
 
                 var checkBox = new CheckBox
                 {
-                    IsChecked = layers.IsVisible(layer),
-                    Tag = layer.Name,
+                    IsChecked = layers.IsVisible(item.layer),
+                    Tag = item.layer.Name,
                     Margin = new Thickness(3),
                     VerticalAlignment = VerticalAlignment.Center,
                     ToolTip = MapLocalizer.GetString(MapStringId.Visibility)
@@ -343,25 +336,25 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                 checkBox.Checked += visibility_Checked;
                 checkBox.Unchecked += visibility_Unchecked;
                 Grid.SetColumn(checkBox, 2);
-                Grid.SetRow(checkBox, cnt);
+                Grid.SetRow(checkBox, item.index);
                 LayersStack.Children.Add(checkBox);
 
-                var slider = new Slider { Tag = layer.Name, Margin = new Thickness(3), Width = 40, Minimum = 0, Maximum = 100, VerticalAlignment = VerticalAlignment.Center };
+                var slider = new Slider { Tag = item.layer.Name, Margin = new Thickness(3), Width = 40, Minimum = 0, Maximum = 100, VerticalAlignment = VerticalAlignment.Center };
                 // store any slider (used for calculation of header items later on.
                 referenceSlider = slider;
                 slider.ValueChanged += slider_ValueChanged;
-                slider.Value = layer.Opacity * 100;
+                slider.Value = item.layer.Opacity * 100;
                 Grid.SetColumn(slider, 4);
-                Grid.SetRow(slider, cnt);
+                Grid.SetRow(slider, item.index);
                 LayersStack.Children.Add(slider);
 
-                if (layer is ILayerGeoSearch)
+                if (item.layer is ILayerGeoSearch)
                 {   // IsChecked = null for the existence of an exclusive selectable layer
                     // and this layer itself is not exclusive selectable.
                     checkBox = new CheckBox
                     {
                         IsChecked = true,
-                        Tag = layer.Name,
+                        Tag = item.layer.Name,
                         Margin = new Thickness(3),
                         VerticalAlignment = VerticalAlignment.Center
                     };
@@ -373,22 +366,22 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                     checkBox.ToolTip = MapLocalizer.GetString(MapStringId.Selectability);
 
                     Grid.SetColumn(checkBox, selectionColumn);
-                    Grid.SetRow(checkBox, cnt);
+                    Grid.SetRow(checkBox, item.index);
                     LayersStack.Children.Add(checkBox);
                 }
+            });
 
-                cnt++;
-            }
             UpdateSelection();
         }
 
         void layer_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != "Opacity" || !(sender is ILayer layer)) return;
-            foreach (var uiElement in LayersStack.Children.Cast<object>().Where(uiElement => uiElement is Slider slider && slider.Tag.ToString() == layer.Name))
-            {
-                ((Slider)uiElement).Value = layer.Opacity * 100;
-            }
+
+            LayersStack.Children.Cast<object>()
+                .OfType<Slider>()
+                .Where(slider => slider.Tag.ToString() == layer.Name)
+                .ForEach(null, slider => slider.Value = layer.Opacity * 100);
         }
 
         /// <summary> Helper method for checking a selection checkbox of one of the layers. Updates the selection checkboxes. </summary>
@@ -414,12 +407,10 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <summary> Updates the selection checkboxes. </summary>
         private void UpdateSelection()
         {
-            foreach (UIElement element in LayersStack.Children)
-            {
-                if (Grid.GetColumn(element) != selectionColumn)
-                    continue;
-
-                if (element is CheckBox checkBox)
+            LayersStack.Children.Cast<UIElement>()
+                .Where(uiElement => Grid.GetColumn(uiElement) == selectionColumn)
+                .OfType<CheckBox>()
+                .ForEach(null, checkBox =>
                 {
                     var layer = layers[checkBox.Tag as string];
 
@@ -433,8 +424,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                     }
                     else
                         checkBox.IsChecked = null;
-                }
-            }
+                });
         }
         #endregion
 

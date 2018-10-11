@@ -43,7 +43,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// <summary>Unique ID for addressing the corresponding snapshot. </summary>
         public string id { get; set; }
 
-        /// <summary>Human readable description of a snapshot. Krumbl </summary>
+        /// <summary>Human readable description of a snapshot.</summary>
         public string label { get; set; }
     }
 }

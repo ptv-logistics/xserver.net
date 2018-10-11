@@ -1,5 +1,7 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
+using Ptv.XServer.Controls.Map.Tools.Reprojection;
+
 namespace Ptv.XServer.Controls.Map
 {
     using System;
@@ -95,12 +97,11 @@ namespace Ptv.XServer.Controls.Map
         /// containing all points provided by the point enumeration, i.e. the new object represents the minimal bounding rectangle
         /// of the point collection. The ordering of the points inside the enumeration has no influence on the result.
         /// </summary> 
-        /// <param name="enumPoints">Enumeration of points, which are included in the new instance in a minimal way. An enumeration with
+        /// <param name="points">Enumeration of points, which are included in the new instance in a minimal way. An enumeration with
         /// no points results in an empty rectangle.</param>
-        public MapRectangle(IEnumerable<Point> enumPoints) : this()
+        public MapRectangle(IEnumerable<Point> points) : this()
         {
-            foreach (var point in enumPoints)
-                Union(point);
+            points.ForEach(null, point => Union(point));
         }
 
         /// <summary>
@@ -506,9 +507,12 @@ namespace Ptv.XServer.Controls.Map
         /// </returns>
         public static bool Equals(MapRectangle rect1, MapRectangle rect2)
         {
-            if (rect1.IsEmpty != rect2.IsEmpty)
+            bool rect1IsEmpty = rect1?.IsEmpty ?? true;
+            bool rect2IsEmpty = rect2?.IsEmpty ?? true;
+
+            if (rect1IsEmpty != rect2IsEmpty)
                 return false;
-            if (rect1.IsEmpty && rect2.IsEmpty)
+            if (rect1IsEmpty) // rect2 is also null or empty
                 return true;
             return (rect1.West == rect2.West) && (rect1.East == rect2.East) && (rect1.South == rect2.South) && (rect1.North == rect2.North);
         }

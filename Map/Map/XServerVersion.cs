@@ -162,7 +162,7 @@ namespace Ptv.XServer.Controls.Map
             if (map.Xmap2LayerFactory != null)
             {
                 map.Layers.Remove(map.Xmap2LayerFactory.BackgroundLayer);
-                map.Layers.Remove(map.Xmap2LayerFactory.ForegroundLayer);
+                map.Layers.Remove(map.Xmap2LayerFactory.LabelLayer);
                 map.Xmap2LayerFactory = null;
             }
 
@@ -174,12 +174,12 @@ namespace Ptv.XServer.Controls.Map
             map.Xmap2LayerFactory.BackgroundThemes.Add("Background");
             map.Xmap2LayerFactory.BackgroundThemes.Add("Transport");
 
-            map.Xmap2LayerFactory.ForegroundLayer.Icon = ResourceHelper.LoadBitmapFromResource("Ptv.XServer.Controls.Map;component/Resources/Labels.png");
-            map.Xmap2LayerFactory.ForegroundLayer.Caption = MapLocalizer.GetString(MapStringId.Labels);
-            map.Xmap2LayerFactory.ForegroundThemes.Add("Labels");
+            map.Xmap2LayerFactory.LabelLayer.Icon = ResourceHelper.LoadBitmapFromResource("Ptv.XServer.Controls.Map;component/Resources/Labels.png");
+            map.Xmap2LayerFactory.LabelLayer.Caption = MapLocalizer.GetString(MapStringId.Labels);
+            map.Xmap2LayerFactory.LabelThemes.Add("Labels");
 
             map.Layers.Add(map.Xmap2LayerFactory.BackgroundLayer);
-            map.Layers.Add(map.Xmap2LayerFactory.ForegroundLayer);
+            map.Layers.Add(map.Xmap2LayerFactory.LabelLayer);
         }
     }
 }

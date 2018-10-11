@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 
 using Ptv.XServer.Controls.Map.Canvases;
 using Ptv.XServer.Controls.Map.Tools;
+using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 
 namespace Ptv.XServer.Controls.Map.Layers.Tiled
@@ -215,21 +216,21 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             currentlyVisibleTiles = new HashSet<TileParam>(GetVisibleTiles(mapParam));
             currentlyVisibleTiles.ExceptWith(new HashSet<TileParam>(shownImages.Keys));
 
-            if (!MapView.Printing)
+            if (MapView.Printing)
+            {
+                GetVisibleTiles(mapParam).ForEach(null, tileParam =>
+                {
+                    GetImage(tileParam, out var buffer);
+                    DisplayImage(buffer, tileParam, false, true);
+                    RemoveRestOfTiles();
+                });
+            }
+            else
             {
                 worker = new BackgroundWorker();
                 worker.DoWork += Worker_DoWork;
                 worker.WorkerSupportsCancellation = true;
                 worker.RunWorkerAsync(currentlyVisibleTiles);
-            }
-            else
-            {
-                foreach (TileParam tile in GetVisibleTiles(mapParam))
-                {
-                    GetImage(tile, out var buffer);
-                    DisplayImage(buffer, tile, false, true);
-                    RemoveRestOfTiles();
-                }
             }
         }
 
@@ -248,9 +249,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                     .ToDictionary<TileParam, TileParam, object>(tile => tile, tile => null);
 
             var tmpList = new List<TileParam>(shownImages.Keys.Where(imageKey => !visibleTiles.ContainsKey(imageKey)));
-
-            foreach (var key in tmpList)
-                RemoveImage(key);
+            tmpList.ForEach(null, RemoveImage);
         }
 
         /// <summary> Just as the name says: Remove all visible tiles. </summary>
@@ -281,10 +280,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                     tmpList.Add(imageKey);
                 }
             }
-            foreach (var key in tmpList)
-            {
-                RemoveImage(key);
-            }
+
+            tmpList.ForEach(null, RemoveImage);
         }
 
         private bool ContainsShownImagesTransparentImage(TileParam tileParam) => shownImages.ContainsKey(tileParam) && IsImageTransparent(shownImages[tileParam]);
@@ -292,10 +289,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
 
         private void RemoveAllTiles()
         {
-            foreach (var key in shownImages.Keys.ToList())
-            {
-                RemoveImage(key);
-            }
+            shownImages.Keys.ToList().ForEach(null, RemoveImage);
         }
 
         private void RemoveRestOfTiles()
@@ -303,21 +297,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
             var visibleTileKeys = GetVisibleTiles(new MapParam(MapView, GetTileZoom())).ToDictionary<TileParam, TileParam, object>(imageKey => imageKey, imageKey => null);
 
             if (visibleTileKeys.Keys.Any(key => !ContainsShownImagesTransparentImage(key)))
-            {
                 return;
-            }
 
-            var tmpList = shownImages.Keys.Where(imageKey => !visibleTileKeys.ContainsKey(imageKey)).ToList();
+            var tmpList = shownImages.Keys.Where(key => !visibleTileKeys.ContainsKey(key)).ToList();
+            tmpList.ForEach(null, RemoveImage);
 
-            foreach (var key in tmpList)
-            {
-                RemoveImage(key);
-            }
-
-            foreach (var image in shownImages.Values)
-            {
-                SetZIndex(image, ((TileParam)image.Tag).Zoom);
-            }
+            shownImages.Values.ForEach(null, image => SetZIndex(image, ((TileParam)image.Tag).Zoom));
         }
 
         private void RemoveImage(TileParam key)

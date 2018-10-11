@@ -5,7 +5,7 @@ using System.Windows.Media;
 using System.ComponentModel;
 using System.Collections.Generic;
 using Ptv.XServer.Controls.Map.Canvases;
-
+using Ptv.XServer.Controls.Map.TileProviders;
 
 namespace Ptv.XServer.Controls.Map.Layers
 {
@@ -52,6 +52,6 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <param name="center">Pixel coordinate of the point.</param>
         /// <param name="maxPixelDistance">Maximal number of pixels to search for.</param>
         /// <returns>A collection of strings describing the geographical objects.</returns>
-        IEnumerable<string> Get(Point center, double maxPixelDistance);
+        IEnumerable<IMapObject> Get(Point center, double maxPixelDistance);
     }
 }

@@ -90,8 +90,7 @@ namespace Ptv.XServer.Controls.Map
             mapViews.Add(mapView);
             if (!mapView.IsVisible) return;
 
-            foreach (var layer in this.Where(IsVisible))
-                layer.AddToMapView(mapView);
+            this.Where(IsVisible).ForEach(null, layer => layer.AddToMapView(mapView));
         }
 
         /// <summary> Disconnect a <see cref="MapView"/>-object from the called LayerCollection. In return, all visible
@@ -320,8 +319,7 @@ namespace Ptv.XServer.Controls.Map
         public object Clone()
         {
             var clone = new LayerCollection();
-            foreach (var layer in this)
-                clone.Add(layer);
+            this.ForEach(null, clone.Add);
 
             return clone;
         }

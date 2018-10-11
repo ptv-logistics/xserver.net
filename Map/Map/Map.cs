@@ -80,10 +80,8 @@ namespace Ptv.XServer.Controls.Map
         {
             ToolTipManagement = new ToolTipManagement(this)
             {
-                IsHitTestOKFunc = currentPosition =>
-                    VisualTreeHelper.HitTest(this, currentPosition)?.VisualHit?.FindAncestor<MapGadget>() == null,
-                FillToolTipEntriesFunc = (position, maxPixelDistance) =>
-                    Layers.OfType<IToolTips>().SelectMany(layer => layer.Get(position, maxPixelDistance))
+                IsHitTestOKFunc = currentPosition => VisualTreeHelper.HitTest(this, currentPosition)?.VisualHit?.FindAncestor<MapGadget>() == null,
+                FillToolTipMapObjectsFunc = (position, maxPixelDistance) => Layers.OfType<IToolTips>().SelectMany(layer => layer.Get(position, maxPixelDistance))
             };
         }
         #endregion

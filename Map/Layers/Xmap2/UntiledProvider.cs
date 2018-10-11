@@ -1,9 +1,7 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
 using Ptv.XServer.Controls.Map.Layers.Untiled;
-using System.Text;
 using System.IO;
-using System.Net;
 using TinyJson;
 using System;
 using System.Collections.Generic;
@@ -35,45 +33,51 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// <summary>URL of the service which provides untiled access of a map image via JSON request. </summary>
         public string RequestUriString { get; set; }
 
-        /// <summary> Function which returns the xToken needed for authentication in cloud based environments.</summary>
-        public Func<string> XTokenFunc { get; set; }
+        /// <summary> xToken needed for authentication in cloud based environments.</summary>
+        public string XToken { get; set; }
 
-        /// <summary>Function which returns a set of themes for which a map should be rendered. Examples are <em>labels</em>,
+        /// <summary>A set of themes for which a map should be rendered. Examples are <em>labels</em>,
         /// but also Feature Layer themes like <em>Truck Attributes</em>.</summary>
-        public Func<IEnumerable<string>> ThemesForRenderingFunc { get; set; }
+        public IEnumerable<string> ThemesForRendering { get; set; }
 
-        /// <summary>Function which returns a set of themes for which map object information should be calculated during
+        /// <summary>A set of themes for which map object information should be calculated during
         /// the renderMap service request. Commonly, this set is restricted to Feature Layer themes like <em>Truck Attributes</em>.</summary>
-        public Func<IEnumerable<string>> ThemesWithMapObjectsFunc { get; set; }
+        public IEnumerable<string> ThemesWithMapObjects { get; set; }
 
-        /// <summary>Function which returns the time consideration scenario which should be used when the map is rendered and
+        /// <summary>Time consideration scenario which should be used when the map is rendered and
         /// map objects are retrieved. Currently supported scenarios are
         /// <em>OptimisticTimeConsideration</em>, <em>SnapshotTimeConsideration</em> and <em>TimeSpanConsideration</em>. 
         /// For all other return values (including null string), no scenario is used and all time dependent features are not relevant.
         /// </summary>
-        public Func<string> TimeConsiderationScenarioFunc { get; set; }
+        public string TimeConsiderationScenario { get; set; }
 
         /// <summary>For <em>SnapshotTimeConsideration</em> and <em>TimeSpanConsideration</em> it is necessary to define a reference
-        /// time to determine which time dependent features should be active or not. The function returns a reference time with the following format:
+        /// time to determine which time dependent features should be active or not. This reference time comes along with the following format:
         /// <c>yyyy-MM-ddTHH:mm:ss[+-]HH:mm</c>, for example <c>2018-08-05T04:00:00+02:00</c>. </summary>
-        public Func<string> ReferenceTimeFunc { get; set; }
+        public string ReferenceTime { get; set; }
 
-        /// <summary>Function which defines the time span (in seconds) which is added to the reference time 
+        /// <summary>Time span (in seconds) which is added to the reference time 
         /// and needed for the <em>TimeSpanConsideration</em> scenario. </summary>
-        public Func<double> TimeSpanFunc { get; set; }
+        public double? TimeSpan { get; set; }
 
-        /// <summary>Function which indicates if the non-relevant Features should be shown or not.</summary>
-        public Func<bool> ShowOnlyRelevantByTimeFunc { get; set; }
+        /// <summary>Indicator if the non-relevant features should be shown or not.</summary>
+        public bool ShowOnlyRelevantByTime { get; set; }
 
-        /// <summary>Function which returns the language used for textual messages provided
+        /// <summary>The language used for textual messages, for example provided
         /// by the theme <em>traffic incidents</em>. The language code is defined in BCP47, 
         /// for example <em>en</em>, <em>fr</em> or <em>de</em>. </summary>
-        public Func<string> UserLanguageFunc { get; set; }
+        public string UserLanguage { get; set; }
 
-        /// <summary>Function which returns the language used for geographical objects in the map like names
+        /// <summary>The language code used for geographical objects in the map like names
         /// for town and streets. The language code is defined in BCP47,
         /// for example <em>en</em>, <em>fr</em> or <em>de</em>. </summary>
-        public Func<string> MapLanguageFunc { get; set; }
+        public string MapLanguage { get; set; }
+
+        /// <summary>Profile containing the styles of a map.</summary>
+        public string StoredProfile { get; set; }
+
+        /// <summary>ID of the content snapshot.</summary>
+        public string ContentSnapshotId { get; set; }
 
         /// <inheritdoc/>
         public Action<IEnumerable<IMapObject>, Size> Update { get; set; }
@@ -81,44 +85,22 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// <inheritdoc/>
         public Stream GetImageStream(double left, double top, double right, double bottom, int width, int height)
         {
-            var request = WebRequest.Create(RequestUriString);
-            request.Method = "POST";
-            request.ContentType = "application/json";
+            var responseObject = new RequestBase.Builder(RequestUriString, XToken, GetJsonRequest(left, top, right, bottom, width, height)).Response.FromJson<ResponseObject>();
+            
+            IEnumerable<IMapObject> mapObjects = responseObject?.features?.Select(feature =>
+                (IMapObject) new MapObject(
+                    feature.id,
+                    feature.themeId,
+                    new Point(feature.referencePixelPoint.x, feature.referencePixelPoint.y),
+                    new Point(feature.referenceCoordinate.x, feature.referenceCoordinate.y),
+                    () => feature.attributes?.Select(attribute =>
+                        new KeyValuePair<string, string>(attribute.key, attribute.value))
+                ));
+            Update?.Invoke(mapObjects, new Size(width, height));
 
-            string xToken = XTokenFunc?.Invoke();
-            if (!string.IsNullOrEmpty(xToken))
-                request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes("xtok:" + xToken));
-
-            using (var stream = request.GetRequestStream())
-            using (var writer = new StreamWriter(stream))
-            {
-                writer.Write(GetJsonRequest(left, top, right, bottom, width, height));
-            }
-
-            using (var response = request.GetResponse())
-            using (var stream = response.GetResponseStream())
-            {
-                if (stream == null) return null;
-                using (var reader = new StreamReader(stream, Encoding.UTF8))
-                {
-                    var responseObject = reader.ReadToEnd().FromJson<ResponseObject>();
-
-                    IEnumerable<IMapObject> mapObjects = responseObject?.features?.Select(feature =>
-                        (IMapObject) new MapObject(
-                            feature.id,
-                            feature.themeId,
-                            new Point(feature.referencePixelPoint.x, feature.referencePixelPoint.y),
-                            new Point(feature.referenceCoordinate.x, feature.referenceCoordinate.y),
-                            () => feature.attributes?.Select(attribute =>
-                                new KeyValuePair<string, string>(attribute.key, attribute.value))
-                        ));
-                    Update?.Invoke(mapObjects, new Size(width, height));
-
-                    return (responseObject?.image != null)
-                        ? new MemoryStream(Convert.FromBase64String(responseObject.image))
-                        : null;
-                }
-            }
+            return responseObject?.image != null
+                ? new MemoryStream(Convert.FromBase64String(responseObject.image))
+                : null;
         }
 
         private string GetJsonRequest(double left, double top, double right, double bottom, int width, int height)
@@ -127,9 +109,10 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
             {
                 requestProfile = new
                 {
-                    userLanguage = UserLanguageFunc?.Invoke() ?? "en",
-                    mapLanguage = MapLanguageFunc?.Invoke() ?? "x-ptv-DFT"
+                    userLanguage = UserLanguage ?? "en",
+                    mapLanguage = MapLanguage ?? "x-ptv-DFT"
                 },
+                storedProfile = StoredProfile,
                 mapSection = new
                 {
                     _type = "MapSectionByBounds",
@@ -142,14 +125,15 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
                 },
                 mapOptions = new
                 {
-                    layers = ThemesForRenderingFunc?.Invoke().ToArray(),
+                    contentSnapshotId = ContentSnapshotId,
+                    layers = ThemesForRendering?.ToArray(),
                     timeConsideration = GetTimeConsideration(),
-                    showOnlyRelevantByTime = ShowOnlyRelevantByTimeFunc?.Invoke() ?? false
+                    showOnlyRelevantByTime = ShowOnlyRelevantByTime
                 },
                 resultFields = new
                 {
                     image = true,
-                    featureThemeIds = ThemesWithMapObjectsFunc?.Invoke().ToArray()
+                    featureThemeIds = ThemesWithMapObjects?.ToArray()
                 },
                 coordinateFormat = "EPSG:76131"
             };
@@ -161,8 +145,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         {
             try
             {
-                string timeConsiderationScenario = TimeConsiderationScenarioFunc?.Invoke();
-                string referenceTime = ReferenceTimeFunc?.Invoke();
+                var timeConsiderationScenario = TimeConsiderationScenario;
+                var referenceTime = ReferenceTime;
                 switch (timeConsiderationScenario)
                 {
                     case "OptimisticTimeConsideration":
@@ -172,15 +156,15 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
                         };
 
                     case "SnapshotTimeConsideration":
-                        return (referenceTime == null) ? null : new
+                        return referenceTime == null ? null : new
                         {
                             _type = timeConsiderationScenario,
                             referenceTime
                         };
 
                     case "TimeSpanConsideration":
-                        double? timeSpan = TimeSpanFunc?.Invoke();
-                        return ((referenceTime == null) || !timeSpan.HasValue) ? null : new
+                        double? timeSpan = TimeSpan;
+                        return referenceTime == null || !timeSpan.HasValue ? null : new
                         {
                             _type = timeConsiderationScenario,
                             referenceTime,

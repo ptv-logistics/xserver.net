@@ -6,6 +6,8 @@ using Ptv.XServer.Controls.Map.Layers.Tiled;
 using Ptv.XServer.Controls.Map.Layers.Untiled;
 using Ptv.XServer.Controls.Map.TileProviders;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Net;
 
 namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 {
@@ -23,6 +25,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
             Token = (token?.Contains(":") ?? false) ? token.Split(':')[1] : token;
 
             DataInformation = new DataInformation(BaseUrl, Token);
+            ServerConfiguration = new ServerConfiguration(BaseUrl, Token);
+            ContentSnapshots = new ContentSnapshots(BaseUrl, Token);
 
             InitializeTiledLayer();
             InitializeUntiledLayer();
@@ -37,10 +41,10 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
                 MinZoom = 0,
                 MaxZoom = 22,
                 RequestBuilderDelegate = (x, y, z) => BaseUrl
-                                                  + $"/services/rest/XMap/tile/{z}/{x}/{y}"
-                                                  + "?storedProfile=gravelpit"
-                                                  + $"&layers={string.Join(",", BackgroundThemes.ToArray())}"
-                                                  + $"&xtok={Token}"
+                                                      + $"/services/rest/XMap/tile/{z}/{x}/{y}"
+                                                      + $"?storedProfile={StoredProfile}"
+                                                      + $"&layers={string.Join(",", BackgroundThemes.ToArray())}"
+                                                      + $"&xtok={Token}"
             };
 
             BackgroundLayer.TiledProvider = tiledProvider;
@@ -58,21 +62,21 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
             var untiledProvider = new UntiledProvider
             {
                 RequestUriString = DataInformation.CompleteUrl("services/rs/XMap/renderMap"),
-                XTokenFunc = () => Token,
-                ThemesForRenderingFunc = () => ForegroundThemes,
-                ThemesWithMapObjectsFunc = () => ForegroundThemes.Where(theme => FeatureLayers.AvailableThemes.Contains(theme))
+                XToken = Token
             };
 
-            ForegroundLayer.UntiledProvider = untiledProvider;
+            LabelLayer.UntiledProvider = untiledProvider;
 
-            ForegroundThemes.CollectionChanged += (sender, e) =>
+            LabelThemes.CollectionChanged += (sender, e) =>
             {
-                ForegroundLayer.Copyright = FormatCopyRight(ForegroundThemes);
-                ForegroundLayer.Refresh();
+                untiledProvider.ThemesForRendering = LabelThemes;
+                untiledProvider.ThemesWithMapObjects = LabelThemes.Where(theme => FeatureLayers.AvailableThemes.Contains(theme));
+                LabelLayer.Copyright = FormatCopyRight(LabelThemes);
+                LabelLayer.Refresh();
             };
         }
 
-        private string FormatCopyRight(ObservableCollection<string> themes) => string.Join("|", DataInformation.CopyRights(themes).ToArray());
+        private string FormatCopyRight(IEnumerable<string> themes) => string.Join("|", DataInformation.CopyRights(themes).ToArray());
 
         /// <summary>URL specifying the root part of the URL from which a service like rendering a map can be composed. For example, 
         /// https://xserver2-europe-eu-test.cloud.ptvgroup.com
@@ -84,10 +88,13 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// <summary>For xServer internet, a token must be specified for authentication. </summary>
         public string Token { get; }
 
+        /// <summary>Callback for a final adaptation of a WebRequest before it is sent to XMap2 server.</summary>
+        public static Func<WebRequest, WebRequest> ModifyRequest;
+
         /// <summary>An <see cref="ILayer"/> object providing a tile-based (i.e. more responsive) rendering. The geographical content is defined 
         /// by the list of background themes, see <see cref="BackgroundThemes"/>. This layer object should be inserted in a <see cref="Map"/>
-        /// before the <see cref="ForegroundLayer"/>. </summary>
-        public TiledLayer BackgroundLayer { get; } = new TiledLayer("background");
+        /// before the <see cref="LabelLayer"/>. </summary>
+        public TiledLayer BackgroundLayer { get; } = new TiledLayer("Background");
 
         /// <summary>Collection of themes which determine the geographical content of the <see cref="BackgroundLayer"/>,
         /// for example themes like <c>background</c> or <c>transport</c>.
@@ -95,29 +102,70 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         public ObservableCollection<string> BackgroundThemes { get; } = new ObservableCollection<string>();
 
         /// <summary>An <see cref="ILayer"/> object providing an untiled rendering, the whole map is comprised in a single bitmap. 
-        /// The geographical content is defined by the list of foreground themes, see <see cref="ForegroundThemes"/>. 
+        /// The geographical content is defined by the list of foreground themes, see <see cref="LabelThemes"/>. 
         /// This layer object should be inserted in a <see cref="Map"/> after the <see cref="BackgroundLayer"/>. </summary>
-        public UntiledLayer ForegroundLayer { get; } = new UntiledLayer("foreground");
+        public UntiledLayer LabelLayer { get; } = new UntiledLayer("Labels");
 
-        /// <summary>Collection of themes which determine the geographical content for the <see cref="ForegroundLayer"/>,
+        /// <summary>Collection of themes which determine the geographical content for the <see cref="LabelLayer"/>,
         /// for example themes like <c>labels</c> or <c>PTV_TruckAttributes</c>. The major intention of this layer
         /// is to avoid blurred objects like texts or traffic signs when fractional rendering is applied. Fractional rendering
         /// is provided by the <see cref="Map"/> object allowing seamless zooming. In most mapping frameworks there are only
         /// zoom levels available according the classification of tile sizes. Only in such environments a tile-based rendering is
         /// recommended. </summary>
-        public ObservableCollection<string> ForegroundThemes { get; } = new ObservableCollection<string>();
+        public ObservableCollection<string> LabelThemes { get; } = new ObservableCollection<string>();
 
         /// <summary>Function which returns the language, used for  geographical objects in the map like names for town and streets. 
         /// The language code is defined in BCP47, for example <em>en</em>, <em>fr</em> or <em>de</em>. </summary>
-        public Func<string> MapLanguageFunc
+        public string MapLanguage
         {
-            get => ((UntiledProvider)ForegroundLayer.UntiledProvider).MapLanguageFunc;
-            set => ((UntiledProvider)ForegroundLayer.UntiledProvider).MapLanguageFunc = value;
+            get => ((UntiledProvider)LabelLayer.UntiledProvider).MapLanguage;
+            set
+            {
+                if (Equals(MapLanguage, value)) return;
+                ((UntiledProvider)LabelLayer.UntiledProvider).MapLanguage = value;
+                LabelLayer.Refresh();
+            }
+        }
+
+
+        /// <summary>The language used for textual messages, for example provided
+        /// by the theme <em>traffic incidents</em>. The language code is defined in BCP47, 
+        /// for example <em>en</em>, <em>fr</em> or <em>de</em>. </summary>
+        public string UserLanguage
+        {
+            get => ((UntiledProvider)LabelLayer.UntiledProvider).UserLanguage;
+            set
+            {
+                if (Equals(UserLanguage, value)) return;
+                ((UntiledProvider)LabelLayer.UntiledProvider).UserLanguage = value;
+                LabelLayer.Refresh();
+            }
+        }
+
+        /// <summary>All available map styles configured on the corresponding xMap2 server.</summary>
+        public IEnumerable<string> AvailableMapStyles => ServerConfiguration.AvailableMapStyles;
+
+        /// <summary>Style of a map.</summary>
+        public string StoredProfile
+        {
+            get => ((UntiledProvider)LabelLayer.UntiledProvider).StoredProfile;
+            set
+            {
+                if (Equals(((UntiledProvider)LabelLayer.UntiledProvider).StoredProfile, value)) return;
+
+                ((UntiledProvider)LabelLayer.UntiledProvider).StoredProfile = value;
+                BackgroundLayer.Refresh();
+                LabelLayer.Refresh();
+            }
         }
 
         /// <summary> Provides functionality all around Feature Layers. </summary>
         public FeatureLayers FeatureLayers { get; }
 
         internal DataInformation DataInformation { get; }
+
+        internal ServerConfiguration ServerConfiguration { get; }
+
+        internal ContentSnapshots ContentSnapshots { get; }
     }
 }

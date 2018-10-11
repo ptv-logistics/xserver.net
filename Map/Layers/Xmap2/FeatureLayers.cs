@@ -1,6 +1,5 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
-using System;
 using System.Collections.Generic;
 
 namespace Ptv.XServer.Controls.Map.Layers.Xmap2
@@ -25,49 +24,77 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// <returns>String list of all available Feature Layer themes.</returns>
         public IEnumerable<string> AvailableThemes => layerFactory.DataInformation.AvailableFeatureLayerThemes;
 
-        /// <summary>Function which returns the time consideration scenario which should be used when the map is rendered and
+        /// <summary>Time consideration scenario which should be used when the map is rendered and
         /// map objects are retrieved. Currently supported scenarios are
         /// <em>OptimisticTimeConsideration</em>, <em>SnapshotTimeConsideration</em> and <em>TimeSpanConsideration</em>. 
         /// For all other return values (including null string), no scenario is used and all time dependent features are not relevant.
         /// </summary>
-        public Func<string> TimeConsiderationScenarioFunc
+        public string TimeConsiderationScenario
         {
-            get => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).TimeConsiderationScenarioFunc;
-            set => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).TimeConsiderationScenarioFunc = value;
+            get => ((UntiledProvider) layerFactory.LabelLayer.UntiledProvider).TimeConsiderationScenario;
+            set
+            {
+                if (Equals(TimeConsiderationScenario, value)) return;
+                ((UntiledProvider)layerFactory.LabelLayer.UntiledProvider).TimeConsiderationScenario = value;
+                layerFactory.LabelLayer.Refresh();
+            }
         }
 
         /// <summary>For <em>SnapshotTimeConsideration</em> and <em>TimeSpanConsideration</em> it is necessary to define a reference
-        /// time to determine which time dependent features should be active or not. The function returns a reference time
-        /// including a time zone in the following format:
+        /// time to determine which time dependent features should be active or not. The reference time
+        /// including a time zone comes along in the following format:
         /// <c>yyyy-MM-ddTHH:mm:ss[+-]HH:mm</c>, for example <c>2018-08-05T04:00:00+02:00</c>. </summary>
-        public Func<string> ReferenceTimeFunc
+        public string ReferenceTime
         {
-            get => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).ReferenceTimeFunc;
-            set => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).ReferenceTimeFunc = value;
+            get => ((UntiledProvider) layerFactory.LabelLayer.UntiledProvider).ReferenceTime;
+            set
+            {
+                if (Equals(ReferenceTime, value)) return;
+                ((UntiledProvider)layerFactory.LabelLayer.UntiledProvider).ReferenceTime = value;
+                layerFactory.LabelLayer.Refresh();
+            }
         }
 
-        /// <summary>Function which defines the time span (in seconds) which is added to the reference time 
+        /// <summary>Time span (in seconds) which is added to the reference time 
         /// and needed for the <em>TimeSpanConsideration</em> scenario. </summary>
-        public Func<double> TimeSpanFunc
+        public double? TimeSpan
         {
-            get => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).TimeSpanFunc;
-            set => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).TimeSpanFunc = value;
+            get => ((UntiledProvider) layerFactory.LabelLayer.UntiledProvider).TimeSpan;
+            set
+            {
+                if (Equals(TimeSpan, value)) return;
+                ((UntiledProvider)layerFactory.LabelLayer.UntiledProvider).TimeSpan = value;
+                layerFactory.LabelLayer.Refresh();
+            }
         }
 
         /// <summary>Function which indicates if the non-relevant Features should be shown or not.</summary>
-        public Func<bool> ShowOnlyRelevantByTimeFunc
+        public bool ShowOnlyRelevantByTime
         {
-            get => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).ShowOnlyRelevantByTimeFunc;
-            set => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).ShowOnlyRelevantByTimeFunc = value;
+            get => ((UntiledProvider) layerFactory.LabelLayer.UntiledProvider).ShowOnlyRelevantByTime;
+            set
+            {
+                if (Equals(ShowOnlyRelevantByTime, value)) return;
+                ((UntiledProvider) layerFactory.LabelLayer.UntiledProvider).ShowOnlyRelevantByTime = value;
+                layerFactory.LabelLayer.Refresh();
+            }
         }
 
-        /// <summary>Function which returns the language, used for textual messages provided
-        /// by the theme <em>traffic incidents</em>. The language code is defined in BCP47, 
-        /// for example <em>en</em>, <em>fr</em> or <em>de</em>. </summary>
-        public Func<string> LanguageFunc
+        /// <summary>Provides all available content snapshots configured on the server defined by the <see cref="LayerFactory.BaseUrl"/> property.</summary>
+        /// <returns>Description list of all available content snapshots.</returns>
+        public IEnumerable<ContentSnapshotDescription> AvailableContentSnapshots => layerFactory.ContentSnapshots.Available;
+
+        /// <summary>ID of the content snapshot.</summary>
+        public string ContentSnapshotId
         {
-            get => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).UserLanguageFunc;
-            set => ((UntiledProvider) layerFactory.ForegroundLayer.UntiledProvider).UserLanguageFunc = value;
+            get => ((UntiledProvider)layerFactory.LabelLayer.UntiledProvider).ContentSnapshotId;
+            set
+            {
+                if (Equals(((UntiledProvider)layerFactory.LabelLayer.UntiledProvider).ContentSnapshotId, value)) return;
+
+                ((UntiledProvider)layerFactory.LabelLayer.UntiledProvider).ContentSnapshotId = value;
+                layerFactory.LabelLayer.Refresh();
+            }
         }
     }
 }

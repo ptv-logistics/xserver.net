@@ -277,70 +277,40 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Point center
         {
-            get
-            {
-                return this.centerField;
-            }
-            set
-            {
-                this.centerField = value;
-            }
+            get => this.centerField;
+            set => this.centerField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int scale
         {
-            get
-            {
-                return this.scaleField;
-            }
-            set
-            {
-                this.scaleField = value;
-            }
+            get => this.scaleField;
+            set => this.scaleField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int scrollHorizontal
         {
-            get
-            {
-                return this.scrollHorizontalField;
-            }
-            set
-            {
-                this.scrollHorizontalField = value;
-            }
+            get => this.scrollHorizontalField;
+            set => this.scrollHorizontalField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int scrollVertical
         {
-            get
-            {
-                return this.scrollVerticalField;
-            }
-            set
-            {
-                this.scrollVerticalField = value;
-            }
+            get => this.scrollVerticalField;
+            set => this.scrollVerticalField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int zoom
         {
-            get
-            {
-                return this.zoomField;
-            }
-            set
-            {
-                this.zoomField = value;
-            }
+            get => this.zoomField;
+            set => this.zoomField = value;
         }
     }
 
@@ -359,14 +329,8 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public PlainPoint point
         {
-            get
-            {
-                return this.pointField;
-            }
-            set
-            {
-                this.pointField = value;
-            }
+            get => this.pointField;
+            set => this.pointField = value;
         }
     }
 
@@ -391,56 +355,32 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public double x
         {
-            get
-            {
-                return this.xField;
-            }
-            set
-            {
-                this.xField = value;
-            }
+            get => this.xField;
+            set => this.xField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public double y
         {
-            get
-            {
-                return this.yField;
-            }
-            set
-            {
-                this.yField = value;
-            }
+            get => this.yField;
+            set => this.yField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public double z
         {
-            get
-            {
-                return this.zField;
-            }
-            set
-            {
-                this.zField = value;
-            }
+            get => this.zField;
+            set => this.zField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool zSpecified
         {
-            get
-            {
-                return this.zFieldSpecified;
-            }
-            set
-            {
-                this.zFieldSpecified = value;
-            }
+            get => this.zFieldSpecified;
+            set => this.zFieldSpecified = value;
         }
     }
 
@@ -568,56 +508,32 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int maximumPollingPeriod
         {
-            get
-            {
-                return this.maximumPollingPeriodField;
-            }
-            set
-            {
-                this.maximumPollingPeriodField = value;
-            }
+            get => this.maximumPollingPeriodField;
+            set => this.maximumPollingPeriodField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool maximumPollingPeriodSpecified
         {
-            get
-            {
-                return this.maximumPollingPeriodFieldSpecified;
-            }
-            set
-            {
-                this.maximumPollingPeriodFieldSpecified = value;
-            }
+            get => this.maximumPollingPeriodFieldSpecified;
+            set => this.maximumPollingPeriodFieldSpecified = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int progressUpdatePeriod
         {
-            get
-            {
-                return this.progressUpdatePeriodField;
-            }
-            set
-            {
-                this.progressUpdatePeriodField = value;
-            }
+            get => this.progressUpdatePeriodField;
+            set => this.progressUpdatePeriodField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         public bool progressUpdatePeriodSpecified
         {
-            get
-            {
-                return this.progressUpdatePeriodFieldSpecified;
-            }
-            set
-            {
-                this.progressUpdatePeriodFieldSpecified = value;
-            }
+            get => this.progressUpdatePeriodFieldSpecified;
+            set => this.progressUpdatePeriodFieldSpecified = value;
         }
     }
 
@@ -640,42 +556,24 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int currentLoopIndex
         {
-            get
-            {
-                return this.currentLoopIndexField;
-            }
-            set
-            {
-                this.currentLoopIndexField = value;
-            }
+            get => this.currentLoopIndexField;
+            set => this.currentLoopIndexField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int lastLoopIndex
         {
-            get
-            {
-                return this.lastLoopIndexField;
-            }
-            set
-            {
-                this.lastLoopIndexField = value;
-            }
+            get => this.lastLoopIndexField;
+            set => this.lastLoopIndexField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int progress
         {
-            get
-            {
-                return this.progressField;
-            }
-            set
-            {
-                this.progressField = value;
-            }
+            get => this.progressField;
+            set => this.progressField = value;
         }
     }
 
@@ -718,182 +616,104 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int costOfObjectiveFunction
         {
-            get
-            {
-                return this.costOfObjectiveFunctionField;
-            }
-            set
-            {
-                this.costOfObjectiveFunctionField = value;
-            }
+            get => this.costOfObjectiveFunctionField;
+            set => this.costOfObjectiveFunctionField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int numberOfInfeasibleOrders
         {
-            get
-            {
-                return this.numberOfInfeasibleOrdersField;
-            }
-            set
-            {
-                this.numberOfInfeasibleOrdersField = value;
-            }
+            get => this.numberOfInfeasibleOrdersField;
+            set => this.numberOfInfeasibleOrdersField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int numberOfScheduledOrders
         {
-            get
-            {
-                return this.numberOfScheduledOrdersField;
-            }
-            set
-            {
-                this.numberOfScheduledOrdersField = value;
-            }
+            get => this.numberOfScheduledOrdersField;
+            set => this.numberOfScheduledOrdersField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int numberOfScheduledVehicles
         {
-            get
-            {
-                return this.numberOfScheduledVehiclesField;
-            }
-            set
-            {
-                this.numberOfScheduledVehiclesField = value;
-            }
+            get => this.numberOfScheduledVehiclesField;
+            set => this.numberOfScheduledVehiclesField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int numberOfUnscheduledOrders
         {
-            get
-            {
-                return this.numberOfUnscheduledOrdersField;
-            }
-            set
-            {
-                this.numberOfUnscheduledOrdersField = value;
-            }
+            get => this.numberOfUnscheduledOrdersField;
+            set => this.numberOfUnscheduledOrdersField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int totalChainCost
         {
-            get
-            {
-                return this.totalChainCostField;
-            }
-            set
-            {
-                this.totalChainCostField = value;
-            }
+            get => this.totalChainCostField;
+            set => this.totalChainCostField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int totalChainPeriod
         {
-            get
-            {
-                return this.totalChainPeriodField;
-            }
-            set
-            {
-                this.totalChainPeriodField = value;
-            }
+            get => this.totalChainPeriodField;
+            set => this.totalChainPeriodField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int totalTourCost
         {
-            get
-            {
-                return this.totalTourCostField;
-            }
-            set
-            {
-                this.totalTourCostField = value;
-            }
+            get => this.totalTourCostField;
+            set => this.totalTourCostField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int totalTourCount
         {
-            get
-            {
-                return this.totalTourCountField;
-            }
-            set
-            {
-                this.totalTourCountField = value;
-            }
+            get => this.totalTourCountField;
+            set => this.totalTourCountField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int totalTourDistance
         {
-            get
-            {
-                return this.totalTourDistanceField;
-            }
-            set
-            {
-                this.totalTourDistanceField = value;
-            }
+            get => this.totalTourDistanceField;
+            set => this.totalTourDistanceField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int totalTourDrivingPeriod
         {
-            get
-            {
-                return this.totalTourDrivingPeriodField;
-            }
-            set
-            {
-                this.totalTourDrivingPeriodField = value;
-            }
+            get => this.totalTourDrivingPeriodField;
+            set => this.totalTourDrivingPeriodField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int totalTourPeriod
         {
-            get
-            {
-                return this.totalTourPeriodField;
-            }
-            set
-            {
-                this.totalTourPeriodField = value;
-            }
+            get => this.totalTourPeriodField;
+            set => this.totalTourPeriodField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int totalTourWaitingPeriod
         {
-            get
-            {
-                return this.totalTourWaitingPeriodField;
-            }
-            set
-            {
-                this.totalTourWaitingPeriodField = value;
-            }
+            get => this.totalTourWaitingPeriodField;
+            set => this.totalTourWaitingPeriodField = value;
         }
     }
 
@@ -924,98 +744,56 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public KeyFigures bestPlan
         {
-            get
-            {
-                return this.bestPlanField;
-            }
-            set
-            {
-                this.bestPlanField = value;
-            }
+            get => this.bestPlanField;
+            set => this.bestPlanField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public KeyFigures currentPlan
         {
-            get
-            {
-                return this.currentPlanField;
-            }
-            set
-            {
-                this.currentPlanField = value;
-            }
+            get => this.currentPlanField;
+            set => this.currentPlanField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public KeyFigures initialPlan
         {
-            get
-            {
-                return this.initialPlanField;
-            }
-            set
-            {
-                this.initialPlanField = value;
-            }
+            get => this.initialPlanField;
+            set => this.initialPlanField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int availableMachineTime
         {
-            get
-            {
-                return this.availableMachineTimeField;
-            }
-            set
-            {
-                this.availableMachineTimeField = value;
-            }
+            get => this.availableMachineTimeField;
+            set => this.availableMachineTimeField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int iterationIndex
         {
-            get
-            {
-                return this.iterationIndexField;
-            }
-            set
-            {
-                this.iterationIndexField = value;
-            }
+            get => this.iterationIndexField;
+            set => this.iterationIndexField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int numberOfImprovements
         {
-            get
-            {
-                return this.numberOfImprovementsField;
-            }
-            set
-            {
-                this.numberOfImprovementsField = value;
-            }
+            get => this.numberOfImprovementsField;
+            set => this.numberOfImprovementsField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int usedMachineTime
         {
-            get
-            {
-                return this.usedMachineTimeField;
-            }
-            set
-            {
-                this.usedMachineTimeField = value;
-            }
+            get => this.usedMachineTimeField;
+            set => this.usedMachineTimeField = value;
         }
     }
 
@@ -1040,56 +818,32 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public DistanceMatrixProgress currentDistanceMatrixProgress
         {
-            get
-            {
-                return this.currentDistanceMatrixProgressField;
-            }
-            set
-            {
-                this.currentDistanceMatrixProgressField = value;
-            }
+            get => this.currentDistanceMatrixProgressField;
+            set => this.currentDistanceMatrixProgressField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int currentDimaIndex
         {
-            get
-            {
-                return this.currentDimaIndexField;
-            }
-            set
-            {
-                this.currentDimaIndexField = value;
-            }
+            get => this.currentDimaIndexField;
+            set => this.currentDimaIndexField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int dimaId
         {
-            get
-            {
-                return this.dimaIdField;
-            }
-            set
-            {
-                this.dimaIdField = value;
-            }
+            get => this.dimaIdField;
+            set => this.dimaIdField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int lastDimaIndex
         {
-            get
-            {
-                return this.lastDimaIndexField;
-            }
-            set
-            {
-                this.lastDimaIndexField = value;
-            }
+            get => this.lastDimaIndexField;
+            set => this.lastDimaIndexField = value;
         }
     }
 
@@ -1110,28 +864,16 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int currentRowIndex
         {
-            get
-            {
-                return this.currentRowIndexField;
-            }
-            set
-            {
-                this.currentRowIndexField = value;
-            }
+            get => this.currentRowIndexField;
+            set => this.currentRowIndexField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int lastRowIndex
         {
-            get
-            {
-                return this.lastRowIndexField;
-            }
-            set
-            {
-                this.lastRowIndexField = value;
-            }
+            get => this.lastRowIndexField;
+            set => this.lastRowIndexField = value;
         }
     }
 
@@ -1168,28 +910,16 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string action
         {
-            get
-            {
-                return this.actionField;
-            }
-            set
-            {
-                this.actionField = value;
-            }
+            get => this.actionField;
+            set => this.actionField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int optimizationProgress
         {
-            get
-            {
-                return this.optimizationProgressField;
-            }
-            set
-            {
-                this.optimizationProgressField = value;
-            }
+            get => this.optimizationProgressField;
+            set => this.optimizationProgressField = value;
         }
     }
 
@@ -1212,42 +942,24 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public DistanceMatrixProgress distanceMatrixProgress
         {
-            get
-            {
-                return this.distanceMatrixProgressField;
-            }
-            set
-            {
-                this.distanceMatrixProgressField = value;
-            }
+            get => this.distanceMatrixProgressField;
+            set => this.distanceMatrixProgressField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string action
         {
-            get
-            {
-                return this.actionField;
-            }
-            set
-            {
-                this.actionField = value;
-            }
+            get => this.actionField;
+            set => this.actionField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int optimizationProgress
         {
-            get
-            {
-                return this.optimizationProgressField;
-            }
-            set
-            {
-                this.optimizationProgressField = value;
-            }
+            get => this.optimizationProgressField;
+            set => this.optimizationProgressField = value;
         }
     }
 
@@ -1270,42 +982,24 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public DistanceMatrixProgress distanceMatrixProgress
         {
-            get
-            {
-                return this.distanceMatrixProgressField;
-            }
-            set
-            {
-                this.distanceMatrixProgressField = value;
-            }
+            get => this.distanceMatrixProgressField;
+            set => this.distanceMatrixProgressField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public OptimizationProgress optimizationProgress
         {
-            get
-            {
-                return this.optimizationProgressField;
-            }
-            set
-            {
-                this.optimizationProgressField = value;
-            }
+            get => this.optimizationProgressField;
+            set => this.optimizationProgressField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string action
         {
-            get
-            {
-                return this.actionField;
-            }
-            set
-            {
-                this.actionField = value;
-            }
+            get => this.actionField;
+            set => this.actionField = value;
         }
     }
 
@@ -1328,42 +1022,24 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public DistanceMatrixCalculationProgress distanceMatrixCalculationProgress
         {
-            get
-            {
-                return this.distanceMatrixCalculationProgressField;
-            }
-            set
-            {
-                this.distanceMatrixCalculationProgressField = value;
-            }
+            get => this.distanceMatrixCalculationProgressField;
+            set => this.distanceMatrixCalculationProgressField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public ImprovementProgress improvementProgress
         {
-            get
-            {
-                return this.improvementProgressField;
-            }
-            set
-            {
-                this.improvementProgressField = value;
-            }
+            get => this.improvementProgressField;
+            set => this.improvementProgressField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string action
         {
-            get
-            {
-                return this.actionField;
-            }
-            set
-            {
-                this.actionField = value;
-            }
+            get => this.actionField;
+            set => this.actionField = value;
         }
     }
 
@@ -1386,42 +1062,24 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int failed
         {
-            get
-            {
-                return this.failedField;
-            }
-            set
-            {
-                this.failedField = value;
-            }
+            get => this.failedField;
+            set => this.failedField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int remaining
         {
-            get
-            {
-                return this.remainingField;
-            }
-            set
-            {
-                this.remainingField = value;
-            }
+            get => this.remainingField;
+            set => this.remainingField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int successful
         {
-            get
-            {
-                return this.successfulField;
-            }
-            set
-            {
-                this.successfulField = value;
-            }
+            get => this.successfulField;
+            set => this.successfulField = value;
         }
     }
 
@@ -1446,56 +1104,32 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public JobProgress progress
         {
-            get
-            {
-                return this.progressField;
-            }
-            set
-            {
-                this.progressField = value;
-            }
+            get => this.progressField;
+            set => this.progressField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int elapsedTime
         {
-            get
-            {
-                return this.elapsedTimeField;
-            }
-            set
-            {
-                this.elapsedTimeField = value;
-            }
+            get => this.elapsedTimeField;
+            set => this.elapsedTimeField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string id
         {
-            get
-            {
-                return this.idField;
-            }
-            set
-            {
-                this.idField = value;
-            }
+            get => this.idField;
+            set => this.idField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public JobStatus status
         {
-            get
-            {
-                return this.statusField;
-            }
-            set
-            {
-                this.statusField = value;
-            }
+            get => this.statusField;
+            set => this.statusField = value;
         }
     }
 
@@ -1551,70 +1185,40 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public GeometryEncoding[] wrappedResponseGeometry
         {
-            get
-            {
-                return this.wrappedResponseGeometryField;
-            }
-            set
-            {
-                this.wrappedResponseGeometryField = value;
-            }
+            get => this.wrappedResponseGeometryField;
+            set => this.wrappedResponseGeometryField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public CoordFormat coordFormat
         {
-            get
-            {
-                return this.coordFormatField;
-            }
-            set
-            {
-                this.coordFormatField = value;
-            }
+            get => this.coordFormatField;
+            set => this.coordFormatField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string profile
         {
-            get
-            {
-                return this.profileField;
-            }
-            set
-            {
-                this.profileField = value;
-            }
+            get => this.profileField;
+            set => this.profileField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string profileXMLSnippet
         {
-            get
-            {
-                return this.profileXMLSnippetField;
-            }
-            set
-            {
-                this.profileXMLSnippetField = value;
-            }
+            get => this.profileXMLSnippetField;
+            set => this.profileXMLSnippetField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string srId
         {
-            get
-            {
-                return this.srIdField;
-            }
-            set
-            {
-                this.srIdField = value;
-            }
+            get => this.srIdField;
+            set => this.srIdField = value;
         }
     }
 
@@ -1687,28 +1291,16 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string key
         {
-            get
-            {
-                return this.keyField;
-            }
-            set
-            {
-                this.keyField = value;
-            }
+            get => this.keyField;
+            set => this.keyField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string value
         {
-            get
-            {
-                return this.valueField;
-            }
-            set
-            {
-                this.valueField = value;
-            }
+            get => this.valueField;
+            set => this.valueField = value;
         }
     }
 
@@ -1733,56 +1325,32 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public CallerContextProperty[] wrappedProperties
         {
-            get
-            {
-                return this.wrappedPropertiesField;
-            }
-            set
-            {
-                this.wrappedPropertiesField = value;
-            }
+            get => this.wrappedPropertiesField;
+            set => this.wrappedPropertiesField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string log1
         {
-            get
-            {
-                return this.log1Field;
-            }
-            set
-            {
-                this.log1Field = value;
-            }
+            get => this.log1Field;
+            set => this.log1Field = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string log2
         {
-            get
-            {
-                return this.log2Field;
-            }
-            set
-            {
-                this.log2Field = value;
-            }
+            get => this.log2Field;
+            set => this.log2Field = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string log3
         {
-            get
-            {
-                return this.log3Field;
-            }
-            set
-            {
-                this.log3Field = value;
-            }
+            get => this.log3Field;
+            set => this.log3Field = value;
         }
     }
 
@@ -1807,56 +1375,32 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string language
         {
-            get
-            {
-                return this.languageField;
-            }
-            set
-            {
-                this.languageField = value;
-            }
+            get => this.languageField;
+            set => this.languageField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string referenceTime
         {
-            get
-            {
-                return this.referenceTimeField;
-            }
-            set
-            {
-                this.referenceTimeField = value;
-            }
+            get => this.referenceTimeField;
+            set => this.referenceTimeField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool showScale
         {
-            get
-            {
-                return this.showScaleField;
-            }
-            set
-            {
-                this.showScaleField = value;
-            }
+            get => this.showScaleField;
+            set => this.showScaleField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool useMiles
         {
-            get
-            {
-                return this.useMilesField;
-            }
-            set
-            {
-                this.useMilesField = value;
-            }
+            get => this.useMilesField;
+            set => this.useMilesField = value;
         }
     }
 
@@ -1877,28 +1421,16 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public GeometryOptions option
         {
-            get
-            {
-                return this.optionField;
-            }
-            set
-            {
-                this.optionField = value;
-            }
+            get => this.optionField;
+            set => this.optionField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string value
         {
-            get
-            {
-                return this.valueField;
-            }
-            set
-            {
-                this.valueField = value;
-            }
+            get => this.valueField;
+            set => this.valueField = value;
         }
     }
 
@@ -2031,56 +1563,32 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public EncodedGeometry geometry
         {
-            get
-            {
-                return this.geometryField;
-            }
-            set
-            {
-                this.geometryField = value;
-            }
+            get => this.geometryField;
+            set => this.geometryField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Point referencePoint
         {
-            get
-            {
-                return this.referencePointField;
-            }
-            set
-            {
-                this.referencePointField = value;
-            }
+            get => this.referencePointField;
+            set => this.referencePointField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string description
         {
-            get
-            {
-                return this.descriptionField;
-            }
-            set
-            {
-                this.descriptionField = value;
-            }
+            get => this.descriptionField;
+            set => this.descriptionField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int id
         {
-            get
-            {
-                return this.idField;
-            }
-            set
-            {
-                this.idField = value;
-            }
+            get => this.idField;
+            set => this.idField = value;
         }
     }
 
@@ -2111,42 +1619,24 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public KML kml
         {
-            get
-            {
-                return this.kmlField;
-            }
-            set
-            {
-                this.kmlField = value;
-            }
+            get => this.kmlField;
+            set => this.kmlField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "base64Binary")]
         public byte[] wkb
         {
-            get
-            {
-                return this.wkbField;
-            }
-            set
-            {
-                this.wkbField = value;
-            }
+            get => this.wkbField;
+            set => this.wkbField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string wkt
         {
-            get
-            {
-                return this.wktField;
-            }
-            set
-            {
-                this.wktField = value;
-            }
+            get => this.wktField;
+            set => this.wktField = value;
         }
     }
 
@@ -2168,28 +1658,16 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayItemAttribute("String", Namespace = "http://wrappertypes.service.jabba.ptvag.com")]
         public string[] wrappedPlacemarks
         {
-            get
-            {
-                return this.wrappedPlacemarksField;
-            }
-            set
-            {
-                this.wrappedPlacemarksField = value;
-            }
+            get => this.wrappedPlacemarksField;
+            set => this.wrappedPlacemarksField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string kml
         {
-            get
-            {
-                return this.kmlField;
-            }
-            set
-            {
-                this.kmlField = value;
-            }
+            get => this.kmlField;
+            set => this.kmlField = value;
         }
     }
 
@@ -2227,14 +1705,8 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public PlainGeometryCollection geometryCollection
         {
-            get
-            {
-                return this.geometryCollectionField;
-            }
-            set
-            {
-                this.geometryCollectionField = value;
-            }
+            get => this.geometryCollectionField;
+            set => this.geometryCollectionField = value;
         }
     }
 
@@ -2253,14 +1725,8 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public PlainGeometryBase[] wrappedGeometries
         {
-            get
-            {
-                return this.wrappedGeometriesField;
-            }
-            set
-            {
-                this.wrappedGeometriesField = value;
-            }
+            get => this.wrappedGeometriesField;
+            set => this.wrappedGeometriesField = value;
         }
     }
 
@@ -2279,14 +1745,8 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public PlainMultiPolygon multiPolygon
         {
-            get
-            {
-                return this.multiPolygonField;
-            }
-            set
-            {
-                this.multiPolygonField = value;
-            }
+            get => this.multiPolygonField;
+            set => this.multiPolygonField = value;
         }
     }
 
@@ -2305,14 +1765,8 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public PlainPolygon[] wrappedPolygons
         {
-            get
-            {
-                return this.wrappedPolygonsField;
-            }
-            set
-            {
-                this.wrappedPolygonsField = value;
-            }
+            get => this.wrappedPolygonsField;
+            set => this.wrappedPolygonsField = value;
         }
     }
 
@@ -2331,14 +1785,8 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public PlainLinearRing[] wrappedLinearRings
         {
-            get
-            {
-                return this.wrappedLinearRingsField;
-            }
-            set
-            {
-                this.wrappedLinearRingsField = value;
-            }
+            get => this.wrappedLinearRingsField;
+            set => this.wrappedLinearRingsField = value;
         }
     }
 
@@ -2357,14 +1805,8 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public PlainPoint[] wrappedPoints
         {
-            get
-            {
-                return this.wrappedPointsField;
-            }
-            set
-            {
-                this.wrappedPointsField = value;
-            }
+            get => this.wrappedPointsField;
+            set => this.wrappedPointsField = value;
         }
     }
 
@@ -2383,14 +1825,8 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public PlainMultiLineString multiLineString
         {
-            get
-            {
-                return this.multiLineStringField;
-            }
-            set
-            {
-                this.multiLineStringField = value;
-            }
+            get => this.multiLineStringField;
+            set => this.multiLineStringField = value;
         }
     }
 
@@ -2409,14 +1845,8 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public PlainLineString[] wrappedLineStrings
         {
-            get
-            {
-                return this.wrappedLineStringsField;
-            }
-            set
-            {
-                this.wrappedLineStringsField = value;
-            }
+            get => this.wrappedLineStringsField;
+            set => this.wrappedLineStringsField = value;
         }
     }
 
@@ -2435,14 +1865,8 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public PlainPoint[] wrappedPoints
         {
-            get
-            {
-                return this.wrappedPointsField;
-            }
-            set
-            {
-                this.wrappedPointsField = value;
-            }
+            get => this.wrappedPointsField;
+            set => this.wrappedPointsField = value;
         }
     }
 
@@ -2461,14 +1885,8 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public PlainMultiPoint multiPoint
         {
-            get
-            {
-                return this.multiPointField;
-            }
-            set
-            {
-                this.multiPointField = value;
-            }
+            get => this.multiPointField;
+            set => this.multiPointField = value;
         }
     }
 
@@ -2487,14 +1905,8 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public PlainPoint[] wrappedPoints
         {
-            get
-            {
-                return this.wrappedPointsField;
-            }
-            set
-            {
-                this.wrappedPointsField = value;
-            }
+            get => this.wrappedPointsField;
+            set => this.wrappedPointsField = value;
         }
     }
 
@@ -2513,14 +1925,8 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public PlainLineString lineString
         {
-            get
-            {
-                return this.lineStringField;
-            }
-            set
-            {
-                this.lineStringField = value;
-            }
+            get => this.lineStringField;
+            set => this.lineStringField = value;
         }
     }
 
@@ -2539,14 +1945,8 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public PlainPolygon polygon
         {
-            get
-            {
-                return this.polygonField;
-            }
-            set
-            {
-                this.polygonField = value;
-            }
+            get => this.polygonField;
+            set => this.polygonField = value;
         }
     }
 
@@ -2565,14 +1965,8 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public PlainLinearRing linearRing
         {
-            get
-            {
-                return this.linearRingField;
-            }
-            set
-            {
-                this.linearRingField = value;
-            }
+            get => this.linearRingField;
+            set => this.linearRingField = value;
         }
     }
 
@@ -2591,14 +1985,8 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string geometryString
         {
-            get
-            {
-                return this.geometryStringField;
-            }
-            set
-            {
-                this.geometryStringField = value;
-            }
+            get => this.geometryStringField;
+            set => this.geometryStringField = value;
         }
     }
 
@@ -2619,28 +2007,16 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public Geometry[] wrappedGeometries
         {
-            get
-            {
-                return this.wrappedGeometriesField;
-            }
-            set
-            {
-                this.wrappedGeometriesField = value;
-            }
+            get => this.wrappedGeometriesField;
+            set => this.wrappedGeometriesField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public GeometryOption[] wrappedOptions
         {
-            get
-            {
-                return this.wrappedOptionsField;
-            }
-            set
-            {
-                this.wrappedOptionsField = value;
-            }
+            get => this.wrappedOptionsField;
+            set => this.wrappedOptionsField = value;
         }
     }
 
@@ -2661,28 +2037,16 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Point position
         {
-            get
-            {
-                return this.positionField;
-            }
-            set
-            {
-                this.positionField = value;
-            }
+            get => this.positionField;
+            set => this.positionField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string text
         {
-            get
-            {
-                return this.textField;
-            }
-            set
-            {
-                this.textField = value;
-            }
+            get => this.textField;
+            set => this.textField = value;
         }
     }
 
@@ -2711,84 +2075,48 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool bold
         {
-            get
-            {
-                return this.boldField;
-            }
-            set
-            {
-                this.boldField = value;
-            }
+            get => this.boldField;
+            set => this.boldField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool frame
         {
-            get
-            {
-                return this.frameField;
-            }
-            set
-            {
-                this.frameField = value;
-            }
+            get => this.frameField;
+            set => this.frameField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool italic
         {
-            get
-            {
-                return this.italicField;
-            }
-            set
-            {
-                this.italicField = value;
-            }
+            get => this.italicField;
+            set => this.italicField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name
         {
-            get
-            {
-                return this.nameField;
-            }
-            set
-            {
-                this.nameField = value;
-            }
+            get => this.nameField;
+            set => this.nameField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int size
         {
-            get
-            {
-                return this.sizeField;
-            }
-            set
-            {
-                this.sizeField = value;
-            }
+            get => this.sizeField;
+            set => this.sizeField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool underline
         {
-            get
-            {
-                return this.underlineField;
-            }
-            set
-            {
-                this.underlineField = value;
-            }
+            get => this.underlineField;
+            set => this.underlineField = value;
         }
     }
 
@@ -2827,154 +2155,88 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Color bgColor
         {
-            get
-            {
-                return this.bgColorField;
-            }
-            set
-            {
-                this.bgColorField = value;
-            }
+            get => this.bgColorField;
+            set => this.bgColorField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Font font
         {
-            get
-            {
-                return this.fontField;
-            }
-            set
-            {
-                this.fontField = value;
-            }
+            get => this.fontField;
+            set => this.fontField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Color frameColor
         {
-            get
-            {
-                return this.frameColorField;
-            }
-            set
-            {
-                this.frameColorField = value;
-            }
+            get => this.frameColorField;
+            set => this.frameColorField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Color textColor
         {
-            get
-            {
-                return this.textColorField;
-            }
-            set
-            {
-                this.textColorField = value;
-            }
+            get => this.textColorField;
+            set => this.textColorField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public TextAlignment alignment
         {
-            get
-            {
-                return this.alignmentField;
-            }
-            set
-            {
-                this.alignmentField = value;
-            }
+            get => this.alignmentField;
+            set => this.alignmentField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool fillBg
         {
-            get
-            {
-                return this.fillBgField;
-            }
-            set
-            {
-                this.fillBgField = value;
-            }
+            get => this.fillBgField;
+            set => this.fillBgField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int pixelX
         {
-            get
-            {
-                return this.pixelXField;
-            }
-            set
-            {
-                this.pixelXField = value;
-            }
+            get => this.pixelXField;
+            set => this.pixelXField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int pixelY
         {
-            get
-            {
-                return this.pixelYField;
-            }
-            set
-            {
-                this.pixelYField = value;
-            }
+            get => this.pixelYField;
+            set => this.pixelYField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int relX
         {
-            get
-            {
-                return this.relXField;
-            }
-            set
-            {
-                this.relXField = value;
-            }
+            get => this.relXField;
+            set => this.relXField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int relY
         {
-            get
-            {
-                return this.relYField;
-            }
-            set
-            {
-                this.relYField = value;
-            }
+            get => this.relYField;
+            set => this.relYField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool showFrame
         {
-            get
-            {
-                return this.showFrameField;
-            }
-            set
-            {
-                this.showFrameField = value;
-            }
+            get => this.showFrameField;
+            set => this.showFrameField = value;
         }
     }
 
@@ -2997,42 +2259,24 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int blue
         {
-            get
-            {
-                return this.blueField;
-            }
-            set
-            {
-                this.blueField = value;
-            }
+            get => this.blueField;
+            set => this.blueField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int green
         {
-            get
-            {
-                return this.greenField;
-            }
-            set
-            {
-                this.greenField = value;
-            }
+            get => this.greenField;
+            set => this.greenField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int red
         {
-            get
-            {
-                return this.redField;
-            }
-            set
-            {
-                this.redField = value;
-            }
+            get => this.redField;
+            set => this.redField = value;
         }
     }
 
@@ -3088,28 +2332,16 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public TextOptions options
         {
-            get
-            {
-                return this.optionsField;
-            }
-            set
-            {
-                this.optionsField = value;
-            }
+            get => this.optionsField;
+            set => this.optionsField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public Text[] wrappedTexts
         {
-            get
-            {
-                return this.wrappedTextsField;
-            }
-            set
-            {
-                this.wrappedTextsField = value;
-            }
+            get => this.wrappedTextsField;
+            set => this.wrappedTextsField = value;
         }
     }
 
@@ -3131,28 +2363,16 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Color color
         {
-            get
-            {
-                return this.colorField;
-            }
-            set
-            {
-                this.colorField = value;
-            }
+            get => this.colorField;
+            set => this.colorField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool visible
         {
-            get
-            {
-                return this.visibleField;
-            }
-            set
-            {
-                this.visibleField = value;
-            }
+            get => this.visibleField;
+            set => this.visibleField = value;
         }
     }
 
@@ -3171,14 +2391,8 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int width
         {
-            get
-            {
-                return this.widthField;
-            }
-            set
-            {
-                this.widthField = value;
-            }
+            get => this.widthField;
+            set => this.widthField = value;
         }
     }
 
@@ -3205,70 +2419,40 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public BasicDrawingOptions arrows
         {
-            get
-            {
-                return this.arrowsField;
-            }
-            set
-            {
-                this.arrowsField = value;
-            }
+            get => this.arrowsField;
+            set => this.arrowsField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public LinePartOptions mainLine
         {
-            get
-            {
-                return this.mainLineField;
-            }
-            set
-            {
-                this.mainLineField = value;
-            }
+            get => this.mainLineField;
+            set => this.mainLineField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public LinePartOptions sideLine
         {
-            get
-            {
-                return this.sideLineField;
-            }
-            set
-            {
-                this.sideLineField = value;
-            }
+            get => this.sideLineField;
+            set => this.sideLineField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool showFlags
         {
-            get
-            {
-                return this.showFlagsField;
-            }
-            set
-            {
-                this.showFlagsField = value;
-            }
+            get => this.showFlagsField;
+            set => this.showFlagsField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool transparent
         {
-            get
-            {
-                return this.transparentField;
-            }
-            set
-            {
-                this.transparentField = value;
-            }
+            get => this.transparentField;
+            set => this.transparentField = value;
         }
     }
 
@@ -3290,28 +2474,16 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayItemAttribute(Namespace = "http://common.xserver.ptvag.com")]
         public LineString[] wrappedLines
         {
-            get
-            {
-                return this.wrappedLinesField;
-            }
-            set
-            {
-                this.wrappedLinesField = value;
-            }
+            get => this.wrappedLinesField;
+            set => this.wrappedLinesField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public LineOptions options
         {
-            get
-            {
-                return this.optionsField;
-            }
-            set
-            {
-                this.optionsField = value;
-            }
+            get => this.optionsField;
+            set => this.optionsField = value;
         }
     }
 
@@ -3332,28 +2504,16 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public PlainPoint referencePoint
         {
-            get
-            {
-                return this.referencePointField;
-            }
-            set
-            {
-                this.referencePointField = value;
-            }
+            get => this.referencePointField;
+            set => this.referencePointField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Color transparencyColor
         {
-            get
-            {
-                return this.transparencyColorField;
-            }
-            set
-            {
-                this.transparencyColorField = value;
-            }
+            get => this.transparencyColorField;
+            set => this.transparencyColorField = value;
         }
     }
 
@@ -3376,28 +2536,16 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Point position
         {
-            get
-            {
-                return this.positionField;
-            }
-            set
-            {
-                this.positionField = value;
-            }
+            get => this.positionField;
+            set => this.positionField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string descr
         {
-            get
-            {
-                return this.descrField;
-            }
-            set
-            {
-                this.descrField = value;
-            }
+            get => this.descrField;
+            set => this.descrField = value;
         }
     }
 
@@ -3416,14 +2564,8 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "base64Binary")]
         public byte[] rawBitmap
         {
-            get
-            {
-                return this.rawBitmapField;
-            }
-            set
-            {
-                this.rawBitmapField = value;
-            }
+            get => this.rawBitmapField;
+            set => this.rawBitmapField = value;
         }
     }
 
@@ -3442,14 +2584,8 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name
         {
-            get
-            {
-                return this.nameField;
-            }
-            set
-            {
-                this.nameField = value;
-            }
+            get => this.nameField;
+            set => this.nameField = value;
         }
     }
 
@@ -3470,28 +2606,16 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public BasicBitmap[] wrappedBitmaps
         {
-            get
-            {
-                return this.wrappedBitmapsField;
-            }
-            set
-            {
-                this.wrappedBitmapsField = value;
-            }
+            get => this.wrappedBitmapsField;
+            set => this.wrappedBitmapsField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public BitmapOptions options
         {
-            get
-            {
-                return this.optionsField;
-            }
-            set
-            {
-                this.optionsField = value;
-            }
+            get => this.optionsField;
+            set => this.optionsField = value;
         }
     }
 
@@ -3520,28 +2644,16 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name
         {
-            get
-            {
-                return this.nameField;
-            }
-            set
-            {
-                this.nameField = value;
-            }
+            get => this.nameField;
+            set => this.nameField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool visible
         {
-            get
-            {
-                return this.visibleField;
-            }
-            set
-            {
-                this.visibleField = value;
-            }
+            get => this.visibleField;
+            set => this.visibleField = value;
         }
     }
 
@@ -3560,14 +2672,8 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public ObjectInfoType objectInfos
         {
-            get
-            {
-                return this.objectInfosField;
-            }
-            set
-            {
-                this.objectInfosField = value;
-            }
+            get => this.objectInfosField;
+            set => this.objectInfosField = value;
         }
     }
 
@@ -3618,14 +2724,8 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public ObjectInfoType objectInfos
         {
-            get
-            {
-                return this.objectInfosField;
-            }
-            set
-            {
-                this.objectInfosField = value;
-            }
+            get => this.objectInfosField;
+            set => this.objectInfosField = value;
         }
     }
 
@@ -3648,42 +2748,24 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public Geometries[] wrappedGeometries
         {
-            get
-            {
-                return this.wrappedGeometriesField;
-            }
-            set
-            {
-                this.wrappedGeometriesField = value;
-            }
+            get => this.wrappedGeometriesField;
+            set => this.wrappedGeometriesField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int drawPriority
         {
-            get
-            {
-                return this.drawPriorityField;
-            }
-            set
-            {
-                this.drawPriorityField = value;
-            }
+            get => this.drawPriorityField;
+            set => this.drawPriorityField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public ObjectInfoType objectInfos
         {
-            get
-            {
-                return this.objectInfosField;
-            }
-            set
-            {
-                this.objectInfosField = value;
-            }
+            get => this.objectInfosField;
+            set => this.objectInfosField = value;
         }
     }
 
@@ -3706,42 +2788,24 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string configuration
         {
-            get
-            {
-                return this.configurationField;
-            }
-            set
-            {
-                this.configurationField = value;
-            }
+            get => this.configurationField;
+            set => this.configurationField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public ObjectInfoType objectInfos
         {
-            get
-            {
-                return this.objectInfosField;
-            }
-            set
-            {
-                this.objectInfosField = value;
-            }
+            get => this.objectInfosField;
+            set => this.objectInfosField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "base64Binary")]
         public byte[] smoData
         {
-            get
-            {
-                return this.smoDataField;
-            }
-            set
-            {
-                this.smoDataField = value;
-            }
+            get => this.smoDataField;
+            set => this.smoDataField = value;
         }
     }
 
@@ -3770,84 +2834,48 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public Bitmaps[] wrappedBitmaps
         {
-            get
-            {
-                return this.wrappedBitmapsField;
-            }
-            set
-            {
-                this.wrappedBitmapsField = value;
-            }
+            get => this.wrappedBitmapsField;
+            set => this.wrappedBitmapsField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public Lines[] wrappedLines
         {
-            get
-            {
-                return this.wrappedLinesField;
-            }
-            set
-            {
-                this.wrappedLinesField = value;
-            }
+            get => this.wrappedLinesField;
+            set => this.wrappedLinesField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public Texts[] wrappedTexts
         {
-            get
-            {
-                return this.wrappedTextsField;
-            }
-            set
-            {
-                this.wrappedTextsField = value;
-            }
+            get => this.wrappedTextsField;
+            set => this.wrappedTextsField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool centerObjects
         {
-            get
-            {
-                return this.centerObjectsField;
-            }
-            set
-            {
-                this.centerObjectsField = value;
-            }
+            get => this.centerObjectsField;
+            set => this.centerObjectsField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int drawPriority
         {
-            get
-            {
-                return this.drawPriorityField;
-            }
-            set
-            {
-                this.drawPriorityField = value;
-            }
+            get => this.drawPriorityField;
+            set => this.drawPriorityField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public ObjectInfoType objectInfos
         {
-            get
-            {
-                return this.objectInfosField;
-            }
-            set
-            {
-                this.objectInfosField = value;
-            }
+            get => this.objectInfosField;
+            set => this.objectInfosField = value;
         }
     }
 
@@ -3870,28 +2898,16 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int category
         {
-            get
-            {
-                return this.categoryField;
-            }
-            set
-            {
-                this.categoryField = value;
-            }
+            get => this.categoryField;
+            set => this.categoryField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int detailLevel
         {
-            get
-            {
-                return this.detailLevelField;
-            }
-            set
-            {
-                this.detailLevelField = value;
-            }
+            get => this.detailLevelField;
+            set => this.detailLevelField = value;
         }
     }
 
@@ -3910,14 +2926,8 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public DrawPositions drawPosition
         {
-            get
-            {
-                return this.drawPositionField;
-            }
-            set
-            {
-                this.drawPositionField = value;
-            }
+            get => this.drawPositionField;
+            set => this.drawPositionField = value;
         }
     }
 
@@ -3956,14 +2966,8 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public ObjectInfoType objectInfos
         {
-            get
-            {
-                return this.objectInfosField;
-            }
-            set
-            {
-                this.objectInfosField = value;
-            }
+            get => this.objectInfosField;
+            set => this.objectInfosField = value;
         }
     }
 
@@ -3988,56 +2992,32 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public ImageFileFormat format
         {
-            get
-            {
-                return this.formatField;
-            }
-            set
-            {
-                this.formatField = value;
-            }
+            get => this.formatField;
+            set => this.formatField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int height
         {
-            get
-            {
-                return this.heightField;
-            }
-            set
-            {
-                this.heightField = value;
-            }
+            get => this.heightField;
+            set => this.heightField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string imageParameter
         {
-            get
-            {
-                return this.imageParameterField;
-            }
-            set
-            {
-                this.imageParameterField = value;
-            }
+            get => this.imageParameterField;
+            set => this.imageParameterField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int width
         {
-            get
-            {
-                return this.widthField;
-            }
-            set
-            {
-                this.widthField = value;
-            }
+            get => this.widthField;
+            set => this.widthField = value;
         }
     }
 
@@ -4084,28 +3064,16 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Point leftTop
         {
-            get
-            {
-                return this.leftTopField;
-            }
-            set
-            {
-                this.leftTopField = value;
-            }
+            get => this.leftTopField;
+            set => this.leftTopField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Point rightBottom
         {
-            get
-            {
-                return this.rightBottomField;
-            }
-            set
-            {
-                this.rightBottomField = value;
-            }
+            get => this.rightBottomField;
+            set => this.rightBottomField = value;
         }
     }
 
@@ -4129,42 +3097,24 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public BoundingBox boundingBox
         {
-            get
-            {
-                return this.boundingBoxField;
-            }
-            set
-            {
-                this.boundingBoxField = value;
-            }
+            get => this.boundingBoxField;
+            set => this.boundingBoxField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Point center
         {
-            get
-            {
-                return this.centerField;
-            }
-            set
-            {
-                this.centerField = value;
-            }
+            get => this.centerField;
+            set => this.centerField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int scale
         {
-            get
-            {
-                return this.scaleField;
-            }
-            set
-            {
-                this.scaleField = value;
-            }
+            get => this.scaleField;
+            set => this.scaleField = value;
         }
     }
 
@@ -4191,70 +3141,40 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Point leftBottom
         {
-            get
-            {
-                return this.leftBottomField;
-            }
-            set
-            {
-                this.leftBottomField = value;
-            }
+            get => this.leftBottomField;
+            set => this.leftBottomField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Point leftTop
         {
-            get
-            {
-                return this.leftTopField;
-            }
-            set
-            {
-                this.leftTopField = value;
-            }
+            get => this.leftTopField;
+            set => this.leftTopField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Point rightBottom
         {
-            get
-            {
-                return this.rightBottomField;
-            }
-            set
-            {
-                this.rightBottomField = value;
-            }
+            get => this.rightBottomField;
+            set => this.rightBottomField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Point rightTop
         {
-            get
-            {
-                return this.rightTopField;
-            }
-            set
-            {
-                this.rightTopField = value;
-            }
+            get => this.rightTopField;
+            set => this.rightTopField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int angle
         {
-            get
-            {
-                return this.angleField;
-            }
-            set
-            {
-                this.angleField = value;
-            }
+            get => this.angleField;
+            set => this.angleField = value;
         }
     }
 
@@ -4275,28 +3195,16 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public PlainGeometryBase pixelGeometry
         {
-            get
-            {
-                return this.pixelGeometryField;
-            }
-            set
-            {
-                this.pixelGeometryField = value;
-            }
+            get => this.pixelGeometryField;
+            set => this.pixelGeometryField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public EncodedGeometry refGeometry
         {
-            get
-            {
-                return this.refGeometryField;
-            }
-            set
-            {
-                this.refGeometryField = value;
-            }
+            get => this.refGeometryField;
+            set => this.refGeometryField = value;
         }
     }
 
@@ -4325,84 +3233,48 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public ObjectGeometry geometry
         {
-            get
-            {
-                return this.geometryField;
-            }
-            set
-            {
-                this.geometryField = value;
-            }
+            get => this.geometryField;
+            set => this.geometryField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public PlainPoint pixel
         {
-            get
-            {
-                return this.pixelField;
-            }
-            set
-            {
-                this.pixelField = value;
-            }
+            get => this.pixelField;
+            set => this.pixelField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Point @ref
         {
-            get
-            {
-                return this.refField;
-            }
-            set
-            {
-                this.refField = value;
-            }
+            get => this.refField;
+            set => this.refField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string descr
         {
-            get
-            {
-                return this.descrField;
-            }
-            set
-            {
-                this.descrField = value;
-            }
+            get => this.descrField;
+            set => this.descrField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int hiId
         {
-            get
-            {
-                return this.hiIdField;
-            }
-            set
-            {
-                this.hiIdField = value;
-            }
+            get => this.hiIdField;
+            set => this.hiIdField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int loId
         {
-            get
-            {
-                return this.loIdField;
-            }
-            set
-            {
-                this.loIdField = value;
-            }
+            get => this.loIdField;
+            set => this.loIdField = value;
         }
     }
 
@@ -4423,28 +3295,16 @@ namespace xserver
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public LayerObject[] wrappedObjects
         {
-            get
-            {
-                return this.wrappedObjectsField;
-            }
-            set
-            {
-                this.wrappedObjectsField = value;
-            }
+            get => this.wrappedObjectsField;
+            set => this.wrappedObjectsField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name
         {
-            get
-            {
-                return this.nameField;
-            }
-            set
-            {
-                this.nameField = value;
-            }
+            get => this.nameField;
+            set => this.nameField = value;
         }
     }
 
@@ -4465,28 +3325,16 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "base64Binary")]
         public byte[] rawImage
         {
-            get
-            {
-                return this.rawImageField;
-            }
-            set
-            {
-                this.rawImageField = value;
-            }
+            get => this.rawImageField;
+            set => this.rawImageField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string url
         {
-            get
-            {
-                return this.urlField;
-            }
-            set
-            {
-                this.urlField = value;
-            }
+            get => this.urlField;
+            set => this.urlField = value;
         }
     }
 
@@ -4509,42 +3357,24 @@ namespace xserver
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public Image image
         {
-            get
-            {
-                return this.imageField;
-            }
-            set
-            {
-                this.imageField = value;
-            }
+            get => this.imageField;
+            set => this.imageField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayAttribute(IsNullable = true)]
         public ObjectInfos[] wrappedObjects
         {
-            get
-            {
-                return this.wrappedObjectsField;
-            }
-            set
-            {
-                this.wrappedObjectsField = value;
-            }
+            get => this.wrappedObjectsField;
+            set => this.wrappedObjectsField = value;
         }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public VisibleSection visibleSection
         {
-            get
-            {
-                return this.visibleSectionField;
-            }
-            set
-            {
-                this.visibleSectionField = value;
-            }
+            get => this.visibleSectionField;
+            set => this.visibleSectionField = value;
         }
     }
 
@@ -4563,14 +3393,8 @@ namespace xserver
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int angle
         {
-            get
-            {
-                return this.angleField;
-            }
-            set
-            {
-                this.angleField = value;
-            }
+            get => this.angleField;
+            set => this.angleField = value;
         }
     }
 

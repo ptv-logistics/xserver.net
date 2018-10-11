@@ -1,10 +1,12 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Ptv.XServer.Controls.Map.Tools;
 using Ptv.XServer.Controls.Map.Canvases;
+using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 namespace Ptv.XServer.Controls.Map.Layers.Shapes
 {
@@ -80,9 +82,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         protected void TransformShape(MapView mapView)
         {
             TransformedPoints.Clear();
-
-            foreach (var point in Points)
-                TransformedPoints.Add(GeoTransform(point));
+            Points.ForEach(null, point => TransformedPoints.Add(GeoTransform(point)));
         }
 
         protected virtual void ClipShape(MapView mapView, UpdateMode mode, bool lazyUpdate)
@@ -140,17 +140,14 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
 
             using (StreamGeometryContext gc = geom.Open())
             {
-                foreach (PointCollection points in lines)
+                lines.Where(points => points.Count > 0).ForEach(null, points =>
                 {
-                    if (points.Count <= 0) continue;
                     var destPoints = new PointCollection();
-
-                    for (int i = 1; i < points.Count; ++i)
-                        destPoints.Add(points[i]);
+                    points.Skip(1).ForEach(null, point => destPoints.Add(point));
 
                     gc.BeginFigure(points[0], true, false);
                     gc.PolyLineTo(destPoints, true, true);
-                }
+                });
             }
 
             return geom;

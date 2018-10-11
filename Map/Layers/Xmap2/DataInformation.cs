@@ -1,26 +1,15 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using TinyJson;
 
 namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 {
-    internal class DataInformation
+    internal class DataInformation : RequestBase
     {
-        public DataInformation(string baseUrl, string token)
-        {
-            this.baseUrl = baseUrl;
-            this.token = token;
-        }
-
-        private readonly string baseUrl;
-        private readonly string token;
+        public DataInformation(string baseUrl, string token) : base(baseUrl, token) { }
 
         public IEnumerable<string> AvailableFeatureLayerThemes =>
             Response?.mapDescription?.copyright?.featureLayers?.Select(theme => theme.themeId) ?? Enumerable.Empty<string>();
@@ -42,37 +31,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
             get
             {
                 if (response != null) return response;
-                try
-                {
-                    var requestObject = new { }; // No sub elements are needed.
 
-                    var request = WebRequest.Create(CompleteUrl("/services/rs/XRuntime/experimental/getDataInformation"));
-                    request.Method = "POST";
-                    request.ContentType = "application/json";
-                    request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes("xtok:" + token));
-
-                    using (var stream = request.GetRequestStream())
-                    using (var writer = new StreamWriter(stream))
-                    {
-                        writer.Write(requestObject.ToJson());
-                    }
-
-                    using (var webResponse = request.GetResponse())
-                    using (var stream = webResponse.GetResponseStream())
-                        if (stream != null)
-                            using (var reader = new StreamReader(stream, Encoding.UTF8))
-                                response = reader.ReadToEnd().FromJson<_Response>();
-                }
-                catch (Exception)
-                { 
-                    // ignored
-                }
-
-                return response;
+                var requestObject = new { }; // No sub elements are needed.
+                return response = Response("/services/rs/XRuntime/experimental/getDataInformation", requestObject.ToJson()).FromJson<_Response>();
             }
         }
-
-        internal string CompleteUrl(string rightUrl) => baseUrl + '/' + rightUrl.TrimStart('/');
 
         [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local")]
         [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]

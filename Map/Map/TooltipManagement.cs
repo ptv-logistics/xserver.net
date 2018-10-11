@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Ptv.XServer.Controls.Map.TileProviders;
 
 // ReSharper disable once CheckNamespace
 namespace Ptv.XServer.Controls.Map
@@ -79,8 +80,8 @@ namespace Ptv.XServer.Controls.Map
             bool showToolTips = currentPosition.HasValue && (ToolTipDelay >= 0) && IsHitTestOKFunc((Point)currentPosition);
             if (!showToolTips) return;
 
-            GetToolTipEntries();
-            if (toolTipEntries.Count <= 0) return;
+            GetToolTipMapObjects();
+            if (toolTipMapObjects.Count <= 0) return;
 
             toolTipTimer.Interval = TimeSpan.FromMilliseconds(ToolTipDelay);
             toolTipTimer.Start();
@@ -96,7 +97,7 @@ namespace Ptv.XServer.Controls.Map
 
             if (CreateCustomizedToolTipsFunc != null)
             {
-                CreateCustomizedToolTipsFunc(toolTipEntries);
+                CreateCustomizedToolTipsFunc(toolTipMapObjects);
                 return;
             }
 
@@ -107,9 +108,13 @@ namespace Ptv.XServer.Controls.Map
         {
             var result = new StackPanel();
 
-            foreach (var item in toolTipEntries.Select((toolTipEntry, index) => new { index, toolTipEntry } ))
+            foreach (var item in toolTipMapObjects.Select((toolTipMapObject, index) => new { index, toolTipMapObject } ))
             {
-                var label = new Label { Margin = new Thickness(1), Content = item.toolTipEntry };
+                string content = item.toolTipMapObject.Count == 1
+                    ? item.toolTipMapObject.First().Value // XMap.Map.UntiledLayer provides only one key/value pair and all structuring is made in the value field.
+                    : item.toolTipMapObject.ToString(); // Needed for layers which uses the data dictionary with multiple key/value pairs for structuring their data.
+
+                var label = new Label { Margin = new Thickness(1), Content = content };
                 result.Children.Add((item.index == 0) 
                     ? (UIElement) label 
                     : new Border {
@@ -123,17 +128,17 @@ namespace Ptv.XServer.Controls.Map
 
         /// <summary>Callback for indicating the rendering of a tool tip. When this callback is set, 
         /// the default rendering is avoided.</summary>
-        public Action<List<string>> CreateCustomizedToolTipsFunc { get; set; }
+        public Action<List<IMapObject>> CreateCustomizedToolTipsFunc { get; set; }
         /// <summary>Callback for indicating the removal of a tool tip. When this callback is set, 
         /// the default removal operation is avoided.</summary>
-        public Action<List<string>> DestroyCustomizedToolTipsFunc { get; set; }
+        public Action<List<IMapObject>> DestroyCustomizedToolTipsFunc { get; set; }
 
         /// <summary> Removes the latest tool tip created by this layer. </summary>
         private void ClearToolTip()
         {
             if (DestroyCustomizedToolTipsFunc != null)
             {
-                DestroyCustomizedToolTipsFunc?.Invoke(toolTipEntries);
+                DestroyCustomizedToolTipsFunc?.Invoke(toolTipMapObjects);
                 return;
             }
 
@@ -144,22 +149,22 @@ namespace Ptv.XServer.Controls.Map
             toolTip = null;
         }
 
-        private void GetToolTipEntries()
+        private void GetToolTipMapObjects()
         {
-            toolTipEntries.Clear();
+            toolTipMapObjects.Clear();
             if (LatestPosition.HasValue)
-                toolTipEntries.AddRange(FillToolTipEntriesFunc(LatestPosition.Value, MaxPixelDistance));
+                toolTipMapObjects.AddRange(FillToolTipMapObjectsFunc(LatestPosition.Value, MaxPixelDistance));
         }
 
         /// <summary>Callback for ordering the tool tip entries from the layers of a map. Commonly the
         /// map object implements this callback. </summary>
-        public Func<Point, double, IEnumerable<string>> FillToolTipEntriesFunc { get; set; }
+        public Func<Point, double, IEnumerable<IMapObject>> FillToolTipMapObjectsFunc { get; set; }
 
         private ToolTip toolTip;
 
         private readonly DispatcherTimer toolTipTimer = new DispatcherTimer();
 
-        private readonly List<string> toolTipEntries = new List<string>();
+        private readonly List<IMapObject> toolTipMapObjects = new List<IMapObject>();
 
         /// <summary> 
         /// Stores the latest known position handled by method <see cref="StartToolTipTimer"/>. If the mouse position is outside the bounds

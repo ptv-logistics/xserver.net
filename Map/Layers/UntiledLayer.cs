@@ -50,11 +50,6 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
     ///   geometry into account - depending on what actually is available) qualify for tool tip display. Depending on the 
     ///   xMap content requested you may want to change this behavior. <see cref="ToolTipHitTest"/> can be overridden in 
     ///   derived classes.
-    /// 
-    /// - <see cref="GetToolTipFromMapObject" /> transforms a <see cref="xserver.LayerObject"/> information object into 
-    ///   a tool tip text. By default, <see cref="GetToolTipFromMapObject" /> returns the xMap Server description as it 
-    ///   is. Usually this description needs further formatting; <see cref="GetToolTipFromMapObject" /> can be overridden 
-    ///   in derived classes.
     /// </remarks>
     public class UntiledLayer : BaseLayer, IToolTips
     {
@@ -92,11 +87,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// <inheritdoc/>
         public override void AddToMapView(MapView mapView)
         {
-            if (mapView != null && mapView.Name == "Map")
+            if (mapView?.Name == "Map")
             {
                 map = mapView;
-                map = map.FindAncestor<WpfMap>();
-
                 mapView.ViewportBeginChanged += ViewportBeginChanged;
             }
 
@@ -114,11 +107,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         {
             mapObjects = null;
 
-            if (mapView != null && mapView.Name == "Map")
+            if (mapView?.Name == "Map")
             {
                 map = mapView;
-                map = map.FindAncestor<WpfMap>();
-
                 mapView.ViewportBeginChanged -= ViewportBeginChanged;
             }
 
@@ -135,24 +126,10 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// <param name="size"></param>
         public void UpdateXmap2ObjectInfos(IEnumerable<IMapObject> newMapObjects, Size size)
         {
-            if (newMapObjects != null)
-            {
-                map.Dispatcher.Invoke((Action)(() =>
-                {
-                    mapObjects = newMapObjects.ToArray();
-                    imageSize = size;
-                }), DispatcherPriority.Send, null);
-            }
+            mapObjects = (newMapObjects ?? Enumerable.Empty<IMapObject>()).ToArray();
+            imageSize = size;
         }
 
-        /// <summary>
-        /// Provides a hook to generate tool tips for map objects.
-        /// </summary>
-        /// <returns>
-        /// Method that returns a tool tip for a map object. The default implementation returns the stringified map object.
-        /// </returns>
-        public Func<IMapObject, string> GetToolTipFromMapObject = mapObject => mapObject.ToString(); 
-        
         /// <summary>Handles an object information update for xMap-1.
         /// See comments on <see cref="Ptv.XServer.Controls.Map.TileProviders.MapUpdateDelegate"/>.
         /// </summary>
@@ -160,39 +137,30 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// <param name="requestedSize">Requested image size.</param>
         public void UdpateOjectInfos(xserver.Map xServerMap, Size requestedSize)
         {
-            if (map == null)
-                return;
-
             IMapObject[] xmap1MapObjects = xServerMap?.wrappedObjects?
                 .Select(objects => objects.wrappedObjects?.Select(layerObject => new XMap1MapObject(objects, layerObject)))
                 .Where(objects => objects != null && objects.Any())
                 .SelectMany(objects => objects)
                 .ToArray();
 
-            if (xmap1MapObjects == null || !xmap1MapObjects.Any())
+            if (!xmap1MapObjects?.Any() ?? true)
                 return;
 
-            map.Dispatcher.Invoke((Action)(() =>
-            {
-                mapObjects = xmap1MapObjects;
-                imageSize = requestedSize;
-            }), DispatcherPriority.Send, null);
+            mapObjects = xmap1MapObjects;
+            imageSize = requestedSize;
         }
 
         /// <summary> Determines the tool tip texts for a given position </summary>
         /// <param name="center">Position to get the tool tips for.</param>
         /// <param name="maxPixelDistance">Maximal distance from the specified position to get the tool tips for.</param>
         /// <returns>Tool tip texts.</returns>
-        public IEnumerable<string> Get(Point center, double maxPixelDistance)
+        public IEnumerable<IMapObject> Get(Point center, double maxPixelDistance)
         {
-            if (map != null && GetToolTipFromMapObject != null && mapObjects != null && mapObjects.Length > 0)
-            { 
-                center = new Point(center.X * imageSize.Width / map.ActualWidth, center.Y * imageSize.Height / map.ActualHeight);
-                foreach (var description in ToolTipHitTest(mapObjects, center, maxPixelDistance)
-                    .Select(GetToolTipFromMapObject)
-                    .Where(description => !string.IsNullOrEmpty(description)))
-                    { yield return description; }
-            }
+            if (map == null || (mapObjects?.Length ?? 0) == 0)
+                return Enumerable.Empty<IMapObject>();
+
+            center = new Point(center.X * imageSize.Width / map.ActualWidth, center.Y * imageSize.Height / map.ActualHeight);
+            return ToolTipHitTest(mapObjects, center, maxPixelDistance);
         }
 
         /// <summary> Hit tests the given layer features.  </summary>
@@ -662,9 +630,26 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             objectInfos.name,
             new Point(layerObject.pixel.x, layerObject.pixel.y),
             new Point(layerObject.@ref.point.x, layerObject.@ref.point.y),
-            () => new[] {new KeyValuePair<string, string>("description", layerObject.descr)}
-        ) {
+            () => new[] {new KeyValuePair<string, string>("description", GetDescription(layerObject))}
+        )
+        {
             Source = layerObject;
+        }
+
+        private static string GetDescription(LayerObject layerObject)
+        {
+            string result = layerObject?.descr;
+            if (string.IsNullOrEmpty(result)) return string.Empty;
+
+            if (result.Contains('#'))
+                result = result.Split('#')[1];
+            result = result.Trim('|').Replace("|", "\n");
+
+            var match = Regex.Match(result, @"^(?:[^\|=:]+):([^\|=:]*)$");
+            if (match.Success)
+                result = match.Groups[1].Value;
+
+            return result;
         }
 
         /// <inheritdoc/>
