@@ -7,8 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Linq;
-using System.Windows.Media.Imaging;
-using System.Reflection;
 
 using Ptv.XServer.Controls.Map.Layers;
 using Ptv.XServer.Controls.Map.Tools;
@@ -44,25 +42,7 @@ namespace Ptv.XServer.Controls.Map
     /// and as a proxy for the WinForms map control. So, it is possible to provide a common implementation for both
     /// environments, i.e. WPF and WinForms.</summary>
     public class Map : UserControl, IMap, IToolTipManagement, IDisposable
-    {
-        /// <summary> Initializes static members of the <see cref="Map"/> class. </summary>
-        static Map()
-        {
-            try
-            {
-                // the evil hack to avoid induced GC.Collect(), see
-                // http://stackoverflow.com/questions/7331735/gc-is-forced-when-working-with-small-images-4k-pixel-data
-                if (GlobalOptions.MemoryPressureMode == MemoryPressureMode.Disable ||
-                    GlobalOptions.MemoryPressureMode == MemoryPressureMode.Automatic && IntPtr.Size == 8)
-                {
-                    typeof(BitmapImage).Assembly.GetType("MS.Internal.MemoryPressure")
-                        .GetField("_totalMemory", BindingFlags.NonPublic | BindingFlags.Static)
-                        ?.SetValue(null, Int64.MinValue / 2);
-                }
-            }
-            catch { }
-        }
-
+    {    
         #region constructor
         /// <summary> Initializes a new instance of the <see cref="Map"/> class. By default, the map uses animation
         /// and the scale is shown in km. </summary>

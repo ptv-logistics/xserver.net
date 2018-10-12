@@ -14,7 +14,9 @@ namespace Ptv.XServer.Controls.Map
         /// The default setting is automatic, which disables it for 64-Bit and enables it
         /// when running in a 32-Bit process.
         /// Must be called before the first initialization of the map control!
+        /// Note: This property is now ignored by default and will be removed in later versions!
         /// </summary>
+        [Obsolete("MemoryPressureMode is deprecated.")]
         public static MemoryPressureMode MemoryPressureMode = MemoryPressureMode.Automatic;
 
         /// <summary>
@@ -25,6 +27,7 @@ namespace Ptv.XServer.Controls.Map
         /// <summary>
         /// Indicated that the "Infinite Zoom" feature should be activated.
         /// This allows zoom factors beyond level 19, but must be supported by all layers.
+        /// Note: This property is now true by default and will be removed in later versions!
         /// </summary>
         [Obsolete("InfiniteZoom is deprecated.")]
         public static bool InfiniteZoom = true;
