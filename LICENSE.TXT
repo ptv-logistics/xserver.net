@@ -1,3 +1,5 @@
+MIT License
+
 PTV xServer .Net
 
 Copyright (c) 2018  PTV Group, Karlsruhe, Germany.
