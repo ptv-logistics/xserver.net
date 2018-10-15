@@ -35,6 +35,22 @@ Prerequisites
 Release Notes 
 -------------
 
+Version 1.6.0.0 (2018/08/14)
+
+  Bugfixes:
+  - Some minor bugfixes
+  - Fixed rendering error if the Container-Control set UseLayoutRounding
+
+  Changes and Optimizations:
+  - Added support for integration of Web Map Tile Services (WMTS)
+  - Optimized tile caching and pruning
+  - The InifiniteZoom property (to avoid jitter at deep zoom levels)
+    is now set to true by default. This setting should be compatible 
+    with the previous setting. If you experience problems with your 
+    custom layer implementation, you can set it back to false. 
+    However, this property will be removed in future releases.
+
+
 Version 1.5.0.0 (2016/04/18)
 
   Bugfixes:
