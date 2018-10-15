@@ -118,6 +118,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <param name="width"> Width of the image. </param>
         /// <param name="height"> Height of the image. </param>
         /// <param name="border"> Border width. </param>
+        /// <param name="mapObjects"> Set of map objects. </param>
         /// <returns> The image as a stream. </returns>
         public Stream GetStream(double left, double top, double right, double bottom, int width, int height, int border, out IEnumerable<IMapObject> mapObjects)
         {
@@ -200,6 +201,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <param name="bottom"> Bottom coordinates. </param>
         /// <param name="width"> Width of the image. </param>
         /// <param name="height"> Height of the image. </param>
+        /// <param name="mapObjects"> Set of map objects. </param>
         /// <returns> The map image as stream. </returns>
         public Stream GetStreamInternal(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects)
         {
@@ -251,6 +253,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <param name="bottom"> Bottom coordinates. </param>
         /// <param name="width"> Width of the image. </param>
         /// <param name="height"> Height of the image. </param>
+        /// <param name="mapObjects"> Set of map objects. </param>
         /// <returns> The map image as stream. </returns>
         public abstract byte[] TryGetStreamInternal(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects);
         #endregion

@@ -47,11 +47,10 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// <param name="bottom"> Bottom coordinate of the requested map section. </param>
         /// <param name="width"> Width in pixel of the bitmap. </param>
         /// <param name="height"> Height in pixel of the bitmap. </param>
-        /// <param name="mapObjects"> An array of map objects. </param>
+        /// <param name="mapObjects"> Set of map objects. </param>
         /// <returns> Stream containing the bitmap. </returns>
         Stream GetImageStreamAndMapObjects(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects);
     }
-
 
     /// <summary> A layer which draws a bitmap overlay on the current map section. </summary>
     ///
@@ -327,6 +326,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// Loads an map image for the specified map parameters.
         /// </summary>
         /// <param name="mapParam">Map parameters (map section and image size)</param>
+        /// <param name="mapObjects"> Set of map objects. </param>
         /// <returns>The bytes of the encoded map image.</returns>
         private byte[] GetImageBytes(MapParam mapParam, out IEnumerable<IMapObject> mapObjects)
         {
@@ -377,6 +377,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
 
         /// <summary> Display the loaded image. </summary>
         /// <param name="buffer"> The byte array containing the image data. </param>
+        /// <param name="mapObjects"> Set of map objects. </param>
         /// <param name="mapParam"> The corresponding map parameters object. </param>
         private void DisplayImage(byte[] buffer, IEnumerable<IMapObject> mapObjects, MapParam mapParam)
         {
