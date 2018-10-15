@@ -21,15 +21,8 @@ been provided with this distribution.
 Prerequisites
 -------------
 
-- At least Windows Vista, Windows 7 or Windows 8 is recommended.
-
-- At least Microsoft .NET 4.6.2 for building the corresponding binaries.
-
-- At least Visual Studio C# 2008 Express Edition for developing applications
-  based on PTV xServer .NET. With regards to the WPF integration and the 
-  overall development experience we recommend at least Visual Studio 2010.
-
-- All third-party libraries used by the SDK are included in the SDK package.
+- PTV xServer.NET is built to run with the minimum target framework with WPF support, which is **.NET 3.5 Client Profile**.
+- The source code is implemented with C# 7.0, which requires at least **Visual Studio 2017 Community Edition**.
 
 
 Release Notes 
