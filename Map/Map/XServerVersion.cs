@@ -13,12 +13,8 @@ namespace Ptv.XServer.Controls.Map
 {
     internal interface IXServerVersion
     {
-        string AdjustedUrl(string moduleName = "xmap");
-        string WithServicePath(string protocolShortcut, string moduleName);
-
         bool IsValidUrl();
         bool IsCloudBased();
-
         void InitializeMapLayers(Map map, string xmapCredentials);
     }
 
@@ -124,6 +120,9 @@ namespace Ptv.XServer.Controls.Map
 
             if (string.IsNullOrEmpty(scheme))
                 scheme = host.ToLower().StartsWith("xserver2") ? "https://" : "http://";
+
+            if (host.ToLower().StartsWith("xserver2") && !host.ToLower().EndsWith(".cloud.ptvgroup.com"))
+                host += ".cloud.ptvgroup.com";
 
             return scheme + host + port; // Everything beyond the port has to be omitted
         }

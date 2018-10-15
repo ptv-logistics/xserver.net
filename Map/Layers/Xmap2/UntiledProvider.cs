@@ -12,23 +12,13 @@ using System.Windows;
 
 namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 {
-    /// <summary> Handles additional map objects like Feature Layer information. Map objects are used to show
-    /// textual information extending the geographical content.
-    /// Commonly this interface is used by providers to inform their corresponding layer about a new
-    /// set of map objects which was determined during the common rendering process as a side-effect.</summary>
-    public interface IXmap2ObjectInfos
-    {
-        /// <summary> Signals the listener (commonly a layer) about a new constellation of map objects. </summary>
-        Action<IEnumerable<IMapObject>, Size> Update { get; set; }
-    }
-
     /// <summary> Loads untiled bitmaps from a given xServer 2 URL, like
     /// http://xserver-2:40000/services/rs/XMap/renderMap. 
     /// Its main purpose is to get labels from xServer 2, which shows a proper rendering of textual objects
     /// independent from the current scale.
     /// By means of tiled access some unpleasant artifacts may occur when fractional rendering is used. 
     /// With untiled rendering this issue can be avoided.</summary>
-    public class UntiledProvider : IUntiledProvider, IXmap2ObjectInfos
+    public class UntiledProvider : IUntiledProviderWithMapObjects
     {
         /// <summary>URL of the service which provides untiled access of a map image via JSON request. </summary>
         public string RequestUriString { get; set; }
@@ -85,10 +75,17 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// <inheritdoc/>
         public Stream GetImageStream(double left, double top, double right, double bottom, int width, int height)
         {
+            return GetImageStreamAndMapObjects(left, top, right, bottom, width, height, out _);
+        }
+
+        /// <inheritdoc/>
+        public Stream GetImageStreamAndMapObjects(double left, double top, double right, double bottom, int width, int height,
+            out IEnumerable<IMapObject> mapObjects)
+        {
             var responseObject = new RequestBase.Builder(RequestUriString, XToken, GetJsonRequest(left, top, right, bottom, width, height)).Response.FromJson<ResponseObject>();
-            
-            IEnumerable<IMapObject> mapObjects = responseObject?.features?.Select(feature =>
-                (IMapObject) new MapObject(
+
+            mapObjects = responseObject?.features?.Select(feature =>
+                (IMapObject)new MapObject(
                     feature.id,
                     feature.themeId,
                     new Point(feature.referencePixelPoint.x, feature.referencePixelPoint.y),
@@ -96,7 +93,6 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
                     () => feature.attributes?.Select(attribute =>
                         new KeyValuePair<string, string>(attribute.key, attribute.value))
                 ));
-            Update?.Invoke(mapObjects, new Size(width, height));
 
             return responseObject?.image != null
                 ? new MemoryStream(Convert.FromBase64String(responseObject.image))

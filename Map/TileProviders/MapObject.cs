@@ -10,69 +10,12 @@ using Ptv.XServer.Controls.Map.Layers;
 using Ptv.XServer.Controls.Map.Tools;
 using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
-namespace System.Collections.Generic
-{
-    /// <summary>
-    /// Represents a generic read-only collection of key/value pairs.
-    /// </summary>
-    /// <typeparam name="TKey">The type of keys in the read-only dictionary.</typeparam>
-    /// <typeparam name="TValue">The type of values in the read-only dictionary.</typeparam>
-    /// <remarks>IReadOnlyDictionary is standard interface provided by .Net starting with version 4.5. As xServer.Net uses 
-    /// an older version, we need to define the interface in xServer.Net itself.</remarks>
-    public interface IReadOnlyDictionary<TKey, TValue>
-    {
-        /// <summary>
-        /// Gets the number of elements in the collection.
-        /// </summary>
-        int Count { get; }
-
-        /// <summary>
-        /// Gets the element that has the specified key in the read-only dictionary.
-        /// </summary>
-        /// <param name="key">The key to locate.</param>
-        /// <returns>The element that has the specified key in the read-only dictionary.</returns>
-        TValue this[TKey key] { get; }
-
-        /// <summary>
-        /// Gets an enumerable collection that contains the keys in the read-only dictionary.
-        /// </summary>
-        IEnumerable<TKey> Keys { get; }
-
-        /// <summary>
-        /// Gets an enumerable collection that contains the values in the read-only dictionary.
-        /// </summary>
-        IEnumerable<TValue> Values { get; }
-
-        /// <summary>
-        /// Determines whether the read-only dictionary contains an element that has the specified key.
-        /// </summary>
-        /// <param name="key">The key to locate.</param>
-        /// <returns>true if the read-only dictionary contains an element that has the specified key; otherwise, false.</returns>
-        bool ContainsKey(TKey key);
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator();
-
-        /// <summary>
-        /// Gets the value that is associated with the specified key.
-        /// </summary>
-        /// <param name="key">The key to locate.</param>
-        /// <param name="value">When this method returns, the value associated with the specified key, 
-        /// if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
-        /// <returns>true if the object that implements the interface contains an element that has the specified key; otherwise, false.</returns>
-        bool TryGetValue(TKey key, out TValue value);
-    }
-}
-
 namespace Ptv.XServer.Controls.Map.TileProviders
 {
     /// <summary>
     /// Generic interface to access the information of map object.
     /// </summary>
-    public interface IMapObject : IReadOnlyDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>
+    public interface IMapObject : IEnumerable<KeyValuePair<string, string>>
     {
         /// <summary>
         /// The map object's id.

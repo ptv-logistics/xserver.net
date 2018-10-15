@@ -8,14 +8,12 @@ using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
-using System.Windows.Threading;
 using System.Windows.Media.Imaging;
 using Ptv.XServer.Controls.Map.Canvases;
 using Ptv.XServer.Controls.Map.TileProviders;
 using Ptv.XServer.Controls.Map.Tools;
 using Ptv.XServer.Controls.Map.Layers.Tiled;
 using Ptv.XServer.Controls.Map.Localization;
-using Ptv.XServer.Controls.Map.Layers.Xmap2;
 using xserver;
 using Environment = System.Environment;
 using Timer = System.Threading.Timer;
@@ -37,6 +35,21 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// <param name="height"> Height in pixel of the bitmap. </param>
         /// <returns> Stream containing the bitmap. </returns>
         Stream GetImageStream(double left, double top, double right, double bottom, int width, int height);
+    }
+
+    /// <summary> Returns a bitmap for a PTV_Mercator rectangle. </summary>
+    public interface IUntiledProviderWithMapObjects : IUntiledProvider
+    {
+        /// <summary> Returns a bitmap for a map section specified in PTV-internal Mercator format. </summary>
+        /// <param name="left"> Left coordinate of the requested map section. </param>
+        /// <param name="top"> Top coordinate of the requested map section. </param>
+        /// <param name="right"> Right coordinate of the requested map section. </param>
+        /// <param name="bottom"> Bottom coordinate of the requested map section. </param>
+        /// <param name="width"> Width in pixel of the bitmap. </param>
+        /// <param name="height"> Height in pixel of the bitmap. </param>
+        /// <param name="mapObjects"> An array of map objects. </param>
+        /// <returns> Stream containing the bitmap. </returns>
+        Stream GetImageStreamAndMapObjects(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects);
     }
 
 
@@ -64,10 +77,10 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         public double MinLevel { get; set; }
         #endregion
 
-        /// <summary>the map itself</summary>
-        protected UserControl map;
+        /// <summary>The reference to the containing MapView, required for ToolTip hit testing.</summary>
+        protected MapView mapView;
         /// <summary>xServer object information</summary>
-        protected IMapObject[] mapObjects;
+        protected IEnumerable<IMapObject> mapObjects;
         /// <summary>xMap image size</summary>
         protected Size imageSize;
 
@@ -80,74 +93,34 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             MaxRequestSize = new Size(2048, 2048);
             MinLevel = 0;
 
-            InitializeFactory(CanvasCategory.Content, map => new UntiledCanvas(map, UntiledProvider) {MaxRequestSize = MaxRequestSize, MinLevel = MinLevel});
+            InitializeFactory(CanvasCategory.Content, mapView => new UntiledCanvas(mapView, UntiledProvider)
+            {
+                UpdateMapObjects = mapView.Name == "Map"? UpdateMapObjects : (Action<IEnumerable<IMapObject>, Size>)null,
+                MaxRequestSize = MaxRequestSize,
+                MinLevel = MinLevel
+            });
         }
         #endregion
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mapObjects"></param>
+        /// <param name="requestedSize"></param>
+        protected void UpdateMapObjects(IEnumerable<IMapObject> mapObjects, Size requestedSize)
+        {
+            this.mapObjects = mapObjects;
+            imageSize = requestedSize;
+        }
 
         /// <inheritdoc/>
         public override void AddToMapView(MapView mapView)
         {
+            // store the mapView, required for hit-testing
             if (mapView?.Name == "Map")
-            {
-                map = mapView;
-                mapView.ViewportBeginChanged += ViewportBeginChanged;
-            }
-
-            if (UntiledProvider is IObjectInfoProvider objectInfoProvider)
-                objectInfoProvider.MapUdpate += UdpateOjectInfos;
-
-            if (UntiledProvider is IXmap2ObjectInfos xmap2objectInfoProvider)
-                xmap2objectInfoProvider.Update = UpdateXmap2ObjectInfos;
+                this.mapView = mapView;
 
             base.AddToMapView(mapView);
-        }
-
-        /// <inheritdoc/>
-        public override void RemoveFromMapView(MapView mapView)
-        {
-            mapObjects = null;
-
-            if (mapView?.Name == "Map")
-            {
-                map = mapView;
-                mapView.ViewportBeginChanged -= ViewportBeginChanged;
-            }
-
-            base.RemoveFromMapView(mapView);
-        }
-
-        private void ViewportBeginChanged(object o, EventArgs e)
-        {
-            mapObjects = null;
-        }
-
-        /// <summary>Object infos which are stored when request is sent to xMap2. </summary>
-        /// <param name="newMapObjects"></param>
-        /// <param name="size"></param>
-        public void UpdateXmap2ObjectInfos(IEnumerable<IMapObject> newMapObjects, Size size)
-        {
-            mapObjects = (newMapObjects ?? Enumerable.Empty<IMapObject>()).ToArray();
-            imageSize = size;
-        }
-
-        /// <summary>Handles an object information update for xMap-1.
-        /// See comments on <see cref="Ptv.XServer.Controls.Map.TileProviders.MapUpdateDelegate"/>.
-        /// </summary>
-        /// <param name="xServerMap">Map object of xServer</param>
-        /// <param name="requestedSize">Requested image size.</param>
-        public void UdpateOjectInfos(xserver.Map xServerMap, Size requestedSize)
-        {
-            IMapObject[] xmap1MapObjects = xServerMap?.wrappedObjects?
-                .Select(objects => objects.wrappedObjects?.Select(layerObject => new XMap1MapObject(objects, layerObject)))
-                .Where(objects => objects != null && objects.Any())
-                .SelectMany(objects => objects)
-                .ToArray();
-
-            if (!xmap1MapObjects?.Any() ?? true)
-                return;
-
-            mapObjects = xmap1MapObjects;
-            imageSize = requestedSize;
         }
 
         /// <summary> Determines the tool tip texts for a given position </summary>
@@ -155,11 +128,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// <param name="maxPixelDistance">Maximal distance from the specified position to get the tool tips for.</param>
         /// <returns>Tool tip texts.</returns>
         public IEnumerable<IMapObject> Get(Point center, double maxPixelDistance)
-        {
-            if (map == null || (mapObjects?.Length ?? 0) == 0)
+        { 
+            if (mapView == null || (!mapObjects?.Any() ?? true))
                 return Enumerable.Empty<IMapObject>();
 
-            center = new Point(center.X * imageSize.Width / map.ActualWidth, center.Y * imageSize.Height / map.ActualHeight);
+            center = new Point(center.X * imageSize.Width / mapView.ActualWidth, center.Y * imageSize.Height / mapView.ActualHeight);
             return ToolTipHitTest(mapObjects, center, maxPixelDistance);
         }
 
@@ -171,7 +144,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         protected virtual IEnumerable<IMapObject> ToolTipHitTest(IEnumerable<IMapObject> mapObjectsForHitTest, Point center, double maxPixelDistance)
         {
             return mapObjectsForHitTest
-                .Where(mapObject => mapObject.Count > 0)
+                .Where(mapObject => mapObject.Any())
                 .Where(mapObject => (center - mapObject.Point).Length <= maxPixelDistance);
         }
     }
@@ -355,14 +328,25 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// </summary>
         /// <param name="mapParam">Map parameters (map section and image size)</param>
         /// <returns>The bytes of the encoded map image.</returns>
-        private byte[] GetImageBytes(MapParam mapParam)
+        private byte[] GetImageBytes(MapParam mapParam, out IEnumerable<IMapObject> mapObjects)
         {
+            mapObjects = null;
             MapParam reqParam = mapParam.Scale(untiledProvider as ITiledProvider);
 
             if (!reqParam.IsSizeInRange(new Size(32, 32), MaxRequestSize))
                 return null;
-            
-            using (var stream = untiledProvider.GetImageStream(reqParam.Left, reqParam.Top, reqParam.Right, reqParam.Bottom, (int)reqParam.Width, (int)reqParam.Height))
+
+            Stream stream;
+            if (untiledProvider is IUntiledProviderWithMapObjects untiledProviderWithMapObjects)
+                stream = untiledProviderWithMapObjects.GetImageStreamAndMapObjects(
+                    reqParam.Left, reqParam.Top, reqParam.Right, reqParam.Bottom, 
+                    (int) reqParam.Width, (int) reqParam.Height,
+                    out mapObjects);
+            else
+                stream = untiledProvider.GetImageStream(reqParam.Left, reqParam.Top, reqParam.Right, reqParam.Bottom,
+                    (int) reqParam.Width, (int) reqParam.Height);
+
+            using (stream)
             {
                 if (stream == null) return null;
                 if (mapParam == reqParam) return stream.GetBytes();
@@ -382,9 +366,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             try
             {
                 var mapParam = (MapParam)e.Argument;
-                byte[] imageBytes = GetImageBytes(mapParam);
 
-                Dispatcher.BeginInvoke(new Action<byte[], MapParam>(DisplayImage), imageBytes, mapParam);
+                Dispatcher.BeginInvoke(new Action<byte[], IEnumerable<IMapObject>, MapParam>(DisplayImage), GetImageBytes(mapParam, out var mapObjects), mapObjects, mapParam);
             }
             catch (Exception)
             {
@@ -395,7 +378,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         /// <summary> Display the loaded image. </summary>
         /// <param name="buffer"> The byte array containing the image data. </param>
         /// <param name="mapParam"> The corresponding map parameters object. </param>
-        private void DisplayImage(byte[] buffer, MapParam mapParam)
+        private void DisplayImage(byte[] buffer, IEnumerable<IMapObject> mapObjects, MapParam mapParam)
         {
             // map viewport changed already
             if (mapParam.Index != index)
@@ -426,7 +409,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
                 bitmapImage.Freeze();
                 mapImage.Source = bitmapImage;
             }
+
+            UpdateMapObjects?.Invoke(mapObjects, new Size(mapParam.Width, mapParam.Height));
         }
+
+        public Action<IEnumerable<IMapObject>, Size> UpdateMapObjects { get; set; }
 
         /// <summary> Updates the overlay image. </summary>
         /// <param name="forceUpdate"> True, if the update should be forced even if the viewport didn't change. </param>
@@ -467,7 +454,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             }
             else
             {
-                try { DisplayImage(GetImageBytes(mapParam), mapParam); }
+                try
+                {
+                    var bytes = GetImageBytes(mapParam, out var mapObjects);
+                    DisplayImage(bytes, mapObjects, mapParam);
+                }
                 catch
                 {
                     // ignored

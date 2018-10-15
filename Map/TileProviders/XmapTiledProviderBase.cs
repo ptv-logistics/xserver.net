@@ -6,12 +6,12 @@ using System.Net;
 
 using Ptv.XServer.Controls.Map.Layers.Untiled;
 using Ptv.XServer.Controls.Map.Layers.Tiled;
-
+using System.Collections.Generic;
 
 namespace Ptv.XServer.Controls.Map.TileProviders
 {
     /// <summary> Provider delivering bitmap tiles which are requested from an xMapServer. </summary>
-    public abstract class XMapTiledProviderBase : IUntiledProvider, ITiledProvider, ITilingOptions
+    public abstract class XMapTiledProviderBase : IUntiledProviderWithMapObjects, ITiledProvider, ITilingOptions
     {
         #region private variables
 
@@ -119,10 +119,12 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <param name="height"> Height of the image. </param>
         /// <param name="border"> Border width. </param>
         /// <returns> The image as a stream. </returns>
-        public Stream GetStream(double left, double top, double right, double bottom, int width, int height, int border)
+        public Stream GetStream(double left, double top, double right, double bottom, int width, int height, int border, out IEnumerable<IMapObject> mapObjects)
         {
+            mapObjects = null;
+
             if ((left >= minX) && (right <= maxX) && (top >= minY) && (bottom <= maxY) && border <= 0)
-                return GetStreamInternal(left, top, right, bottom, width, height);
+                return GetStreamInternal(left, top, right, bottom, width, height, out mapObjects);
 
             // request must be resized or clipped
             double leftResized, rightResized, topResized, bottomResized;
@@ -170,7 +172,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                     return SaveAndConvert(bmp);
                 }
             }
-            using (var stream = GetStreamInternal(leftClipped, topClipped, rightClipped, bottomClipped, widthClipped, heightClipped))
+            using (var stream = GetStreamInternal(leftClipped, topClipped, rightClipped, bottomClipped, widthClipped, heightClipped, out mapObjects))
             {
                 // paste resized/clipped image on new image
                 using (var img = System.Drawing.Image.FromStream(stream))
@@ -199,15 +201,16 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <param name="width"> Width of the image. </param>
         /// <param name="height"> Height of the image. </param>
         /// <returns> The map image as stream. </returns>
-        public Stream GetStreamInternal(double left, double top, double right, double bottom, int width, int height)
+        public Stream GetStreamInternal(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects)
         {
+            mapObjects = null;
             int trials = 0;
 
             while (true)
             {
                 try
                 {
-                    var imageStream = new MemoryStream(TryGetStreamInternal(left, top, right, bottom, width, height));
+                    var imageStream = new MemoryStream(TryGetStreamInternal(left, top, right, bottom, width, height, out mapObjects));
                     if (!needsTransparency) return imageStream;
 
                     using(var image = System.Drawing.Image.FromStream(imageStream))
@@ -249,7 +252,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <param name="width"> Width of the image. </param>
         /// <param name="height"> Height of the image. </param>
         /// <returns> The map image as stream. </returns>
-        public abstract byte[] TryGetStreamInternal(double left, double top, double right, double bottom, int width, int height);
+        public abstract byte[] TryGetStreamInternal(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects);
         #endregion
 
         #region ITiledProvider Members
@@ -259,7 +262,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             TileToPtvMercatorAtZoom(tileX, tileY, zoom, out var xMin, out var yMin, out var xMax, out var yMax);
 
             return GetStream(xMin, yMin, xMax, yMax,
-                256 + (int)Math.Round(256 * OverlapFactor), 256 + (int)Math.Round(256 * OverlapFactor), Border);
+                256 + (int)Math.Round(256 * OverlapFactor), 256 + (int)Math.Round(256 * OverlapFactor), Border, out _);
         }
 
         /// <inheritdoc/>
@@ -283,8 +286,14 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <returns> The image as a stream. </returns>
         public Stream GetImageStream(double left, double top, double right, double bottom, int width, int height)
         {
-            return GetStream(left, top, right, bottom, width, height, 0);
+            return GetImageStreamAndMapObjects(left, top, height, bottom, width, height, out _);
         }
+
+        public Stream GetImageStreamAndMapObjects(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects)
+        {
+            return GetStream(left, top, right, bottom, width, height, 0, out mapObjects);
+        }
+
         #endregion
 
         #region ITilingOptions Members

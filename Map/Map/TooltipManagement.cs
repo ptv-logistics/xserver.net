@@ -110,7 +110,9 @@ namespace Ptv.XServer.Controls.Map
 
             foreach (var item in toolTipMapObjects.Select((toolTipMapObject, index) => new { index, toolTipMapObject } ))
             {
-                string content = item.toolTipMapObject.Count == 1
+                var kvp = item.toolTipMapObject.ToArray();
+
+                string content = (kvp.Length == 1)
                     ? item.toolTipMapObject.First().Value // XMap.Map.UntiledLayer provides only one key/value pair and all structuring is made in the value field.
                     : item.toolTipMapObject.ToString(); // Needed for layers which uses the data dictionary with multiple key/value pairs for structuring their data.
 

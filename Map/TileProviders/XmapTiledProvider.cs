@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using Ptv.XServer.Controls.Map.Layers.Untiled;
 using Ptv.XServer.Controls.Map.Tools;
 using xserver;
 
@@ -41,7 +42,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
     }
 
     /// <summary> A provider implementation for the xMapServer delivering tiled bitmaps. </summary>
-    public class XMapTiledProvider : XMapTiledProviderBase, IObjectInfoProvider
+    public class XMapTiledProvider : XMapTiledProviderBase
     {
         /// <summary> Logging restricted to this class. </summary>
         private static readonly Logger logger = new Logger("XMapTiledProvider");
@@ -87,11 +88,9 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         public IEnumerable<Layer> CustomXMapLayers { get; set; }
 
         /// <inheritdoc/>
-        public override byte[] TryGetStreamInternal(double left, double top, double right, double bottom, int width, int height)
+        public override byte[] TryGetStreamInternal(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects)
         {
             var size = new System.Windows.Size(width, height);
-
-            MapUdpate?.Invoke(null, size);
 
             using (var service = new XMapWSServiceImpl(url))
             {
@@ -179,7 +178,11 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                     IssueBoundingBoxWarning(bbox, map.visibleSection.boundingBox, width, height, profile);
 #endif
 
-                MapUdpate?.Invoke(map, size);
+                mapObjects = map?.wrappedObjects?
+                    .Select(objects => objects.wrappedObjects?.Select(layerObject => new XMap1MapObject(objects, layerObject)))
+                    .Where(objects => objects != null && objects.Any())
+                    .SelectMany(objects => objects)
+                    .ToArray();
 
                 return map.image.rawImage;
             }
