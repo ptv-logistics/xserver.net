@@ -630,28 +630,28 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
 
         private static string GetDescription(LayerObject layerObject)
         {
-            string result = layerObject?.descr;
-            if (string.IsNullOrEmpty(result)) return string.Empty;
+            string descr = layerObject?.descr;
+            if (string.IsNullOrEmpty(descr)) return string.Empty;
 
-            if (result.Contains('#'))
-                result = result.Split('#')[1];
-            result = result.Trim('|').Replace("|", "\n");
+            // match Values for xPOIAccess
+            if (descr.Contains('#'))
+            {
+                var poidesc = descr.Split('#')[1];
+                poidesc = poidesc.Trim('|').Replace("|", "\n");
 
-            var match = Regex.Match(result, @"^(?:[^\|=:]+):([^\|=:]*)$");
-            if (match.Success)
-                result = match.Groups[1].Value;
+                var match = Regex.Match(poidesc, @"^(?:[^\|=:]+):([^\|=:]*)$");
+                if (match.Success)
+                    poidesc = match.Groups[1].Value;
 
-            return result;
-        }
+                return poidesc;
+            }
 
-        /// <inheritdoc/>
-        public override string ToString()
-        {
-            // match KVP-style description string: a=b|b=c|...
-            var m = Regex.Match(((LayerObject)Source).descr, @"^(?!\|)(?:\|?([^\|=]+)=([^\|]+))+$");
+            // match KVP-style description string: a=b|b=c|... for Feature Layer
+            var m = Regex.Match(descr, @"^(?!\|)(?:\|?([^\|=]+)=([^\|]*))+$");
 
+            // no match - just return descr
             if (!m.Success)
-                return base.ToString();
+                return descr;
 
             var result = new StringBuilder(4);
             var message = string.Empty;
