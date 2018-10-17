@@ -35,6 +35,7 @@ Version 1.6.0.0 (2018/08/14)
   - Fixed rendering error if the Container-Control set UseLayoutRounding
 
   Changes and Optimizations:
+  - Added support for integration of XMap2 Layers including Feature Layers
   - Added support for integration of Web Map Tile Services (WMTS)
   - Optimized tile caching and pruning
   - The InifiniteZoom property (to avoid jitter at deep zoom levels)
