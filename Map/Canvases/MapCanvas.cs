@@ -81,13 +81,13 @@ namespace Ptv.XServer.Controls.Map.Canvases
 
         /// <summary> Updates the map content. The map content consists of all elements of the canvas. This method is
         /// for example triggered when the viewport changes. </summary>
-        /// <param name="updateMode"> The update mode. This mode tells which kind of change is to be processed by the
-        /// update call. </param>
+        /// <param name="updateMode"> The update mode tells which kind of change is to be processed by the update call. </param>
         public abstract void Update(UpdateMode updateMode);
 
+        /// <summary> Callback to precede the updating of the map content. </summary>
+        /// <param name="updateMode"> The update mode tells which kind of change is to be processed by the update call. </param>
         protected virtual void BeforeUpdate(UpdateMode updateMode)
         {
-            
         }
         #endregion
 
@@ -95,25 +95,23 @@ namespace Ptv.XServer.Controls.Map.Canvases
         /// <inheritdoc/>
         public bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
         {
-            if (managerType == typeof(ViewportBeginChangedWeakEventManager))
+            switch (managerType.Name)
             {
-                BeforeUpdate(UpdateMode.BeginTransition);
-                Update(UpdateMode.BeginTransition);
-                return true;
+                case nameof(ViewportBeginChangedWeakEventManager):
+                    BeforeUpdate(UpdateMode.BeginTransition);
+                    Update(UpdateMode.BeginTransition);
+                    return true;
+                case nameof(ViewportWhileChangedWeakEventManager):
+                    BeforeUpdate(UpdateMode.WhileTransition);
+                    Update(UpdateMode.WhileTransition);
+                    return true;
+                case nameof(ViewportEndChangedWeakEventManager):
+                    BeforeUpdate(UpdateMode.EndTransition);
+                    Update(UpdateMode.EndTransition);
+                    return true;
+                default:
+                    return false;
             }
-            if (managerType == typeof(ViewportWhileChangedWeakEventManager))
-            {
-                BeforeUpdate(UpdateMode.WhileTransition);
-                Update(UpdateMode.WhileTransition);
-                return true;
-            }
-            if (managerType == typeof(ViewportEndChangedWeakEventManager))
-            {
-                BeforeUpdate(UpdateMode.EndTransition);
-                Update(UpdateMode.EndTransition);
-                return true;
-            }
-            return false;
         }
         #endregion
 
@@ -296,6 +294,7 @@ namespace Ptv.XServer.Controls.Map.Canvases
                 : RenderTransform.Transform(canvasTransform.Inverse.Transform(new Point(mercatorPoint.X, -mercatorPoint.Y)));
         }
 
+        /// <inheritdoc/>  
         protected override void BeforeUpdate(UpdateMode updateMode)
         {
             if (updateMode == UpdateMode.EndTransition)

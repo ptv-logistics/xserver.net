@@ -373,7 +373,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
             }
             else
             {
-                if (updateMode == UpdateMode.EndTransition && GlobalOptions.InfiniteZoom)
+                if (updateMode == UpdateMode.EndTransition)
                 {
                     if (shape.GetValue(LocationProperty) != null)
                     {

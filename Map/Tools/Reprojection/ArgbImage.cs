@@ -7,6 +7,8 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 
+#pragma warning disable CS3003 // Type is not CLS-compliant
+
 namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 {
     using PointD = System.Windows.Point;
@@ -560,3 +562,5 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         public int Height { get; }
     }
 }
+
+#pragma warning restore CS3003 // Type is not CLS-compliant

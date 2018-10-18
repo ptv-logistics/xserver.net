@@ -356,23 +356,20 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
         {
             RemoveRestOfTiles();
 
-            if (GlobalOptions.InfiniteZoom)
+            double factor = (tiledProvider as ITilingOptions)?.Factor ?? 1;
+
+            foreach (var i in shownImages)
             {
-                double factor = (tiledProvider as ITilingOptions)?.Factor ?? 1;
+                var key = i.Key;
+                var image = i.Value;
 
-                foreach (var i in shownImages)
-                {
-                    var key = i.Key;
-                    var image = i.Value;
+                double size = MapView.ReferenceSize / factor / (1 << key.Zoom);
 
-                    double size = MapView.ReferenceSize / factor / (1 << key.Zoom);
+                var rx = MapView.OriginOffset.X / MapView.LogicalSize * MapView.ReferenceSize;
+                var ry = MapView.OriginOffset.Y / MapView.LogicalSize * MapView.ReferenceSize;
 
-                    var rx = MapView.OriginOffset.X / MapView.LogicalSize * MapView.ReferenceSize;
-                    var ry = MapView.OriginOffset.Y / MapView.LogicalSize * MapView.ReferenceSize;
-
-                    SetLeft(image, rx + key.TileX * size - ((image.Width - size) / 2) - MapView.ReferenceSize / factor / 2);
-                    SetTop(image, ry + key.TileY * size - ((image.Height - size) / 2) - MapView.ReferenceSize / factor / 2);
-                }
+                SetLeft(image, rx + key.TileX * size - ((image.Width - size) / 2) - MapView.ReferenceSize / factor / 2);
+                SetTop(image, ry + key.TileY * size - ((image.Height - size) / 2) - MapView.ReferenceSize / factor / 2);
             }
         }
 
@@ -493,8 +490,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 // inflate size so tiles overlap a bit
                 if (Math.Abs(overlapFactor) < 0.00001)
                 {
-                    image.Width = size + ((!IsTransparentLayer && !GlobalOptions.InfiniteZoom) ? size * 1.0 / 512 : 0);
-                    image.Height = size + ((!IsTransparentLayer && !GlobalOptions.InfiniteZoom) ? size * 1.0 / 512 : 0);
+                    image.Width = image.Height = size;
                 }
                 else
                 {

@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using Ptv.Components.Projections;
 
+#pragma warning disable CS3003 // Type is not CLS-compliant
+
 namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 {
     using SizeD = System.Windows.Size;
@@ -424,3 +426,4 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
     }
 }
 
+#pragma warning restore CS3003 // Type is not CLS-compliant

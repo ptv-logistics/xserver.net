@@ -12,21 +12,18 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         public ContentSnapshots(string baseUrl, string token) : base(baseUrl, token) {}
 
         public IEnumerable<ContentSnapshotDescription> Available =>
-            Response?.contentSnapshotInformation?.Select(singleInformation => singleInformation.contentSnapshotDescription) ?? Enumerable.Empty<ContentSnapshotDescription>();
+            GetResponseObject()?.contentSnapshotInformation?.Select(singleInformation => singleInformation.contentSnapshotDescription) ?? Enumerable.Empty<ContentSnapshotDescription>();
 
-        private _Response Response
+        private ResponseObject GetResponseObject()
         {
-            get
-            {
-                var requestObject = new { }; // No sub elements are needed.
-                return Response("/services/rs/XData/listContentSnapshots", requestObject.ToJson()).FromJson<_Response>();
-            }
+            var requestObject = new { }; // No sub elements are needed.
+            return Response("/services/rs/XData/listContentSnapshots", requestObject.ToJson()).FromJson<ResponseObject>();
         }
 
         [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local")]
         [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
         [SuppressMessage("ReSharper", "CollectionNeverUpdated.Local")]
-        private class _Response
+        private class ResponseObject
         {
             public List<ContentSnapshotInformation> contentSnapshotInformation { get; set; }
 

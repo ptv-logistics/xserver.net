@@ -4,6 +4,10 @@ using System;
 using System.IO;
 using System.Linq;
 
+#pragma warning disable CS3001 // Argument type is not CLS-compliant
+#pragma warning disable CS3002 // Return type is not CLS-compliant
+#pragma warning disable CS3003 // Type is not CLS-compliant
+
 namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 {
     /// <summary>
@@ -31,10 +35,14 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             }
         }
 
-        /* Update a running CRC with the bytes buf[0..len-1]--the CRC
-            should be initialized to all 1's, and the transmitted value
-            is the 1's complement of the final running CRC (see the
-            crc() routine below)). */
+        /// <summary> Update a running CRC with the bytes buf[0..len-1].
+        /// The CRC should be initialized to all 1's, and the transmitted value is the 1's complement of the final running CRC (see
+        /// method <see cref="crc"/>)). </summary>
+        /// <param name="crc">Cyclic redundancy check value.</param>
+        /// <param name="buf">Buffer of image bytes.</param>
+        /// <param name="offset">Where to start in buf. </param>
+        /// <param name="length">Number of bytes in buf. </param>
+        /// <returns>Final cyclic redundancy check value. </returns>
         public static uint update_crc(uint crc, byte[] buf, long offset, long length)
         {
             for (long n = offset, o = offset + length; n < o; n++)
@@ -43,7 +51,11 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             return crc;
         }
 
-        /* Return the CRC of the bytes buf[0..len-1]. */
+        /// <summary> Return the CRC of the bytes buf[0..len-1]. </summary>
+        /// <param name="buf">Buffer of image bytes.</param>
+        /// <param name="offset">Where to start in buf. </param>
+        /// <param name="length">Number of bytes in buf. </param>
+        /// <returns>Final cyclic redundancy check value. </returns>
         public static uint crc(byte[] buf, long offset, long length)
         {
             return update_crc(0xffffffff, buf, offset, length) ^ 0xffffffff;
@@ -365,3 +377,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             { return ChecksumUpdateRegion.ForAdler(stm, adler); }
     }
 }
+
+#pragma warning restore CS3003 // Type is not CLS-compliant
+#pragma warning restore CS3002 // Return type is not CLS-compliant
+#pragma warning restore CS3001 // Argument type is not CLS-compliant

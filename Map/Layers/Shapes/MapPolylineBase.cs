@@ -14,15 +14,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
     /// <para> See the <conceptualLink target="06a654f3-afbd-4f00-9c8e-36997e2a3951"/> topic for an example. </para></summary>
     public abstract class MapPolylineBase : MapShape
     {
+        /// <summary>Contains the geometry provided by property <see cref="DefiningGeometry"/>. </summary>
         protected Geometry Data;
 
-        #region protected variables
         /// <inheritdoc/>
         protected override Geometry DefiningGeometry => Data;
 
-        #endregion
-
-        #region public variables
         /// <summary> Gets or sets the points of the polyline. </summary>
         public PointCollection Points
         {
@@ -34,16 +31,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// been transformed to the currently applied spatial reference system. This property helps to improve
         /// performance since the point transformation is only done once. </summary>
         public PointCollection TransformedPoints { get; set; }
-        #endregion
 
-        #region properties
         /// <summary> Backing store for Points. This enables animation, styling, binding, etc.. </summary>
         public static readonly DependencyProperty PointsProperty =
             DependencyProperty.Register("Points", typeof(PointCollection), typeof(MapPolyline),
             new UIPropertyMetadata(new PointCollection(), OnPointCollectionChanged));
-        #endregion
 
-        #region private methods
         /// <summary> Event handler for a change of the point collection. The polyline is updated in this case. </summary>
         /// <param name="obj"> Element for which the point collection has been changed. </param>
         /// <param name="args"> Event parameters. </param>
@@ -54,13 +47,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
                 shape.UpdateShape(shapeCanvas.MapView, UpdateMode.Refresh, false);
         }
 
-        #region constructor
         /// <summary> Initializes a new instance of the <see cref="MapPolylineBase"/> class. </summary>
         protected MapPolylineBase()
         {
             TransformedPoints = new PointCollection();
         }
-        #endregion
     }
 
     /// <summary><para> This class represents a polyline on the map. The MapPolyline is responsible for adapting the visual
@@ -68,29 +59,31 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
     /// <para> See the <conceptualLink target="06a654f3-afbd-4f00-9c8e-36997e2a3951"/> topic for an example. </para></summary>
     public class MapPolyline : MapPolylineBase
     {
-        /// <summary> Initializes a new instance of the <see cref="MapPolyline"/> class. Initializes the
-        /// <see cref="MapShape.ScaleFactor"/> to 0.5. </summary>
+        /// <summary> Initializes a new instance of the <see cref="MapPolyline"/> class. </summary>
         public MapPolyline()
         {
             ScaleFactor = 0.0;
         }
 
-        #endregion
-
-        #region public methods
-
+        /// <summary> Transforms the polyline object according the transformation provided by
+        /// <see cref="MapShape.GeoTransform"/>. </summary>
+        /// <param name="mapView">Not used.</param>
         protected void TransformShape(MapView mapView)
         {
             TransformedPoints.Clear();
             Points.ForEach(null, point => TransformedPoints.Add(GeoTransform(point)));
         }
 
-        protected virtual void ClipShape(MapView mapView, UpdateMode mode, bool lazyUpdate)
+        /// <summary>Clip the Polyline object. </summary>
+        /// <param name="mapView">Mapview object in which the clipping takes place.</param>
+        /// <param name="updateMode"> The update mode tells which kind of change is to be processed by the update call. </param>
+        /// <param name="lazyUpdate"> Flag indicating if lazy updating is activated. </param>
+        protected virtual void ClipShape(MapView mapView, UpdateMode updateMode, bool lazyUpdate)
         {
-            if (mode == UpdateMode.Refresh || (GlobalOptions.InfiniteZoom && mode == UpdateMode.EndTransition))  
+            if (updateMode == UpdateMode.Refresh || updateMode == UpdateMode.EndTransition)
                 TransformShape(mapView);
 
-            if (!(NeedsUpdate(lazyUpdate, mode) || (GlobalOptions.InfiniteZoom && mode == UpdateMode.EndTransition)))
+            if (!(NeedsUpdate(lazyUpdate, updateMode) || updateMode == UpdateMode.EndTransition))
                 return;
 
             MapRectangle rect = mapView.CurrentEnvelope;
@@ -121,14 +114,14 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         }
 
         /// <inheritdoc/>
-        public override void UpdateShape(MapView mapView, UpdateMode mode, bool lazyUpdate)
+        public override void UpdateShape(MapView mapView, UpdateMode updateMode, bool lazyUpdate)
         {
-            ClipShape(mapView, mode, lazyUpdate);
+            ClipShape(mapView, updateMode, lazyUpdate);
 
-            if (!NeedsUpdate(lazyUpdate, mode))
+            if (!NeedsUpdate(lazyUpdate, updateMode))
                 return;
 
-            base.UpdateShape(mapView, mode, lazyUpdate);
+            base.UpdateShape(mapView, updateMode, lazyUpdate);
         }
 
         /// <summary> Builds the geometry of the polyline. </summary>
@@ -152,8 +145,6 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
 
             return geom;
         }
-
-        #endregion
     }
 
     /// <summary><para> This class represents a polygon on the map. </para>
@@ -167,9 +158,13 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
             ScaleFactor = 0.0;
         }
 
+        /// <summary>Clip the Polygon object. </summary>
+        /// <param name="mapView"> Mapview object in which the clipping takes place.</param>
+        /// <param name="updateMode"> The update mode tells which kind of change is to be processed by the update call. </param>
+        /// <param name="lazyUpdate"> Flag indicating if lazy updating is activated. </param>
         protected override void ClipShape(MapView mapView, UpdateMode updateMode, bool lazyUpdate)
         {
-            if (updateMode == UpdateMode.Refresh || (GlobalOptions.InfiniteZoom && updateMode == UpdateMode.EndTransition))  
+            if (updateMode == UpdateMode.Refresh || updateMode == UpdateMode.EndTransition)
             {
                 TransformShape(mapView);
                 Data = BuildGeometry(new[] { TransformedPoints });
@@ -179,16 +174,19 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         }
 
         /// <inheritdoc/>
-        public override void UpdateShape(MapView mapView, UpdateMode mode, bool lazyUpdate)
+        public override void UpdateShape(MapView mapView, UpdateMode updateMode, bool lazyUpdate)
         {
-            ClipShape(mapView, mode, lazyUpdate);
+            ClipShape(mapView, updateMode, lazyUpdate);
 
-            if (lazyUpdate && mode != UpdateMode.Refresh && mode != UpdateMode.EndTransition)
+            if (lazyUpdate && updateMode != UpdateMode.Refresh && updateMode != UpdateMode.EndTransition)
                 return;
 
-            base.UpdateShape(mapView, mode, lazyUpdate);
+            base.UpdateShape(mapView, updateMode, lazyUpdate);
         }
 
+        /// <summary> Creates a new <see cref="Geometry"/> object by means of a set of <see cref="PointCollection"/>s. </summary>
+        /// <param name="lines">Set of <see cref="PointCollection"/>s. </param>
+        /// <returns>Geometry consisting of the input parameters.</returns>
         protected new Geometry BuildGeometry(ICollection<PointCollection> lines)
         {
             var geom = new StreamGeometry();

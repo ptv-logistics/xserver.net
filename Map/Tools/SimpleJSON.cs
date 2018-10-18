@@ -11,23 +11,12 @@ using System.Text;
 
 namespace TinyJson
 {
-    // Really simple JSON parser in ~300 lines
-    // - Attempts to parse JSON files with minimal GC allocation
-    // - Nice and simple "[1,2,3]".FromJson<List<int>>() API
-    // - Classes and structs can be parsed too!
-    //      class Foo { public int Value; }
-    //      "{\"Value\":10}".FromJson<Foo>()
-    // - Can parse JSON without type information into Dictionary<string,object> and List<object> e.g.
-    //      "[1,2,3]".FromJson<object>().GetType() == typeof(List<object>)
-    //      "{\"Value\":10}".FromJson<object>().GetType() == typeof(Dictionary<string,object>)
-    // - No JIT Emit support to support AOT compilation on iOS
-    // - Attempts are made to NOT throw an exception if the JSON is corrupted or invalid: returns null instead.
-    // - Only public fields and property setters on classes/structs will be written to
-    //
-    // Limitations:
-    // - No JIT Emit support to parse structures quickly
-    // - Limited to parsing <2GB JSON files (due to int.MaxValue)
-    // - Parsing of abstract classes or interfaces is NOT supported and will throw an exception.
+    /// <summary>
+    /// Really simple JSON parser which attempts to parse JSON files with minimal GC allocation
+    /// Attempts are made to NOT throw an exception if the JSON is corrupted or invalid: returns null instead.
+    /// Only public fields and property setters on classes/structs will be written to.
+    /// Parsing of abstract classes or interfaces is NOT supported and will throw an exception.
+    /// </summary>
     public static class JSONParser
     {
         [ThreadStatic]
@@ -39,6 +28,10 @@ namespace TinyJson
         [ThreadStatic]
         static Dictionary<Type, Dictionary<string, PropertyInfo>> propertyInfoCache;
 
+        /// <summary>Transforms a JSON string into the object of type T. </summary>
+        /// <typeparam name="T"> Type to which the JSON string is converted.</typeparam>
+        /// <param name="json">String to convert. </param>
+        /// <returns></returns>
         public static T FromJson<T>(this string json)
         {
             // Initialize, if needed, the ThreadStatic variables
@@ -348,12 +341,12 @@ namespace TinyJson
         }
     }
 
-    //Really simple JSON writer
-    //- Outputs JSON structures from an object
-    //- Really simple API (new List<int> { 1, 2, 3 }).ToJson() == "[1,2,3]"
-    //- Will only output public fields and property getters on objects
+    /// <summary> Really simple JSON writer which outputs JSON structures from an object. </summary>
     public static class JSONWriter
     {
+        /// <summary> Converts an object to a JSON string representation. </summary>
+        /// <param name="item"> Object which should be converted to a JSON string representation. </param>
+        /// <returns> JSON string representation of the input object. </returns>
         public static string ToJson(this object item)
         {
             StringBuilder stringBuilder = new StringBuilder();

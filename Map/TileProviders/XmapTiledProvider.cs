@@ -35,6 +35,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         Custom
     }
 
+    /// <summary>Setting a delegate handling map updates. </summary>
     public interface IObjectInfoProvider
     {
         /// <summary> MapUpdate event. See remarks on <see cref="MapUpdateDelegate"/>. </summary>
@@ -78,10 +79,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <param name="mode"> The mode of this tiled provider instance. </param>
         public XMapTiledProvider(string url, XMapMode mode) : this(url, string.Empty, string.Empty, mode) { }
 
-
-        /// <summary> MapUpdate event. See remarks on <see cref="MapUpdateDelegate"/>. </summary>
-        public event MapUpdateDelegate MapUdpate;
-
+        /// <summary> Customized caller constext properties. </summary>
         public IEnumerable<CallerContextProperty> CustomCallerContextProperties { get; set; }
 
         /// <summary> Gets or sets the custom layers of the xMapServer. </summary>

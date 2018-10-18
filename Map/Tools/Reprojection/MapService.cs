@@ -10,6 +10,9 @@ using System.Linq;
 using System.Threading;
 using Ptv.Components.Projections;
 
+#pragma warning disable CS3001 // Argument type is not CLS-compliant
+#pragma warning disable CS3003 // Type is not CLS-compliant
+
 namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 {
     using SizeD = System.Windows.Size;
@@ -64,14 +67,14 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         }
 
         /// <summary> Creates and initializes a MapRectangle instance. </summary>
-        /// <param name="lt">Upper left-hand corner.</param>
-        /// <param name="rb">Bottom right-hand corner.</param>
-        public MapRectangle(Location lt, Location rb)
+        /// <param name="leftTop">Upper left-hand corner.</param>
+        /// <param name="rightBottom">Bottom right-hand corner.</param>
+        public MapRectangle(Location leftTop, Location rightBottom)
         {
-            Left = lt.X;
-            Top = lt.Y;
-            Right = rb.X;
-            Bottom = rb.Y;
+            Left = leftTop.X;
+            Top = leftTop.Y;
+            Right = rightBottom.X;
+            Bottom = rightBottom.Y;
         }
 
         /// <summary>
@@ -582,3 +585,6 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         public bool IsRectangular => LeftDeviation < 1e-6 && TopDeviation < 1e-6 && RightDeviation < 1e-6 && BottomDeviation < 1e-6;
     }
 }
+
+#pragma warning restore CS3003 // Type is not CLS-compliant
+#pragma warning restore CS3001 // Argument type is not CLS-compliant

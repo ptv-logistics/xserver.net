@@ -341,9 +341,6 @@ namespace Ptv.XServer.Controls.Map
 
         private void ResetOrigin()
         {
-            if (!GlobalOptions.InfiniteZoom)
-                return;
-
             var tx = FinalX;
             var ty = FinalY;
 
@@ -523,9 +520,6 @@ namespace Ptv.XServer.Controls.Map
 
             zoom = Math.Max(minZoom, Math.Min(zoom, maxZoom));
 
-            if (!GlobalOptions.InfiniteZoom && zoom > 19)
-                animatePan = animateZoom = false;
-
             // reset map rectangle if XYZ is set after Rect while map is not loaded
             envMapRectangle = new MapRectangle();
 
@@ -670,9 +664,6 @@ namespace Ptv.XServer.Controls.Map
 
             if (zoom < MinZoom)
                 zoom = MinZoom;
-
-            if (!GlobalOptions.InfiniteZoom && zoom > 19)
-                animate = false;
 
             z = Math.Max(minZoom, Math.Min(zoom, maxZoom));
 

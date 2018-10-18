@@ -101,11 +101,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         }
         #endregion
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="mapObjects"></param>
-        /// <param name="requestedSize"></param>
+        /// <summary>Takes all parameters into members, commonly provided by the corresponding provider. </summary>
+        /// <param name="mapObjects">Set of map objects which can be used for showing tool tips.</param>
+        /// <param name="requestedSize">The size of the map image.</param>
         protected void UpdateMapObjects(IEnumerable<IMapObject> mapObjects, Size requestedSize)
         {
             this.mapObjects = mapObjects;
@@ -275,7 +273,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
 
                     break;
                 case UpdateMode.EndTransition:
-                    if (GlobalOptions.InfiniteZoom && mapImage?.Tag != null)
+                    if (mapImage?.Tag != null)
                     {
                         var mapParam = (MapParam)mapImage.Tag;
                         SetLeft(mapImage, mapParam.Left + MapView.OriginOffset.X);
@@ -414,6 +412,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             UpdateMapObjects?.Invoke(mapObjects, new Size(mapParam.Width, mapParam.Height));
         }
 
+        /// <summary>Callback for a provider object to set the map objects which belong to a requested map image. </summary>
         public Action<IEnumerable<IMapObject>, Size> UpdateMapObjects { get; set; }
 
         /// <summary> Updates the overlay image. </summary>
@@ -617,6 +616,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
     /// </remarks>
     public class XMap1MapObject : MapObject
     {
+        /// <summary> Creates an xMap-1 map object. </summary>
+        /// <param name="objectInfos">Set of object infos returned by xMap-1.</param>
+        /// <param name="layerObject">XServer layer object.</param>
         public XMap1MapObject(ObjectInfos objectInfos, LayerObject layerObject) : base(
             (((long) layerObject.hiId << 32) + layerObject.loId).ToString(),
             objectInfos.name,

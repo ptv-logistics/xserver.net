@@ -12,35 +12,32 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         public DataInformation(string baseUrl, string token) : base(baseUrl, token) { }
 
         public IEnumerable<string> AvailableFeatureLayerThemes =>
-            Response?.mapDescription?.copyright?.featureLayers?.Select(theme => theme.themeId) ?? Enumerable.Empty<string>();
+            GetResponseObject()?.mapDescription?.copyright?.featureLayers?.Select(theme => theme.themeId) ?? Enumerable.Empty<string>();
 
         public IEnumerable<string> CopyRights(IEnumerable<string> themes)
         {
             var result = new HashSet<string>();
 
-            var copyrightsFromResponse = Response?.mapDescription?.copyright;
+            var copyrightsFromResponse = GetResponseObject()?.mapDescription?.copyright;
             result.UnionWith(copyrightsFromResponse?.basemap ?? Enumerable.Empty<string>());
             result.UnionWith(copyrightsFromResponse?.featureLayers?.Where(theme => themes.Contains(theme.themeId)).SelectMany(theme => theme.copyright) ?? Enumerable.Empty<string>());
 
             return result;
         }
 
-        private _Response response;
-        private _Response Response
+        private ResponseObject responseObject;
+        private ResponseObject GetResponseObject()
         {
-            get
-            {
-                if (response != null) return response;
+            if (responseObject != null) return responseObject;
 
-                var requestObject = new { }; // No sub elements are needed.
-                return response = Response("/services/rs/XRuntime/experimental/getDataInformation", requestObject.ToJson()).FromJson<_Response>();
-            }
+            var requestObject = new { }; // No sub elements are needed.
+            return responseObject = Response("/services/rs/XRuntime/getDataInformation", requestObject.ToJson()).FromJson<ResponseObject>();
         }
 
         [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local")]
         [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
         [SuppressMessage("ReSharper", "CollectionNeverUpdated.Local")]
-        private class _Response
+        private class ResponseObject
         {
             public MapDescription mapDescription { get; set; }
 
