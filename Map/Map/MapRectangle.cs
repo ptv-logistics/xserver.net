@@ -1,7 +1,5 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
-using Ptv.XServer.Controls.Map.Tools.Reprojection;
-
 namespace Ptv.XServer.Controls.Map
 {
     using System;
@@ -101,7 +99,8 @@ namespace Ptv.XServer.Controls.Map
         /// no points results in an empty rectangle.</param>
         public MapRectangle(IEnumerable<Point> points) : this()
         {
-            points.ForEach(null, point => Union(point));
+            foreach (var point in points)
+                Union(point);
         }
 
         /// <summary>

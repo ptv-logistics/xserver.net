@@ -13,7 +13,6 @@ using System.Windows.Media.Imaging;
 
 using Ptv.XServer.Controls.Map.Canvases;
 using Ptv.XServer.Controls.Map.Tools;
-using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 
 namespace Ptv.XServer.Controls.Map.Layers.Tiled
@@ -218,12 +217,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
 
             if (MapView.Printing)
             {
-                GetVisibleTiles(mapParam).ForEach(null, tileParam =>
+                foreach (var tileParam in GetVisibleTiles(mapParam))
                 {
                     GetImage(tileParam, out var buffer);
                     DisplayImage(buffer, tileParam, false, true);
                     RemoveRestOfTiles();
-                });
+                }
             }
             else
             {
@@ -249,7 +248,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                     .ToDictionary<TileParam, TileParam, object>(tile => tile, tile => null);
 
             var tmpList = new List<TileParam>(shownImages.Keys.Where(imageKey => !visibleTiles.ContainsKey(imageKey)));
-            tmpList.ForEach(null, RemoveImage);
+            tmpList.ForEach(RemoveImage);
         }
 
         /// <summary> Just as the name says: Remove all visible tiles. </summary>
@@ -281,7 +280,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 }
             }
 
-            tmpList.ForEach(null, RemoveImage);
+            tmpList.ForEach(RemoveImage);
         }
 
         private bool ContainsShownImagesTransparentImage(TileParam tileParam) => shownImages.ContainsKey(tileParam) && IsImageTransparent(shownImages[tileParam]);
@@ -289,7 +288,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
 
         private void RemoveAllTiles()
         {
-            shownImages.Keys.ToList().ForEach(null, RemoveImage);
+            shownImages.Keys.ToList().ForEach(RemoveImage);
         }
 
         private void RemoveRestOfTiles()
@@ -300,9 +299,10 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                 return;
 
             var tmpList = shownImages.Keys.Where(key => !visibleTileKeys.ContainsKey(key)).ToList();
-            tmpList.ForEach(null, RemoveImage);
+            tmpList.ForEach(RemoveImage);
 
-            shownImages.Values.ForEach(null, image => SetZIndex(image, ((TileParam)image.Tag).Zoom));
+            foreach (var image in shownImages.Values)
+                SetZIndex(image, ((TileParam)image.Tag).Zoom);
         }
 
         private void RemoveImage(TileParam key)

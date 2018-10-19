@@ -14,7 +14,6 @@ using Ptv.XServer.Controls.Map.Layers;
 using Ptv.XServer.Controls.Map.Localization;
 using System.ComponentModel;
 using System.Collections.Specialized;
-using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 
 namespace Ptv.XServer.Controls.Map.Gadgets
@@ -106,31 +105,36 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
         void layers_LayerVisibilityChanged(object sender, LayerChangedEventArgs e)
         {
-            LayersStack.Children.Cast<UIElement>()
+            foreach (var checkBox in LayersStack.Children.Cast<UIElement>()
                 .OfType<CheckBox>()
-                .Where(checkBox => Grid.GetColumn(checkBox) == 2 && checkBox.Tag.ToString() == e.LayerName)
-                .ForEach(null, checkBox => checkBox.IsChecked = layers.IsVisible(layers[e.LayerName]));
+                .Where(checkBox => Grid.GetColumn(checkBox) == 2 && checkBox.Tag.ToString() == e.LayerName))
+                checkBox.IsChecked = layers.IsVisible(layers[e.LayerName]);
         }
 
         void layers_LayerSelectabilityChanged(object sender, LayerChangedEventArgs e)
         {
-            LayersStack.Children.Cast<UIElement>()
+            foreach (var checkBox in LayersStack.Children.Cast<UIElement>()
                 .OfType<CheckBox>()
-                .Where(checkBox => Grid.GetColumn(checkBox) == 3 && checkBox.Tag.ToString() == e.LayerName)
-                .ForEach(null, checkBox => checkBox.IsChecked = layers.IsSelectable(layers[e.LayerName]));
+                .Where(checkBox => Grid.GetColumn(checkBox) == 3 && checkBox.Tag.ToString() == e.LayerName))
+                checkBox.IsChecked = layers.IsSelectable(layers[e.LayerName]);
         }
 
         /// <inheritdoc/>
         protected override void UnInitialize()
         {
-            layers?.ForEach(null, layer => layer.PropertyChanged -= layer_PropertyChanged);
-            
-            if (!IsInDesignMode && (layers != null))
+            if (layers != null)
             {
-                layers.CollectionChanged -= Layers_CollectionChanged;
-                layers.LayerSelectabilityChanged -= layers_LayerSelectabilityChanged;
-                layers.LayerVisibilityChanged -= layers_LayerVisibilityChanged;
+                foreach (var layer in layers)
+                    layer.PropertyChanged -= layer_PropertyChanged;
+
+                if (!IsInDesignMode)
+                {
+                    layers.CollectionChanged -= Layers_CollectionChanged;
+                    layers.LayerSelectabilityChanged -= layers_LayerSelectabilityChanged;
+                    layers.LayerVisibilityChanged -= layers_LayerVisibilityChanged;
+                }
             }
+
 
             Map.Gadgets.Remove(GadgetType.Layers);
 
@@ -158,8 +162,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                     ((ILayer)layer).PropertyChanged -= layer_PropertyChanged;
 
             // unregister events for existing layers
-            layers.Where(layer => e.NewItems == null || !e.NewItems.Contains(layer))
-                .ForEach(null, layer => layer.PropertyChanged -= layer_PropertyChanged);
+            foreach (var layer in layers.Where(layer => e.NewItems == null || !e.NewItems.Contains(layer)))
+                layer.PropertyChanged -= layer_PropertyChanged;
 
             UpdateLayerList();
         }
@@ -262,19 +266,17 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             // by setting 'headerSizeSet' to false.
             headerSizeSet = false;
 
-            layers.Select((layer, index) => new { layer, index })
-                .ForEach(null, item =>
-                {
-                    item.layer.PropertyChanged += layer_PropertyChanged;
+            foreach (var item in layers.Select((layer, index) => new { layer, index }))
+            {
+                item.layer.PropertyChanged += layer_PropertyChanged;
 
-                    if (LayerListReverted)
-                        layerIndices.Add(item.index);
-                    else
-                        layerIndices.Insert(0, item.index);
-                });
+                if (LayerListReverted)
+                    layerIndices.Add(item.index);
+                else
+                    layerIndices.Insert(0, item.index);
+            }
 
-            layerIndices.Select((t, index) => new { layer = layers[t], index })
-                .ForEach(null, item => 
+            foreach (var item in layerIndices.Select((t, index) => new { layer = layers[t], index }))
             {
                 LayersStack.RowDefinitions.Add(new RowDefinition());
 
@@ -369,7 +371,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                     Grid.SetRow(checkBox, item.index);
                     LayersStack.Children.Add(checkBox);
                 }
-            });
+            };
 
             UpdateSelection();
         }
@@ -378,10 +380,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         {
             if (e.PropertyName != "Opacity" || !(sender is ILayer layer)) return;
 
-            LayersStack.Children.Cast<object>()
-                .OfType<Slider>()
-                .Where(slider => slider.Tag.ToString() == layer.Name)
-                .ForEach(null, slider => slider.Value = layer.Opacity * 100);
+            foreach (var slider in LayersStack.Children.Cast<object>().OfType<Slider>().Where(slider => slider.Tag.ToString() == layer.Name))
+                slider.Value = layer.Opacity * 100;
         }
 
         /// <summary> Helper method for checking a selection checkbox of one of the layers. Updates the selection checkboxes. </summary>
@@ -407,24 +407,21 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <summary> Updates the selection checkboxes. </summary>
         private void UpdateSelection()
         {
-            LayersStack.Children.Cast<UIElement>()
-                .Where(uiElement => Grid.GetColumn(uiElement) == selectionColumn)
-                .OfType<CheckBox>()
-                .ForEach(null, checkBox =>
-                {
-                    var layer = layers[checkBox.Tag as string];
+            foreach (var checkBox in LayersStack.Children.Cast<UIElement>().Where(uiElement => Grid.GetColumn(uiElement) == selectionColumn).OfType<CheckBox>())
+            {
+                var layer = layers[checkBox.Tag as string];
 
-                    if (layers.ExclusiveSelectableLayer == null)
-                        checkBox.IsChecked = layers.IsSelectableBase(layer);
-                    else if (layers.ExclusiveSelectableLayer == layer)
-                    {
-                        updateByExclusiveSelection = true;
-                        checkBox.IsChecked = true;
-                        updateByExclusiveSelection = false;
-                    }
-                    else
-                        checkBox.IsChecked = null;
-                });
+                if (layers.ExclusiveSelectableLayer == null)
+                    checkBox.IsChecked = layers.IsSelectableBase(layer);
+                else if (layers.ExclusiveSelectableLayer == layer)
+                {
+                    updateByExclusiveSelection = true;
+                    checkBox.IsChecked = true;
+                    updateByExclusiveSelection = false;
+                }
+                else
+                    checkBox.IsChecked = null;
+            }
         }
         #endregion
 

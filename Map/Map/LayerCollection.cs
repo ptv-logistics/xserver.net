@@ -8,7 +8,6 @@ using System.Linq;
 using System.Windows;
 using Ptv.XServer.Controls.Map.Layers;
 using System.ComponentModel;
-using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 namespace Ptv.XServer.Controls.Map
 {
@@ -90,7 +89,8 @@ namespace Ptv.XServer.Controls.Map
             mapViews.Add(mapView);
             if (!mapView.IsVisible) return;
 
-            this.Where(IsVisible).ForEach(null, layer => layer.AddToMapView(mapView));
+            foreach (var layer in this.Where(IsVisible))
+                layer.AddToMapView(mapView);
         }
 
         /// <summary> Disconnect a <see cref="MapView"/>-object from the called LayerCollection. In return, all visible
@@ -102,7 +102,8 @@ namespace Ptv.XServer.Controls.Map
             mapViews.Remove(mapView);
             if (!mapView.IsVisible) return;
 
-            this.Where(IsVisible).ForEach(null, layer => layer.RemoveFromMapView(mapView));
+            foreach (var layer in this.Where(IsVisible))
+                layer.RemoveFromMapView(mapView);
         }
 
         /// <summary> Retrieves for a layer whether it is visible. </summary>
@@ -319,7 +320,9 @@ namespace Ptv.XServer.Controls.Map
         public object Clone()
         {
             var clone = new LayerCollection();
-            this.ForEach(null, clone.Add);
+
+            foreach (var layer in this)
+                clone.Add(layer);
 
             return clone;
         }

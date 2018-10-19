@@ -8,7 +8,6 @@ using System.Text;
 using System.Windows;
 using Ptv.XServer.Controls.Map.Layers;
 using Ptv.XServer.Controls.Map.Tools;
-using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 namespace Ptv.XServer.Controls.Map.TileProviders
 {
@@ -133,7 +132,10 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         public override string ToString()
         {
             var result = new StringBuilder();
-            Attributes.ForEach(null, attribute => result.AppendWithSeparator(attribute.Key + " = " + attribute.Value, Environment.NewLine));
+
+            foreach (var attribute in Attributes)
+                result.AppendWithSeparator(attribute.Key + " = " + attribute.Value, Environment.NewLine);
+
             return result.ToString();
         }
 

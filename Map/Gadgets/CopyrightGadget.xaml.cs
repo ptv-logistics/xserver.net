@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 namespace Ptv.XServer.Controls.Map.Gadgets
 {
@@ -61,7 +60,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
 
             layers = Map.Layers;
             // For all already inserted layers the missing calls to Layers_LayerAdded have to be caught up on everything.
-            layers.ForEach(null, layer => Layers_LayerAdded(null, new LayerChangedEventArgs(layer)));
+            foreach (var layer in layers)
+                Layers_LayerAdded(null, new LayerChangedEventArgs(layer));
 
             layers.LayerAdded += Layers_LayerAdded;
             layers.LayerRemoved += Layers_LayerRemoved;

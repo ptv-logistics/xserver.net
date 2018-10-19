@@ -8,7 +8,6 @@ using System.Windows.Media;
 using Ptv.XServer.Controls.Map.Tools;
 using Ptv.XServer.Controls.Map.Canvases;
 using Ptv.Components.Projections;
-using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 namespace Ptv.XServer.Controls.Map.Layers.Shapes
 {
@@ -197,7 +196,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
             this.shapes = shapes;
             shapes.CollectionChanged += shapes_CollectionChanged;
 
-            shapes.ForEach(null, Add);
+            foreach (var shape in shapes)
+                Add(shape);
 
             UpdateScales(UpdateMode.EndTransition);
         }
@@ -413,7 +413,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <param name="updateMode"> Mode specifying in which context the update method has been called.. </param>
         public void UpdateScales(UpdateMode updateMode)
         {
-            shapes.ForEach(null, shape => UpdateScale(shape, MapView, updateMode));
+            foreach (var shape in shapes)
+                UpdateScale(shape, MapView, updateMode);
         }
         #endregion
 

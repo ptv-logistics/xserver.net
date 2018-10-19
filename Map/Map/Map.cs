@@ -14,7 +14,6 @@ using Ptv.XServer.Controls.Map.Gadgets;
 using Ptv.XServer.Controls.Map.Layers.Tiled;
 using Ptv.XServer.Controls.Map.Layers.Untiled;
 using Ptv.XServer.Controls.Map.TileProviders;
-using Ptv.XServer.Controls.Map.Tools.Reprojection;
 using Ptv.XServer.Controls.Map.Layers.Xmap2;
 
 // ReSharper disable once CheckNamespace
@@ -124,7 +123,9 @@ namespace Ptv.XServer.Controls.Map
 
             SetXMapUrlHint();
             ((Grid)Content).Children.Insert(0, mapView);
-            MapElementExtensions.FindChildren<MapView>(this).ForEach(null, view => Layers.Register(view));
+
+            foreach (var view in MapElementExtensions.FindChildren<MapView>(this))
+                Layers.Register(view);
         }
 
         private void SetXMapUrlHint()

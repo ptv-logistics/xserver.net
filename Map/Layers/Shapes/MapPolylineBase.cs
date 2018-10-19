@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Media;
 using Ptv.XServer.Controls.Map.Tools;
 using Ptv.XServer.Controls.Map.Canvases;
-using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 namespace Ptv.XServer.Controls.Map.Layers.Shapes
 {
@@ -71,7 +70,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         protected void TransformShape(MapView mapView)
         {
             TransformedPoints.Clear();
-            Points.ForEach(null, point => TransformedPoints.Add(GeoTransform(point)));
+            foreach (var point in Points)
+                TransformedPoints.Add(GeoTransform(point));
         }
 
         /// <summary>Clip the Polyline object. </summary>
@@ -132,16 +132,15 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
             var geom = new StreamGeometry();
 
             using (StreamGeometryContext gc = geom.Open())
-            {
-                lines.Where(points => points.Count > 0).ForEach(null, points =>
+                foreach (var points in lines.Where(points => points.Count > 0))
                 {
                     var destPoints = new PointCollection();
-                    points.Skip(1).ForEach(null, point => destPoints.Add(point));
+                    foreach (var point in points.Skip(1))
+                        destPoints.Add(point);
 
                     gc.BeginFigure(points[0], true, false);
                     gc.PolyLineTo(destPoints, true, true);
-                });
-            }
+                };
 
             return geom;
         }
