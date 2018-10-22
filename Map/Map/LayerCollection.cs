@@ -33,6 +33,8 @@ namespace Ptv.XServer.Controls.Map
         private readonly List<MapView> mapViews = new List<MapView>();
         /// <summary> The single layer which is exclusive selectable (if existent). </summary>
         private ILayer exclusiveSelectableLayer;
+        /// <summary> Indicates the collection is changed from within the CollectionChanged. </summary>
+        private bool selfNotify;
         #endregion
 
         #region public variables
@@ -242,8 +244,12 @@ namespace Ptv.XServer.Controls.Map
             }
 
             // update z-index
+            selfNotify = true;
+
             for (int i = 0; i < Count; i++)
                 this[i].Priority = i;
+
+            selfNotify = false;
         }
 
         private void Layer_Added(object sender, LayerChangedEventArgs e)
@@ -262,7 +268,7 @@ namespace Ptv.XServer.Controls.Map
 
         private void layer_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != "Priority" || !(sender is ILayer layer)) return;
+            if (e.PropertyName != "Priority" || !(sender is ILayer layer) || selfNotify) return;
 
             if (IndexOf(layer) != layer.Priority)
                 Move(IndexOf(layer), layer.Priority);

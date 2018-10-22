@@ -428,6 +428,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             var mapParam = GetMapParam();
             if (!forceUpdate && (mapParam == lastParam)) return;
 
+            // reset existing map map objects
+            UpdateMapObjects?.Invoke(null, new Size());
+
             lastParam = mapParam;
             mapParam.Index = ++index;
 
@@ -635,7 +638,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             string descr = layerObject?.descr;
             if (string.IsNullOrEmpty(descr)) return string.Empty;
 
-            // match Values for xPOIAccess
+            // match Values for xPOIAcc
             if (descr.Contains('#'))
             {
                 var poidesc = descr.Split('#')[1];

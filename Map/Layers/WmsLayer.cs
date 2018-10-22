@@ -18,9 +18,9 @@ namespace Ptv.XServer.Controls.Map.Layers
     /// is transformed to map these reference systems to the internally used format.</remarks>
     public class WmsLayer : ILayer
     {
-        private readonly ILayer layer;
+        private readonly ILayer wrappedLayer;
 
-        /// <summary> Create and initialize a new layer which integrates the images provided by Web Map Services into the map control.  </summary>
+        /// <summary> Creates and initializes a new layer which integrates the images provided by Web Map Services into the map control.  </summary>
         /// <param name="urlTemplate">URL needed for retrieving images from the corresponding Web Map Service. The layout of this URL must
         /// achieve the requirements according the OpenGIS Specification, details can be found in http://www.opengeospatial.org/standards/wms .
         /// <br />
@@ -38,47 +38,52 @@ namespace Ptv.XServer.Controls.Map.Layers
         {
             var canvasCategories = new[] { isBaseMap ? CanvasCategory.BaseMap : CanvasCategory.Content };
             ReprojectionProvider = new ReprojectionProvider(urlTemplate, timeout);
-            layer = isTiled
-                ? (ILayer)new TiledLayer(name) { TiledProvider = ReprojectionProvider, Copyright = copyRight, CanvasCategories = canvasCategories }
+            wrappedLayer = isTiled
+                ? (ILayer) new TiledLayer(name) { TiledProvider = ReprojectionProvider, Copyright = copyRight, CanvasCategories = canvasCategories }
                 : new UntiledLayer(name) { UntiledProvider = ReprojectionProvider, Copyright = copyRight, CanvasCategories = canvasCategories };
+
+            // In LayerCollection the first parameter of PropertyChanged method is determined by class BaseLayer, which is equal to the wrapper layer. 
+            // But this layer wasn't inserted in the LayerCollection, so the sender has to be corrected. 
+            wrappedLayer.PropertyChanged += (object _, PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
         }
 
         /// <inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged;
+
         /// <inheritdoc/>
-        public string Name => layer.Name;
+        public string Name => wrappedLayer.Name;
         /// <inheritdoc/>
         public int Priority {
-            get => layer.Priority;
-            set => layer.Priority = value;
+            get => wrappedLayer.Priority;
+            set => wrappedLayer.Priority = value;
         }
         /// <inheritdoc/>
         public string Caption {
-            get => layer.Caption;
-            set => layer.Caption = value;
+            get => wrappedLayer.Caption;
+            set => wrappedLayer.Caption = value;
         }
         /// <inheritdoc/>
         public ImageSource Icon {
-            get => layer.Icon;
-            set => layer.Icon = value;
+            get => wrappedLayer.Icon;
+            set => wrappedLayer.Icon = value;
         }
         /// <inheritdoc/>
         public double Opacity {
-            get => layer.Opacity;
-            set => layer.Opacity = value;
+            get => wrappedLayer.Opacity;
+            set => wrappedLayer.Opacity = value;
         }
         /// <inheritdoc/>
-        public void AddToMapView(MapView mapView) { layer.AddToMapView(mapView); }
+        public void AddToMapView(MapView mapView) => wrappedLayer.AddToMapView(mapView); 
         /// <inheritdoc/>
-        public void RemoveFromMapView(MapView mapView) { layer.RemoveFromMapView(mapView); }
+        public void RemoveFromMapView(MapView mapView) => wrappedLayer.RemoveFromMapView(mapView); 
         /// <inheritdoc/>
-        public string Copyright => layer.Copyright;
+        public string Copyright => wrappedLayer.Copyright;
 
         /// <inheritdoc/>
-        public bool HasSettingsDialog => layer.HasSettingsDialog;
+        public bool HasSettingsDialog => wrappedLayer.HasSettingsDialog;
 
         /// <inheritdoc/>
-        public CanvasCategory[] CanvasCategories => layer.CanvasCategories;
+        public CanvasCategory[] CanvasCategories => wrappedLayer.CanvasCategories;
 
         /// <summary> Provider used for retrieving images from the specified URL and re-projecting it if necessary. </summary>
         public readonly ReprojectionProvider ReprojectionProvider;
@@ -150,15 +155,14 @@ namespace Ptv.XServer.Controls.Map.Layers
         public static Rect TileToSphereMercator(int x, int y, int z, double radius = 6378137)
         {
             double earthHalfCircum = radius * Math.PI;
-            double earthCircum = earthHalfCircum * 2.0;
+            double arc = earthHalfCircum * 2.0 / Math.Pow(2, z);
 
-            double arc = earthCircum / Math.Pow(2, z);
-            double x1 = earthHalfCircum - x * arc;
+            double x1 = x * arc - earthHalfCircum;
             double y1 = earthHalfCircum - y * arc;
-            double x2 = earthHalfCircum - (x + 1) * arc;
+            double x2 = (x + 1) * arc - earthHalfCircum;
             double y2 = earthHalfCircum - (y + 1) * arc;
 
-            return new Rect(new Point(-x1, y2), new Point(-x2, y1));
+            return new Rect(new Point(x1, y2), new Point(x2, y1));
         }
 
         /// <inheritdoc/>
@@ -167,14 +171,7 @@ namespace Ptv.XServer.Controls.Map.Layers
             return reprojectionService.GetImageStream(new Tools.Reprojection.MapRectangle(left, bottom, right, top), new System.Drawing.Size(width, height));
         }
 
-
-        private string Clean(string toClean)
-        {
-            if (toClean == null) return null;
-
-            toClean = toClean.Trim();
-            return string.IsNullOrEmpty(toClean) ? null : toClean;
-        }
+        private string Clean(string toClean) => string.IsNullOrEmpty(toClean = toClean?.Trim()) ? null : toClean;
 
         private string userAgent;
         /// <summary> Gets or sets the value of the user agent HTTP header. </summary>

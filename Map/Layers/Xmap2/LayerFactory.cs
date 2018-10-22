@@ -42,7 +42,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
                 MaxZoom = 22,
                 RequestBuilderDelegate = (x, y, z) => BaseUrl
                                                       + $"/services/rest/XMap/tile/{z}/{x}/{y}"
-                                                      + $"?storedProfile={StoredProfile}"
+                                                      + $"?storedProfile={MapStyle}"
                                                       + $"&layers={string.Join(",", BackgroundThemes.ToArray())}"
                                                       + $"&xtok={Token}"
             };
@@ -146,7 +146,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         public IEnumerable<string> AvailableMapStyles => ServerConfiguration.AvailableMapStyles;
 
         /// <summary>Style of a map.</summary>
-        public string StoredProfile
+        public string MapStyle
         {
             get => ((UntiledProvider)LabelLayer.UntiledProvider).StoredProfile;
             set
