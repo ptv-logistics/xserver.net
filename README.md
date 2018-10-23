@@ -28,7 +28,7 @@ Prerequisites
 API Documentation
 -----------------
 
-https://ptv-logistics.github.io/xservernet-docs
+https://ptv-logistics.github.io/xserver.net-docs
 
 
 Code Samples and Demos
