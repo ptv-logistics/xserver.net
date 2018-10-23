@@ -25,16 +25,16 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         }
 
         /// <summary> Names the bounding box placeholder. </summary>
-        public String BoundingBox { get; set; }
+        public string BoundingBox { get; set; }
 
         /// <summary> Names the width placeholder. </summary>
-        public String Width { get; set; }
+        public string Width { get; set; }
 
         /// <summary> Names the height placeholder. </summary>
-        public String Height { get; set; }
+        public string Height { get; set; }
 
         /// <summary> Returns all placeholder names in list. </summary>
-        public IList<String> Names => new[] { BoundingBox, Width, Height };
+        public IList<string> Names => new[] { BoundingBox, Width, Height };
     }
 
     /// <summary> Delegate used by WmsMapServer; used for request customization. </summary>
@@ -50,7 +50,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         protected readonly WmsPlaceholders Placeholders = new WmsPlaceholders();
 
         /// <summary> URL template </summary>
-        protected readonly String UrlTemplate;
+        protected readonly string UrlTemplate;
 
         /// <summary> Additional event that will be triggered after the request has been created. Used for request customization. </summary>
         public RequestCreatedHandler OnRequestCreated = null;
@@ -63,7 +63,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// Fails with an ArgumentException if the url template misses mandatory elements or if the specified alignment is set to an unsupported 
         /// value (such as ContentAlignment.MiddleCenter).
         /// </exception>
-        public WmsMapService(String urlTemplate, ContentAlignment minAlignment = ContentAlignment.BottomLeft, WmsPlaceholders placeholders = null)
+        public WmsMapService(string urlTemplate, ContentAlignment minAlignment = ContentAlignment.BottomLeft, WmsPlaceholders placeholders = null)
         {
             MinAlignment = minAlignment;
             // fail if minAlignment is set to an unsupported value
@@ -101,7 +101,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             }
         }
 
-        static bool IsNullOrWhiteSpace(string value) { return String.IsNullOrEmpty(value) || value.Trim().Length == 0; }
+        static bool IsNullOrWhiteSpace(string value) { return string.IsNullOrEmpty(value) || value.Trim().Length == 0; }
 
         static Dictionary<string, string> ParseQueryString(string queryString)
         {
@@ -152,11 +152,11 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <returns>Instantiated url that can be used to request the actual map image.</returns>
         /// <remarks>Derived classes may override this method to customize 
         /// the url being used for requesting map images.</remarks>
-        protected virtual String InstantiateUrl(IBoundingBox box, Size size)
+        protected virtual string InstantiateUrl(IBoundingBox box, Size size)
         {
             // instantiate url
             return UrlTemplate
-                .Replace(Placeholders.BoundingBox, String.Format(CultureInfo.InvariantCulture, "{0},{1},{2},{3}", box.MinX, box.MinY, box.MaxX, box.MaxY))
+                .Replace(Placeholders.BoundingBox, string.Format(CultureInfo.InvariantCulture, "{0},{1},{2},{3}", box.MinX, box.MinY, box.MaxX, box.MaxY))
                 .Replace(Placeholders.Width, size.Width.ToString(CultureInfo.InvariantCulture))
                 .Replace(Placeholders.Height, size.Height.ToString(CultureInfo.InvariantCulture));
         }

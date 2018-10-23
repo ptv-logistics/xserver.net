@@ -25,17 +25,17 @@ namespace Ptv.Components.Projections.Direct
     /// Defines the source and target identifiers of a managed coordinate transformation routine.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
-    internal class TransformationAttribute : System.Attribute
+    internal class TransformationAttribute : Attribute
     {
         /// <summary>
         /// Identifier of the source coordinate reference system.
         /// </summary>
-        public String SourceId;
+        public string SourceId;
 
         /// <summary>
         /// Identifier of the target coordinate reference system.
         /// </summary>
-        public String TargetId;
+        public string TargetId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransformationAttribute"/> class.
@@ -156,22 +156,22 @@ namespace Ptv.Components.Projections.Direct
         #region Constants used by Conform transformations
 
         /// <summary>
-        /// use by conform transformations, taken from claw (Coordiantes.cs)
+        /// use by conform transformations, taken from claw (Coordinates.cs)
         /// </summary>
         private static readonly double gpEuro_n = Math.Log(Math.Cos(DEG_TO_RAD * 90.0) / Math.Cos(DEG_TO_RAD * 110.0)) / Math.Log(Math.Tan(DEG_TO_RAD * 145.0) / Math.Tan(DEG_TO_RAD * 135.0));
 
         /// <summary>
-        /// use by conform transformations, taken from claw (Coordiantes.cs)
+        /// use by conform transformations, taken from claw (Coordinates.cs)
         /// </summary>
         private static readonly double gpEuro_nInv = 1.0 / gpEuro_n;
 
         /// <summary>
-        /// use by conform transformations, taken from claw (Coordiantes.cs)
+        /// use by conform transformations, taken from claw (Coordinates.cs)
         /// </summary>                                                                                                                                   
         private static readonly double gpEuro_RF = Math.Cos(DEG_TO_RAD * 90.0) * Math.Pow(Math.Tan(DEG_TO_RAD * 135.0), gpEuro_n) / gpEuro_n;
 
         /// <summary>
-        /// use by conform transformations, taken from claw (Coordiantes.cs)
+        /// use by conform transformations, taken from claw (Coordinates.cs)
         /// </summary>                                                                                                                              
         private static readonly double gpEuro_rho0 = gpEuro_RF / Math.Pow(Math.Tan(DEG_TO_RAD * 120.0), gpEuro_n);
 
@@ -347,7 +347,7 @@ namespace Ptv.Components.Projections.Direct
             double teta = gpEuro_n * 2.0 * DEG_TO_RAD * (x - 10.0);
             double rho = gpEuro_RF / Math.Pow(Math.Tan(DEG_TO_RAD * (y + 90.0)), gpEuro_n);
 
-            x = (rho * Math.Sin(teta)) * 6365000 + 1800000;
+            x = rho * Math.Sin(teta) * 6365000 + 1800000;
             y = (gpEuro_rho0 - rho * Math.Cos(teta)) * 6365000 - 500000;
         }
 
@@ -368,7 +368,7 @@ namespace Ptv.Components.Projections.Direct
             double rho = Math.Sqrt(x * x + h * h);
 
             x = RAD_TO_DEG * (teta / gpEuro_n + DEG_TO_RAD * 20.0) / 2.0;
-            y = RAD_TO_DEG * (Math.Atan(Math.Pow(gpEuro_RF / rho, gpEuro_nInv))) - 90.0;
+            y = RAD_TO_DEG * Math.Atan(Math.Pow(gpEuro_RF / rho, gpEuro_nInv)) - 90.0;
         }
 
         /// <summary>
@@ -437,7 +437,7 @@ namespace Ptv.Components.Projections.Direct
             /// </summary>
             /// <param name="crsId">The identifier of the coordinate reference system.</param>
             /// <param name="aliases">The aliases for the coordinate reference system</param>
-            public RootCRSID(string crsId, params String[] aliases)
+            public RootCRSID(string crsId, params string[] aliases)
             {
                 Id = crsId;
                 Aliases = aliases;
@@ -480,12 +480,12 @@ namespace Ptv.Components.Projections.Direct
         /// <summary>
         /// Maps CRSIDs to their 'root CRSID' using the aliases defined through alias_def. Initialized in static constructor.
         /// </summary>
-        private static readonly SortedList<String, String> alias_map = new SortedList<String, String>();
+        private static readonly SortedList<string, string> alias_map = new SortedList<string, string>();
 
         /// <summary>
         /// Cache storing the delegates of the well known coordinate transformation routines.
         /// </summary>
-        private static readonly SortedList<String, TransformDelegate> transformations = new SortedList<String, TransformDelegate>();
+        private static readonly SortedList<string, TransformDelegate> transformations = new SortedList<string, TransformDelegate>();
 
         /// <summary>
         /// Caches a transformation method, described by its source and target coordinate reference system.
@@ -508,7 +508,7 @@ namespace Ptv.Components.Projections.Direct
         {
             // setup alias map
             foreach (RootCRSID r in rootCRSIDs)
-                foreach (String alias in r.Aliases)
+                foreach (string alias in r.Aliases)
                     alias_map.Add(alias.ToLower(), r.Id.ToLower());
 
             // find possible transformations
@@ -518,11 +518,9 @@ namespace Ptv.Components.Projections.Direct
                 object[] attribs = mi.GetCustomAttributes(typeof(TransformationAttribute), true);
 
                 // if it has an TransformationAttribute, add the transformation
-                if (attribs != null && attribs.Length == 1) 
-                {
-                    TransformationAttribute ta = (TransformationAttribute)attribs[0];
-                    AddTransformation(ta.SourceId, ta.TargetId, mi);
-                }
+                if (attribs == null || attribs.Length != 1) continue;
+                TransformationAttribute ta = (TransformationAttribute)attribs[0];
+                AddTransformation(ta.SourceId, ta.TargetId, mi);
             }
 
             // loop through the root crs'es
@@ -530,15 +528,13 @@ namespace Ptv.Components.Projections.Direct
                 foreach (RootCRSID trgt in rootCRSIDs)
                 {
                     // avoid IdentityTransformation and avoid those transformations for which a delegate already exists
-                    TransformDelegate d;
-                    if (src != trgt && !TryGetTransformation(src.Id, trgt.Id, out d))
+                    if (src == trgt || TryGetTransformation(src.Id, trgt.Id, out var d)) continue;
+
+                    // try to find a transformation chain for the src -> trgt transformation
+                    if (TryGetTransformationChain(src.Id, trgt.Id, out d))
                     {
-                        // try to find a transformation chain for the src -> trgt transformation
-                        if (TryGetTransformationChain(src.Id, trgt.Id, out d))
-                        {
-                            // found a chain, store the corresponding delegate
-                            transformations.Add(GetTransformationKey(src.Id, trgt.Id), d);
-                        }
+                        // found a chain, store the corresponding delegate
+                        transformations.Add(GetTransformationKey(src.Id, trgt.Id), d);
                     }
                 }
         }
@@ -582,7 +578,7 @@ namespace Ptv.Components.Projections.Direct
         /// <param name="sourceId">Identifier of the source coordinate reference system.</param>
         /// <param name="targetId">Identifier of the target coordinate reference system.</param>
         /// <returns>The transformation identifier.</returns>
-        private static String GetTransformationKey(string sourceId, string targetId)
+        private static string GetTransformationKey(string sourceId, string targetId)
         {
             return (sourceId + " -> " + targetId).ToLower();
         }
@@ -592,9 +588,9 @@ namespace Ptv.Components.Projections.Direct
         /// </summary>
         /// <param name="crsId">The identifier of the coordinate reference system to get the root identifier for.</param>
         /// <returns>Root coordinate reference system identifier.</returns>
-        private static String GetRootId(this string crsId)
+        private static string GetRootId(this string crsId)
         {
-            String crsid = crsId.ToLower();
+            string crsid = crsId.ToLower();
             return alias_map.ContainsKey(crsid) ? alias_map[crsid] : crsid;
         }
         
@@ -609,9 +605,7 @@ namespace Ptv.Components.Projections.Direct
         /// from the specified source to the specified target coordinate reference system.</exception>
         public static TransformDelegate GetTransformation(string sourceId, string targetId)
         {
-            TransformDelegate handler;
-
-            if (TryGetTransformation(sourceId, targetId, out handler))
+            if (TryGetTransformation(sourceId, targetId, out var handler))
                 return handler;
             
             throw new TransformationNotFoundException(sourceId, targetId);
@@ -629,13 +623,12 @@ namespace Ptv.Components.Projections.Direct
             sourceId = sourceId.GetRootId();
             targetId = targetId.GetRootId();
 
-            if (string.Compare(sourceId, targetId, true) == 0)
-            {
-                transform = new TransformDelegate(CoordinateTransformation.IdentityTransform);
-                return true;
-            }
+            if (string.Compare(sourceId, targetId, true) != 0)
+                return transformations.TryGetValue(GetTransformationKey(sourceId, targetId), out transform);
 
-            return transformations.TryGetValue(GetTransformationKey(sourceId, targetId), out transform);
+            transform = new TransformDelegate(CoordinateTransformation.IdentityTransform);
+            return true;
+
         }
 
         /// <summary>
@@ -650,10 +643,10 @@ namespace Ptv.Components.Projections.Direct
             transform = null;
 
             string[][] chains = new string[][] {
-                new string[] { sourceId, WGS84, targetId },
-                new string[] { sourceId, PTV_MERCATOR, targetId },
-                new string[] { sourceId, WGS84, PTV_MERCATOR, targetId },
-                new string[] { sourceId, PTV_MERCATOR, WGS84, targetId }
+                new[] { sourceId, WGS84, targetId },
+                new[] { sourceId, PTV_MERCATOR, targetId },
+                new[] { sourceId, WGS84, PTV_MERCATOR, targetId },
+                new[] { sourceId, PTV_MERCATOR, WGS84, targetId }
             };
 
             foreach (string[] chain in chains)
@@ -664,11 +657,10 @@ namespace Ptv.Components.Projections.Direct
                     if (!TryGetTransformation(chain[i], chain[i + 1], out delegates[i]))
                         delegates = null;
 
-                if (delegates != null)
-                {
-                    transform = new TransformDelegate(new TransformationChain(delegates).Transform);
-                    return true;
-                }
+                if (delegates == null) continue;
+
+                transform = new TransformDelegate(new TransformationChain(delegates).Transform);
+                return true;
             }
 
             return false;
@@ -689,7 +681,7 @@ namespace Ptv.Components.Projections.Direct
         /// <summary>
         /// The transform delegate used internally by the current instance of <see cref="CoordinateTransformation"/>.
         /// </summary>
-        private readonly TransformDelegate transform = null;
+        private readonly TransformDelegate transform;
 
         /// <summary>
         /// Initializes static members of the <see cref="CoordinateTransformation"/> class.
@@ -750,7 +742,7 @@ namespace Ptv.Components.Projections.Direct
             if (t == null) 
             {
                 if (string.Compare(sourceId, targetId, true) == 0)
-                    t = new TransformDelegate(IdentityTransform);
+                    t = IdentityTransform;
                 else 
                     CoordinateTransformations.TryGetTransformation(sourceId, targetId, out t);
             }
@@ -822,7 +814,7 @@ namespace Ptv.Components.Projections.Direct
 
             while (enumerator.MoveNext())
             {
-                T t = (T)enumerator.Current;
+                T t = enumerator.Current;
 
                 Location l = getLocation(t);
 
@@ -841,13 +833,11 @@ namespace Ptv.Components.Projections.Direct
 
             while (enumerator.MoveNext())
             {
-                T t = (T)enumerator.Current;
+                T t = enumerator.Current;
 
                 Point p = getPoint(t);
 
-                double x, y;
-                double? z;
-                Transform(p.X, p.Y, null, out x, out y, out z);
+                Transform(p.X, p.Y, null, out var x, out var y, out var z);
 
                 q.X = x;
                 q.Y = y;

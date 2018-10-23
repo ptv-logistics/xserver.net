@@ -218,8 +218,8 @@ namespace Ptv.XServer.Controls.Map.Canvases
         protected override Point PtvMercatorToCanvas(Point mercatorPoint)
         {
             var geoCanvasPoint = new Point(
-                (mercatorPoint.X + ((1.0 / MapView.ZoomAdjust) * (MapView.LogicalSize / 2))) * (MapView.ZoomAdjust / MapView.LogicalSize) * MapView.ReferenceSize,
-                (-mercatorPoint.Y + ((1.0 / MapView.ZoomAdjust) * (MapView.LogicalSize / 2))) * (MapView.ZoomAdjust / MapView.LogicalSize) * MapView.ReferenceSize);
+                (mercatorPoint.X + 1.0 / MapView.ZoomAdjust * (MapView.LogicalSize / 2)) * (MapView.ZoomAdjust / MapView.LogicalSize) * MapView.ReferenceSize,
+                (-mercatorPoint.Y + 1.0 / MapView.ZoomAdjust * (MapView.LogicalSize / 2)) * (MapView.ZoomAdjust / MapView.LogicalSize) * MapView.ReferenceSize);
 
             return MapView.GeoCanvas.RenderTransform.Transform(geoCanvasPoint);
         }
@@ -289,7 +289,7 @@ namespace Ptv.XServer.Controls.Map.Canvases
         /// <inheritdoc/>  
         protected override Point PtvMercatorToCanvas(Point mercatorPoint)
         {
-            return (RenderTransform == canvasTransform) 
+            return RenderTransform == canvasTransform 
                 ? new Point(mercatorPoint.X, -mercatorPoint.Y) 
                 : RenderTransform.Transform(canvasTransform.Inverse.Transform(new Point(mercatorPoint.X, -mercatorPoint.Y)));
         }
@@ -297,11 +297,10 @@ namespace Ptv.XServer.Controls.Map.Canvases
         /// <inheritdoc/>  
         protected override void BeforeUpdate(UpdateMode updateMode)
         {
-            if (updateMode == UpdateMode.EndTransition)
-            {
-                offsetTransform.X = MapView.OriginOffset.X;
-                offsetTransform.Y = MapView.OriginOffset.Y;
-            }
+            if (updateMode != UpdateMode.EndTransition) return;
+
+            offsetTransform.X = MapView.OriginOffset.X;
+            offsetTransform.Y = MapView.OriginOffset.Y;
         }
 
         #endregion

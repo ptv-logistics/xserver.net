@@ -37,10 +37,7 @@ namespace Ptv.XServer.Controls.Map.Symbols
             if (RealBright(lightFactor))
                 return Colors.White;
 
-            if (ShouldDarken(lightFactor))
-                return DarkenColor(originalColor, lightFactor);
-
-            return LightenColor(originalColor, lightFactor);
+            return ShouldDarken(lightFactor) ? DarkenColor(originalColor, lightFactor) : LightenColor(originalColor, lightFactor);
         }
 
         /// <summary> Documentation in progress... </summary>

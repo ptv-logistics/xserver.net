@@ -116,7 +116,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         private void UpdateScale()
         {
             // Do not show if map is too small.
-            Opacity = (MapView.CurrentScale > 30000) ? 0 : 1;
+            Opacity = MapView.CurrentScale > 30000 ? 0 : 1;
 
             showMiles = Map.UseMiles;
 

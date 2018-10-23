@@ -42,7 +42,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             if (TryGetValueInternal(key, out value))
                 return true;
 
-            if (!(lockedKeys.TryGetValue(key, out var keyLock)))
+            if (!lockedKeys.TryGetValue(key, out var keyLock))
             {
                 lockedKeys.Add(key, new ManualResetEvent(false));
 
@@ -68,7 +68,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             LinkedListNode<string> node = lastUsed.Last;
             while (node != null && lastUsed.Count >= CacheSize)
             {
-                if (!(lockedKeys.ContainsKey(node.Value)))
+                if (!lockedKeys.ContainsKey(node.Value))
                 {
                     valueCache.Remove(node.Value);
                     lastUsed.Remove(node);

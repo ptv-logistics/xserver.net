@@ -17,7 +17,6 @@ using Ptv.XServer.Controls.Map.Localization;
 using xserver;
 using Environment = System.Environment;
 using Timer = System.Threading.Timer;
-using UserControl = System.Windows.Controls.UserControl;
 using Image = System.Windows.Controls.Image;
 using Point = System.Windows.Point;
 
@@ -311,7 +310,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             }
 
             // resize if > MaxSize
-            if ((mapParam.Width <= MaxRequestSize.Width) && (mapParam.Height <= MaxRequestSize.Height)) return mapParam;
+            if (mapParam.Width <= MaxRequestSize.Width && mapParam.Height <= MaxRequestSize.Height) return mapParam;
 
             double ratio = Math.Min(MaxRequestSize.Height / mapParam.Height, MaxRequestSize.Width / mapParam.Width);
             mapParam.Width *= ratio;
@@ -426,7 +425,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             }
 
             var mapParam = GetMapParam();
-            if (!forceUpdate && (mapParam == lastParam)) return;
+            if (!forceUpdate && mapParam == lastParam) return;
 
             // reset existing map map objects
             UpdateMapObjects?.Invoke(null, new Size());
@@ -603,7 +602,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             /// <returns>True, if Width and Height are in range. False otherwise.</returns>
             public bool IsSizeInRange(Size minSize, Size maxSize)
             {
-                return (Width >= minSize.Width && Height >= minSize.Height && Width <= maxSize.Width && Height <= maxSize.Height);
+                return Width >= minSize.Width && Height >= minSize.Height && Width <= maxSize.Width && Height <= maxSize.Height;
             }
         }
         #endregion

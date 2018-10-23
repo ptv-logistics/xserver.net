@@ -39,7 +39,7 @@ namespace Ptv.Components.Projections.Custom
         /// Initializes a new instance of the <see cref="CustomTransformation"/> class.
         /// </summary>
         /// <param name="args">Parameters of <see cref="ShiftScaleTransformation"/>.</param>
-        internal CustomTransformation(Stack<String> args)
+        internal CustomTransformation(Stack<string> args)
         {
         }
 
@@ -111,9 +111,9 @@ namespace Ptv.Components.Projections.Custom
         /// <remarks>The resulting coordinates are written back to the arrays provided.</remarks>
         public void Pre(int length, int ofs, double[] x, double[] y)
         {
-            if (Transforms)
-                for (int i = ofs; i < (ofs + length); ++i)
-                    Pre(ref x[i], ref y[i]);
+            if (!Transforms) return;
+            for (int i = ofs; i < ofs + length; ++i)
+                Pre(ref x[i], ref y[i]);
         }
 
         /// <summary>
@@ -126,9 +126,9 @@ namespace Ptv.Components.Projections.Custom
         /// <remarks>The resulting coordinates are written back to the arrays provided.</remarks>
         public void Post(int length, int ofs, double[] x, double[] y)
         {
-            if (Transforms)
-                for (int i = ofs; i < (ofs + length); ++i)
-                    Pre(ref x[i], ref y[i]);
+            if (!Transforms) return;
+            for (int i = ofs; i < ofs + length; ++i)
+                Pre(ref x[i], ref y[i]);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Ptv.Components.Projections.Custom
         /// string with <see cref="Parse(ref System.String, System.String, bool)">CustomTransformation.Parse</see>.</remarks>
         public override string ToString()
         {
-            return GetType().FullName + (InnerTransformation != null ? "," + InnerTransformation.ToString() : "");
+            return GetType().FullName + (InnerTransformation != null ? "," + InnerTransformation : "");
         }
 
         /// <summary>
@@ -166,8 +166,8 @@ namespace Ptv.Components.Projections.Custom
             int k = i == -1 ? -1 : wkt.IndexOf('+', j);
             int l = k < 0 ? wkt.Length : k;
 
-            Stack<String> args = 
-                new Stack<String>(wkt.Substring(j, l - j).Trim().Split(',').Reverse());
+            Stack<string> args = 
+                new Stack<string>(wkt.Substring(j, l - j).Trim().Split(',').Reverse());
 
             CustomTransformation ct = 
                 args.Count < 1 ? null : Parse(args);
@@ -183,14 +183,14 @@ namespace Ptv.Components.Projections.Custom
         /// </summary>
         /// <param name="args">The custom transformation description.</param>
         /// <returns>The <see cref="CustomTransformation"/> matching the description.</returns>
-        private static CustomTransformation Parse(Stack<String> args)
+        private static CustomTransformation Parse(Stack<string> args)
         {
             CustomTransformation ct = null;
 
             while (args.Count > 0)
             {
                 ConstructorInfo c = Type.GetType(args.Pop()).GetConstructor(BindingFlags.Instance | BindingFlags.Public | 
-                    BindingFlags.NonPublic, null, new Type[] { typeof(Stack<String>) }, null );
+                    BindingFlags.NonPublic, null, new[] { typeof(Stack<string>) }, null );
 
                 var instance = (CustomTransformation) c.Invoke(new object[] { args });
                 
@@ -222,7 +222,7 @@ namespace Ptv.Components.Projections.Custom
         /// <summary>
         /// Scale and shift values.
         /// </summary>
-        private readonly double shx = 0, shy = 0, scx = 1, scy = 1;
+        private readonly double shx, shy, scx = 1, scy = 1;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShiftScaleTransformation"/> class.
@@ -237,8 +237,8 @@ namespace Ptv.Components.Projections.Custom
         /// Initializes a new instance of the <see cref="ShiftScaleTransformation"/> class.
         /// </summary>
         /// <param name="args">Parameters of <see cref="ShiftScaleTransformation"/>.</param>
-        internal ShiftScaleTransformation(Stack<String> args)
-            : this (Double.Parse(args.Pop()), Double.Parse(args.Pop()), Double.Parse(args.Pop()), Double.Parse(args.Pop()))
+        internal ShiftScaleTransformation(Stack<string> args)
+            : this (double.Parse(args.Pop()), double.Parse(args.Pop()), double.Parse(args.Pop()), double.Parse(args.Pop()))
         {
         }
 
@@ -324,7 +324,7 @@ namespace Ptv.Components.Projections.Custom
         {
             return 
                 GetType().FullName + "," + shx + "," + shy + "," + scx + "," + scy + 
-                (InnerTransformation != null ? "," + InnerTransformation.ToString() : "");
+                (InnerTransformation != null ? "," + InnerTransformation : "");
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace Ptv.Components.Projections.Custom
         /// Initializes a new instance of the <see cref="GeoMinSekTransformation"/> class.
         /// </summary>
         /// <param name="args">Parameters of <see cref="ShiftScaleTransformation"/>.</param>
-        internal GeoMinSekTransformation(Stack<String> args)
+        internal GeoMinSekTransformation(Stack<string> args)
         {
         }
         

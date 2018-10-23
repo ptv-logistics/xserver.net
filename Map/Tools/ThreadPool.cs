@@ -144,7 +144,7 @@ namespace DevelopMentor
             
             this.initialThreadCount = initialThreadCount;
             this.maxThreadCount = maxThreadCount;
-            this.requestQueueLimit = (requestQueueLimit < 0 ? DEFAULT_REQUEST_QUEUE_LIMIT : requestQueueLimit);
+            this.requestQueueLimit = requestQueueLimit < 0 ? DEFAULT_REQUEST_QUEUE_LIMIT : requestQueueLimit;
             decayTime = dynamicThreadDecayTime;
             this.newThreadTrigger = new TimeSpan(TimeSpan.TicksPerMillisecond * newThreadTrigger);
             this.threadPriority = threadPriority;
@@ -176,7 +176,7 @@ namespace DevelopMentor
         /// <summary> Gets or sets Documentation in progress... </summary>
         public int DynamicThreadDecay
         {
-            get => (decayTime);
+            get => decayTime;
 
             set
             {
@@ -197,7 +197,7 @@ namespace DevelopMentor
         /// <summary> Gets or sets Documentation in progress... </summary>
         public int NewThreadTrigger
         {
-            get => ((int)newThreadTrigger.TotalMilliseconds);
+            get => (int)newThreadTrigger.TotalMilliseconds;
 
             set
             {
@@ -216,8 +216,8 @@ namespace DevelopMentor
         /// <summary> Gets or sets Documentation in progress... </summary>
         public int RequestQueueLimit
         {
-            get => (requestQueueLimit);
-            set => requestQueueLimit = (value < 0 ? DEFAULT_REQUEST_QUEUE_LIMIT : value);
+            get => requestQueueLimit;
+            set => requestQueueLimit = value < 0 ? DEFAULT_REQUEST_QUEUE_LIMIT : value;
         }
 
         /// <summary> Gets Documentation in progress... </summary>
@@ -226,7 +226,7 @@ namespace DevelopMentor
         /// <summary> Gets or sets Documentation in progress... </summary>
         public int MaxThreads
         {
-            get => (maxThreadCount);
+            get => maxThreadCount;
 
             set
             {
@@ -243,25 +243,13 @@ namespace DevelopMentor
         public bool IsStarted { get; private set; }
 
         /// <summary> Gets or sets a value indicating whether Documentation in progress... </summary>
-        public bool PropagateThreadPrincipal
-        {
-            get => (propagateThreadPrincipal);
-            set => propagateThreadPrincipal = value;
-        }
+        public bool PropagateThreadPrincipal { get; set; }
 
         /// <summary> Gets or sets a value indicating whether Documentation in progress... </summary>
-        public bool PropagateCallContext
-        {
-            get => (propagateCallContext);
-            set => propagateCallContext = value;
-        }
+        public bool PropagateCallContext { get; set; }
 
         /// <summary> Gets or sets a value indicating whether Documentation in progress... </summary>
-        public bool PropagateHttpContext
-        {
-            get => (propagateHttpContext);
-            set => propagateHttpContext = value;
-        }
+        public bool PropagateHttpContext { get; set; }
 
         /// <summary> Gets a value indicating whether Documentation in progress... </summary>
         public bool PropagateCASMarkers => false;
@@ -270,8 +258,7 @@ namespace DevelopMentor
         /// <summary> Gets or sets a value indicating whether Documentation in progress... </summary>
         public bool IsBackground
         {
-            get => (useBackgroundThreads);
-
+            get => useBackgroundThreads;
             set
             {
                 if (IsStarted)
@@ -405,7 +392,7 @@ namespace DevelopMentor
         /// <returns> Documentation in progress... </returns>
         public bool PostRequest(WorkRequestDelegate cb, object state, out IWorkRequest reqStatus)
         {
-            var request = new WorkRequest(cb, state, propagateThreadPrincipal, propagateCallContext, PropagateCASMarkers);
+            var request = new WorkRequest(cb, state, PropagateThreadPrincipal, PropagateCallContext, PropagateCASMarkers);
             reqStatus = request;
             return PostRequest(request);
         }
@@ -429,7 +416,7 @@ namespace DevelopMentor
         /// <returns> Documentation in progress... </returns>
         public bool PostRequest(Delegate cb, object[] args, out IWorkRequest reqStatus)
         {
-            var request = new WorkRequest(cb, args, propagateThreadPrincipal, propagateCallContext, PropagateCASMarkers);
+            var request = new WorkRequest(cb, args, PropagateThreadPrincipal, PropagateCallContext, PropagateCASMarkers);
             reqStatus = request;
             return PostRequest(request);
         }
@@ -448,7 +435,7 @@ namespace DevelopMentor
                 // has been placed on the maximum # of requests that can be
                 // placed into the queue.
                 //
-                if ((requestQueueLimit != -1) && (requestQueue.Count >= requestQueueLimit)) return false;
+                if (requestQueueLimit != -1 && requestQueue.Count >= requestQueueLimit) return false;
 
                 try
                 {
@@ -506,9 +493,6 @@ namespace DevelopMentor
         /// <summary> Throttle for maximum # of work requests that can be added. </summary>
         private int requestQueueLimit;
         private bool useBackgroundThreads = true;
-        private bool propagateThreadPrincipal;
-        private bool propagateCallContext;
-        private bool propagateHttpContext;
 
         #endregion
 
@@ -554,7 +538,7 @@ namespace DevelopMentor
 
                 ThreadInfo prevInfo = Capture(true, true, true);
                 Restore(ti);
-                return(prevInfo);
+                return prevInfo;
             }
 
             /// <summary> Initializes a new instance of the <see cref="ThreadInfo"/> class. </summary>
@@ -568,7 +552,7 @@ namespace DevelopMentor
                     principal = Thread.CurrentPrincipal;
                 }
 
-                if (propagateCallContext && (miGetLogicalCallContext != null))
+                if (propagateCallContext && miGetLogicalCallContext != null)
                 {
                     callContext = (LogicalCallContext)miGetLogicalCallContext.Invoke(Thread.CurrentThread, null);
                     callContext = (LogicalCallContext)callContext.Clone();
@@ -713,7 +697,7 @@ namespace DevelopMentor
                 // result of this test-and-set indicates the request is in the
                 // "processed" state, it might actually be about to be processed.
                 //
-                return(Interlocked.CompareExchange(ref state, CANCELLED, PENDING) == PENDING);
+                return Interlocked.CompareExchange(ref state, CANCELLED, PENDING) == PENDING;
             }
             #endregion
         }
@@ -790,9 +774,9 @@ namespace DevelopMentor
                         //
                         bool timedOut = false;
 
-                        while (!pool.stopInProgress && !timedOut && (pool.requestQueue.Count == 0))
+                        while (!pool.stopInProgress && !timedOut && pool.requestQueue.Count == 0)
                         {
-                            if (!Monitor.Wait(pool, (isPermanent ? Timeout.Infinite : pool.decayTime)))
+                            if (!Monitor.Wait(pool, isPermanent ? Timeout.Infinite : pool.decayTime))
                             {
                                 // Timed out waiting for something to do.  Only dynamically created
                                 // threads will get here, so bail out.
@@ -812,7 +796,7 @@ namespace DevelopMentor
                         // that timed out, pull the request off the queue and prepare to
                         // process it.
                         //
-                        if (!pool.stopInProgress && !timedOut && (pool.requestQueue.Count > 0))
+                        if (!pool.stopInProgress && !timedOut && pool.requestQueue.Count > 0)
                         {
                             wr = (WorkRequest)pool.requestQueue.Dequeue();
                             Debug.Assert(wr != null);
@@ -828,7 +812,7 @@ namespace DevelopMentor
                             //
                             TimeSpan requestTimeInQ = DateTime.Now.Subtract(wr.workingTime);
 
-                            if ((requestTimeInQ >= pool.newThreadTrigger) && (pool.currentThreadCount < pool.maxThreadCount))
+                            if (requestTimeInQ >= pool.newThreadTrigger && pool.currentThreadCount < pool.maxThreadCount)
                             {
                                 // Note - the constructor for ThreadWrapper will update
                                 // pool.currentThreadCount.
@@ -870,7 +854,7 @@ namespace DevelopMentor
 
                     // No longer holding pool lock here...
 
-                    if (done || (wr == null)) continue;
+                    if (done || wr == null) continue;
 
                     // Check to see if this request has been cancelled while
                     // stuck in the work queue.

@@ -44,7 +44,7 @@ namespace Ptv.XServer.Controls.Map.Layers
 
             // In LayerCollection the first parameter of PropertyChanged method is determined by class BaseLayer, which is equal to the wrapper layer. 
             // But this layer wasn't inserted in the LayerCollection, so the sender has to be corrected. 
-            wrappedLayer.PropertyChanged += (object _, PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
+            wrappedLayer.PropertyChanged += (_, e) => PropertyChanged?.Invoke(this, e);
         }
 
         /// <inheritdoc/>
@@ -95,7 +95,6 @@ namespace Ptv.XServer.Controls.Map.Layers
     /// </summary>
     public class ReprojectionProvider : ITiledProvider, IUntiledProvider
     {
-        private readonly string template;
         private readonly ReprojectionService reprojectionService;
 
         /// <summary>
@@ -112,21 +111,20 @@ namespace Ptv.XServer.Controls.Map.Layers
         /// <param name="timeout">Longest time waiting for WMS request.</param>
         public ReprojectionProvider(string urlTemplate, int timeout = 8000)
         {
-            template = urlTemplate;
+            CacheId = urlTemplate;
 
             // create source service; a WMS service using the template above 
-            var wmsService = new WmsMapService(template);
+            var wmsService = new WmsMapService(CacheId);
             // hook event, customize timeout
             wmsService.OnRequestCreated += request =>
             {
                 request.Timeout = timeout;
 
-                if (request is HttpWebRequest httpWebRequest)
-                {
-                    httpWebRequest.UserAgent = UserAgent;
-                    if (Proxy != null)
-                        httpWebRequest.Proxy = Proxy;
-                }
+                if (!(request is HttpWebRequest httpWebRequest)) return;
+
+                httpWebRequest.UserAgent = UserAgent;
+                if (Proxy != null)
+                    httpWebRequest.Proxy = Proxy;
             };
 
             // create the reprojection service that re-projects the wms images
@@ -134,7 +132,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         }
 
         /// <inheritdoc/>
-        public string CacheId => template;
+        public string CacheId { get; }
 
         /// <inheritdoc/>
         public Stream GetImageStream(int x, int y, int z)
@@ -171,7 +169,7 @@ namespace Ptv.XServer.Controls.Map.Layers
             return reprojectionService.GetImageStream(new Tools.Reprojection.MapRectangle(left, bottom, right, top), new System.Drawing.Size(width, height));
         }
 
-        private string Clean(string toClean) => string.IsNullOrEmpty(toClean = toClean?.Trim()) ? null : toClean;
+        private static string Clean(string toClean) => string.IsNullOrEmpty(toClean = toClean?.Trim()) ? null : toClean;
 
         private string userAgent;
         /// <summary> Gets or sets the value of the user agent HTTP header. </summary>

@@ -78,8 +78,8 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         {
             double arc = earthHalfCircum / Math.Pow(2, zoom - 1);
 
-            xMin = (tileX * arc) - earthHalfCircum;
-            yMax = earthHalfCircum - (tileY * arc);
+            xMin = tileX * arc - earthHalfCircum;
+            yMax = earthHalfCircum - tileY * arc;
 
             xMax = xMin + arc;
             yMin = yMax - arc;
@@ -117,7 +117,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         {
             mapObjects = null;
 
-            if ((left >= minX) && (right <= maxX) && (top >= minY) && (bottom <= maxY) && border <= 0)
+            if (left >= minX && right <= maxX && top >= minY && bottom <= maxY && border <= 0)
                 return GetStreamInternal(left, top, right, bottom, width, height, out mapObjects);
 
             // request must be resized or clipped
@@ -131,10 +131,10 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                 double lWidth = (right - left) * resize;
                 double lHeight = (bottom - top) * resize;
 
-                leftResized = (left - lWidth);
-                rightResized = (right + lWidth);
-                topResized = (top - lHeight);
-                bottomResized = (bottom + lHeight);
+                leftResized = left - lWidth;
+                rightResized = right + lWidth;
+                topResized = top - lHeight;
+                bottomResized = bottom + lHeight;
             }
             else
             {
@@ -145,10 +145,10 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             }
 
             // calculate clipped bounds
-            double leftClipped = (leftResized < minX) ? minX : leftResized;
-            double rightClipped = (rightResized > maxX) ? maxX : rightResized;
-            double topClipped = (topResized < minY) ? minY : topResized;
-            double bottomClipped = (bottomResized > maxY) ? maxY : bottomResized;
+            double leftClipped = leftResized < minX ? minX : leftResized;
+            double rightClipped = rightResized > maxX ? maxX : rightResized;
+            double topClipped = topResized < minY ? minY : topResized;
+            double bottomClipped = bottomResized > maxY ? maxY : bottomResized;
 
             // calculate corresponding pixel width and height 
             //

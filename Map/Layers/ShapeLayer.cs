@@ -16,8 +16,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
     public class ShapeLayer : BaseLayer
     {
         #region private variables
-        /// <summary> Collections of shape elements contained in this layer. </summary>
-        private readonly ObservableCollection<FrameworkElement> shapes = new ObservableCollection<FrameworkElement>();
+
         #endregion
 
         #region public variables
@@ -27,7 +26,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         public string SpatialReferenceId { get; set; }
 
         /// <summary> Gets the collection of shapes to be displayed by this layer. </summary>
-        public ObservableCollection<FrameworkElement> Shapes => shapes;
+        public ObservableCollection<FrameworkElement> Shapes { get; } = new ObservableCollection<FrameworkElement>();
 
         #endregion
 
@@ -43,7 +42,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         {
             SpatialReferenceId = "EPSG:4326";
             InitializeFactory(CanvasCategory.Content,
-             map => (map.Name == "Map") ? new ShapeCanvas(map, shapes, SpatialReferenceId, LazyUpdate) : null);
+             map => map.Name == "Map" ? new ShapeCanvas(map, Shapes, SpatialReferenceId, LazyUpdate) : null);
         }
         #endregion
     }
@@ -81,7 +80,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         public static Point GetLocation(UIElement element)
         {
             var result = (Point)element.GetValue(LocationProperty);
-            if (!result.IsValidGeoCoordinate() && (element is MapPolylineBase mapPolyline))
+            if (!result.IsValidGeoCoordinate() && element is MapPolylineBase mapPolyline)
                 result = new MapRectangle(mapPolyline.Points).Center;
             return result;
         }
@@ -234,16 +233,15 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         {
             var element = obj as FrameworkElement;
 
-            if (element?.Parent is ShapeCanvas shapeCanvas)
-            {
-                var location = (Point)args.NewValue;
-                shapeCanvas.UpdateLocation(element, location);
-                var canvasPoint = shapeCanvas.transform(location);
-                shapeCanvas.UpdateLocation(element, canvasPoint);
-            }
+            if (!(element?.Parent is ShapeCanvas shapeCanvas)) return;
+
+            var location = (Point)args.NewValue;
+            UpdateLocation(element, location);
+            var canvasPoint = shapeCanvas.transform(location);
+            UpdateLocation(element, canvasPoint);
         }
 
-        private void UpdateLocation(FrameworkElement element, Point canvasPoint)
+        private static void UpdateLocation(FrameworkElement element, Point canvasPoint)
         {
             double width = element.ActualWidth;
             double height = element.ActualHeight;
@@ -270,13 +268,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         {
             var element = obj as FrameworkElement;
 
-            if (element?.Parent is ShapeCanvas shapeCanvas)
-            {
-                var location = GetLocation(obj as UIElement);
-                shapeCanvas.UpdateLocation(element, location);
-                var canvasPoint = shapeCanvas.transform(location);
-                shapeCanvas.UpdateLocation(element, canvasPoint);
-            }
+            if (!(element?.Parent is ShapeCanvas shapeCanvas)) return;
+
+            var location = GetLocation(obj as UIElement);
+            UpdateLocation(element, location);
+            var canvasPoint = shapeCanvas.transform(location);
+            UpdateLocation(element, canvasPoint);
         }
 
         /// <summary> Sets a new coordinate transformation method. </summary>
@@ -328,15 +325,13 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         private void ShapeSizeChanged(object sender, SizeChangedEventArgs e)
         {
             var element = sender as FrameworkElement;
+            if (!(element?.Parent is ShapeCanvas shapeCanvas)) return;
 
-            if (element?.Parent is ShapeCanvas shapeCanvas)
-            {
-                var location = GetLocation(element);
-                UpdateLocation(element, location);
-                var canvasPoint = shapeCanvas.transform(location);
+            var location = GetLocation(element);
+            UpdateLocation(element, location);
+            var canvasPoint = shapeCanvas.transform(location);
 
-                UpdateLocation(element, canvasPoint);
-            }
+            UpdateLocation(element, canvasPoint);
         }
 
         /// <inheritdoc/>
@@ -354,9 +349,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <returns>True if an update is necessary, otherwise false.</returns>
         protected bool NeedsUpdate(bool isLazyUpdate, UpdateMode updateMode)
         {
-            return
-                (isLazyUpdate && updateMode == UpdateMode.EndTransition)
-                || (!isLazyUpdate && updateMode == UpdateMode.WhileTransition)
+            return isLazyUpdate && updateMode == UpdateMode.EndTransition
+                || !isLazyUpdate && updateMode == UpdateMode.WhileTransition
                 || updateMode == UpdateMode.Refresh;
         }
 
@@ -380,30 +374,30 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
                         UpdateLocation(shape, transform(GetLocation(shape)));
                     }
                 }
-                if (NeedsUpdate(lazyUpdate, updateMode))
-                {
-                    var scale = inputMapView.CurrentScale;
-                    double lsf = GetScaleFactor(shape);
-                    double elementScale = GetScale(shape);
-                    if (lsf == 1 && elementScale == 1)
-                    {
-                        shape.RenderTransform = null;
-                    }
-                    else
-                    {
-                        double scl = Math.Pow(scale, 1 - lsf);
-                        shape.RenderTransform = new ScaleTransform(scl*elementScale, scl*elementScale);
-                    }
 
-                    var x = GetAnchor(shape);
-                    switch (x)
-                    {
-                        case LocationAnchor.Center: shape.RenderTransformOrigin = new Point(.5, .5); break;
-                        case LocationAnchor.LeftTop: shape.RenderTransformOrigin = new Point(0, 0); break;
-                        case LocationAnchor.LeftBottom: shape.RenderTransformOrigin = new Point(0, 1); break;
-                        case LocationAnchor.RightTop: shape.RenderTransformOrigin = new Point(1, 0); break;
-                        case LocationAnchor.RightBottom: shape.RenderTransformOrigin = new Point(1, 1); break;
-                    }
+                if (!NeedsUpdate(lazyUpdate, updateMode)) return;
+
+                var scale = inputMapView.CurrentScale;
+                double lsf = GetScaleFactor(shape);
+                double elementScale = GetScale(shape);
+                if (lsf == 1 && elementScale == 1)
+                {
+                    shape.RenderTransform = null;
+                }
+                else
+                {
+                    double scl = Math.Pow(scale, 1 - lsf);
+                    shape.RenderTransform = new ScaleTransform(scl*elementScale, scl*elementScale);
+                }
+
+                var x = GetAnchor(shape);
+                switch (x)
+                {
+                    case LocationAnchor.Center: shape.RenderTransformOrigin = new Point(.5, .5); break;
+                    case LocationAnchor.LeftTop: shape.RenderTransformOrigin = new Point(0, 0); break;
+                    case LocationAnchor.LeftBottom: shape.RenderTransformOrigin = new Point(0, 1); break;
+                    case LocationAnchor.RightTop: shape.RenderTransformOrigin = new Point(1, 0); break;
+                    case LocationAnchor.RightBottom: shape.RenderTransformOrigin = new Point(1, 1); break;
                 }
             }
         }

@@ -91,10 +91,10 @@ namespace Ptv.XServer.Controls.Map.Tools
             const double EARTH_HALF_CIRC = EARTH_CIRCUM / 2;
 
             double arc = EARTH_CIRCUM / (1 << zoom);
-            double x1 = EARTH_HALF_CIRC - (tileX * arc);
-            double y1 = EARTH_HALF_CIRC - (tileY * arc);
-            double x2 = EARTH_HALF_CIRC - ((tileX + 1) * arc);
-            double y2 = EARTH_HALF_CIRC - ((tileY + 1) * arc);
+            double x1 = EARTH_HALF_CIRC - tileX * arc;
+            double y1 = EARTH_HALF_CIRC - tileY * arc;
+            double x2 = EARTH_HALF_CIRC - (tileX + 1) * arc;
+            double y2 = EARTH_HALF_CIRC - (tileY + 1) * arc;
 
             return new Rect(new Point(-x1, y2), new Point(-x2, y1));            
         }
@@ -112,10 +112,10 @@ namespace Ptv.XServer.Controls.Map.Tools
             const double EARTH_HALF_CIRC = EARTH_CIRCUM / 2;
 
             double arc = EARTH_CIRCUM / (1 << zoom);
-            double x1 = EARTH_HALF_CIRC - (tileX * arc);
-            double y1 = EARTH_HALF_CIRC - (tileY * arc);
-            double x2 = EARTH_HALF_CIRC - ((tileX + 1) * arc);
-            double y2 = EARTH_HALF_CIRC - ((tileY + 1) * arc);
+            double x1 = EARTH_HALF_CIRC - tileX * arc;
+            double y1 = EARTH_HALF_CIRC - tileY * arc;
+            double x2 = EARTH_HALF_CIRC - (tileX + 1) * arc;
+            double y2 = EARTH_HALF_CIRC - (tileY + 1) * arc;
 
            return new Rect(new Point(-x1, y2), new Point(-x2, y1));
         }
@@ -164,8 +164,8 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns>Transformed point containing coordinates in WGS format.</returns>
         public static Point PtvMercatorToWGS(Point point)
         {
-            double x = (180 / Math.PI) * (point.X / 6371000.0);
-            double y = (360 / Math.PI) * (Math.Atan(Math.Exp(point.Y / 6371000.0)) - (Math.PI / 4));
+            double x = 180 / Math.PI * (point.X / 6371000.0);
+            double y = 360 / Math.PI * (Math.Atan(Math.Exp(point.Y / 6371000.0)) - Math.PI / 4);
 
             return new Point(x, y);
         }
@@ -180,13 +180,13 @@ namespace Ptv.XServer.Controls.Map.Tools
             bool latIsNeg = lat < 0;
             lat = Math.Abs(lat);
 
-            int degLat = (int)(lat);
+            int degLat = (int)lat;
             int minLat = (int)((lat - degLat) * 60);
             double secLat = (lat - degLat - (double)minLat / 60) * 3600;
 
             bool lonIsNeg = lon < 0;
             lon = Math.Abs(lon);
-            int degLon = (int)(lon);
+            int degLon = (int)lon;
             int minLon = (int)((lon - degLon) * 60);
             double secLon = (lon - degLon - (double)minLon / 60) * 3600;
             
@@ -228,11 +228,15 @@ namespace Ptv.XServer.Controls.Map.Tools
         {
             if (sourceSrid == destSrid)
                 return p => p;
-            if (sourceSrid == "PTV_MERCATOR" && destSrid == "EPSG:4326")
-                return PtvMercatorToWGS;
-            if (sourceSrid == "EPSG:4326" && destSrid == "PTV_MERCATOR")
-                return WGSToPtvMercator;
-            return TransformProj4(sourceSrid, destSrid);
+            switch (sourceSrid)
+            {
+                case "PTV_MERCATOR" when destSrid == "EPSG:4326":
+                    return PtvMercatorToWGS;
+                case "EPSG:4326" when destSrid == "PTV_MERCATOR":
+                    return WGSToPtvMercator;
+                default:
+                    return TransformProj4(sourceSrid, destSrid);
+            }
         }
 
         /// <summary>

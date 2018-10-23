@@ -1,6 +1,7 @@
 // This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.IO.Packaging;
@@ -212,7 +213,7 @@ namespace Ptv.Components.Projections.Proj4
         /// The <see cref="ICoordinateTransformation"/> instance, initialized 
         /// on demand by <see cref="Instance">Library.Instance</see>.
         /// </summary>
-        private static ICoordinateTransformation instance = null;
+        private static ICoordinateTransformation instance;
 
         /// <summary>
         /// Initialization lock.
@@ -222,7 +223,7 @@ namespace Ptv.Components.Projections.Proj4
         /// <summary>
         /// Gets the possible names of the core PROJ.4 library.
         /// </summary>
-        private static string[] LibraryNames
+        private static IEnumerable<string> LibraryNames
         {
             get
             {
@@ -235,7 +236,7 @@ namespace Ptv.Components.Projections.Proj4
                 string[] suffix = new string[] { "", "d" };
 #endif
 
-                return new string[] {
+                return new[] {
                     baseName + suffix[0] + Path.GetExtension(thisName),
                     baseName + suffix[1] + Path.GetExtension(thisName)
                 };
@@ -252,9 +253,9 @@ namespace Ptv.Components.Projections.Proj4
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
                 Path.DirectorySeparatorChar + name;
 
-            if (File.Exists(path))
-                try { instance = ApiFactory.CreateNativeApi<ICoordinateTransformation>(path); }
-                catch { instance = null; }
+            if (!File.Exists(path)) return instance != null;
+            try { instance = ApiFactory.CreateNativeApi<ICoordinateTransformation>(path); }
+            catch { instance = null; }
 
             return instance != null;
         }
@@ -319,25 +320,25 @@ namespace Ptv.Components.Projections.Proj4
         {
             get
             {
-                if (instance == null)
-                    lock (instanceLock)
-                        if (instance == null)
+                if (instance != null) return instance;
+                lock (instanceLock)
+                    if (instance == null)
+                    {
+                        if (Proj4.CoordinateTransformation.Enabled)
                         {
-                            if (Proj4.CoordinateTransformation.Enabled)
-                            {
-                                foreach (string name in LibraryNames)
-                                    if (TryLoad(name))
-                                        break;
-
-                                if (instance == null)
-                                    foreach (string name in LibraryNames)
-                                        if (TryLoadResource(name))
-                                            break;
-                            }
+                            foreach (string name in LibraryNames)
+                                if (TryLoad(name))
+                                    break;
 
                             if (instance == null)
-                                instance = new Proj4Default();
+                                foreach (string name in LibraryNames)
+                                    if (TryLoadResource(name))
+                                        break;
                         }
+
+                        if (instance == null)
+                            instance = new Proj4Default();
+                    }
 
                 return instance;
             }
@@ -356,12 +357,12 @@ namespace Ptv.Components.Projections.Proj4
         /// <summary>
         /// Source coordinate reference system.
         /// </summary>
-        private readonly CoordinateReferenceSystem source = null;
+        private readonly CoordinateReferenceSystem source;
 
         /// <summary>
         /// Target coordinate reference system.
         /// </summary>
-        private readonly CoordinateReferenceSystem target = null;
+        private readonly CoordinateReferenceSystem target;
 
         /// <summary>
         /// Helper performing array initialization.
@@ -404,7 +405,7 @@ namespace Ptv.Components.Projections.Proj4
         /// </summary>
         /// <param name="sourceId">Identifier of the source coordinate reference system.</param>
         /// <param name="targetId">Identifier of the target coordinate reference system.</param>
-        private CoordinateTransformation(String sourceId, String targetId)
+        private CoordinateTransformation(string sourceId, string targetId)
         {
             source = Registry.Get(sourceId);
             target = Registry.Get(targetId);
@@ -434,7 +435,7 @@ namespace Ptv.Components.Projections.Proj4
         /// <returns>The PROJ.4 coordinate transformation, provided through <see cref="Ptv.Components.Projections.ICoordinateTransformation"/>.</returns>
         /// <exception cref="TransformationNotFoundException">Thrown if no transformation is available to transform coordinates 
         /// from the specified source to the specified target coordinate reference system.</exception>
-        public new static Ptv.Components.Projections.ICoordinateTransformation Get(String sourceId, String targetId)
+        public new static Ptv.Components.Projections.ICoordinateTransformation Get(string sourceId, string targetId)
         {
             return new CoordinateTransformation(sourceId, targetId);
         }
@@ -560,19 +561,14 @@ namespace Ptv.Components.Projections.Proj4
         /// </remarks>
         public static bool Enabled
         {
-            get
-            {
-                return enabled;
-            }
+            get => enabled;
             set
             {
-                if (enabled != value)
-                {
-                    if (Library.HasInstance && !value)
-                        throw new Exception("PROJ.4 transformation must be disabled before using any coordinate transformation.");
+                if (enabled == value) return;
+                if (Library.HasInstance && !value)
+                    throw new Exception("PROJ.4 transformation must be disabled before using any coordinate transformation.");
 
-                    enabled = value;
-                }
+                enabled = value;
             }
         }
     }
@@ -586,14 +582,12 @@ namespace Ptv.Components.Projections.Proj4
         /// <param name="s">The string to process.</param>
         /// <param name="n">Number of characters to return.</param>
         /// <returns>The first <c>Min(n, s.Length)</c> characters of the specified string.</returns>
-        public static String Left(this String s, uint n)
+        public static string Left(this string s, uint n)
         {
             if (string.IsNullOrEmpty(s) || n >= s.Length)
                 return s;
-            else if (n == 0)
-                return "";
-            else
-                return s.Substring(0, (int)Math.Min(s.Length, n));
+
+            return n == 0 ? "" : s.Substring(0, (int)Math.Min(s.Length, n));
         }
 
         /// <summary>
@@ -602,14 +596,11 @@ namespace Ptv.Components.Projections.Proj4
         /// <param name="s">The string to process.</param>
         /// <param name="n">Number of characters to return.</param>
         /// <returns>The last <c>Min(n, s.Length)</c> characters of the specified string.</returns>
-        public static String Right(this String s, uint n)
+        public static string Right(this string s, uint n)
         {
             if (string.IsNullOrEmpty(s) || n >= s.Length)
                 return s;
-            else if (n == 0)
-                return "";
-            else
-                return s.Substring((int)(s.Length - Math.Min(s.Length, n)));
+            return n == 0 ? "" : s.Substring((int)(s.Length - Math.Min(s.Length, n)));
         }
 
         /// <summary>
@@ -625,14 +616,14 @@ namespace Ptv.Components.Projections.Proj4
         /// and l and r the numbers of characters to reuse from the previous WKT description 
         /// (from left and right respectively).
         /// </remarks>
-        internal static String Decompress(this String wkt, ref String lastWkt)
+        internal static string Decompress(this string wkt, ref string lastWkt)
         {
             try
             {
                 if (lastWkt == null)
                     return "";
 
-                String[] fields = wkt.Split(';');
+                string[] fields = wkt.Split(';');
 
                 uint nl = uint.Parse(fields[0]);
                 uint nr = uint.Parse(fields[2]);

@@ -65,20 +65,21 @@ namespace TinyJson
             stringBuilder.Append(json[startIdx]);
             for (int i = startIdx + 1; i < json.Length; i++)
             {
-                if (json[i] == '\\')
+                switch (json[i])
                 {
-                    if (appendEscapeCharacter)
+                    case '\\':
+                        if (appendEscapeCharacter)
+                            stringBuilder.Append(json[i]);
+                        stringBuilder.Append(json[i + 1]);
+                        i++;//Skip next character as it is escaped
+                        break;
+                    case '"':
                         stringBuilder.Append(json[i]);
-                    stringBuilder.Append(json[i + 1]);
-                    i++;//Skip next character as it is escaped
+                        return i;
+                    default:
+                        stringBuilder.Append(json[i]);
+                        break;
                 }
-                else if (json[i] == '"')
-                {
-                    stringBuilder.Append(json[i]);
-                    return i;
-                }
-                else
-                    stringBuilder.Append(json[i]);
             }
             return json.Length - 1;
         }
@@ -146,7 +147,7 @@ namespace TinyJson
                         }
                         if (json[i + 1] == 'u' && i + 5 < json.Length - 1)
                         {
-                            if (UInt32.TryParse(json.Substring(i + 2, 4), System.Globalization.NumberStyles.AllowHexSpecifier, null, out var c))
+                            if (uint.TryParse(json.Substring(i + 2, 4), System.Globalization.NumberStyles.AllowHexSpecifier, null, out var c))
                             {
                                 stringBuilder.Append((char)c);
                                 i += 5;
@@ -281,15 +282,19 @@ namespace TinyJson
                     return result;
                 }
             }
-            if (json == "true")
-                return true;
-            if (json == "false")
-                return false;
-            // handles json == "null" as well as invalid JSON
-            return null;
+            switch (json)
+            {
+                case "true":
+                    return true;
+                case "false":
+                    return false;
+                default:
+                    // handles json == "null" as well as invalid JSON
+                    return null;
+            }
         }
 
-        static Dictionary<string, T> CreateMemberNameDictionary<T>(T[] members) where T : MemberInfo
+        static Dictionary<string, T> CreateMemberNameDictionary<T>(IEnumerable<T> members) where T : MemberInfo
         {
             Dictionary<string, T> nameToMember = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
             foreach (var member in members)
@@ -375,7 +380,7 @@ namespace TinyJson
                         if (j >= 0)
                             stringBuilder.Append("\"\\nrtbf"[j]);
                         else
-                            stringBuilder.AppendFormat("u{0:X4}", (UInt32)c);
+                            stringBuilder.AppendFormat("u{0:X4}", (uint)c);
                     }
                     else
                         stringBuilder.Append(c);
@@ -396,7 +401,7 @@ namespace TinyJson
             }
             else if (type == typeof(bool))
             {
-                stringBuilder.Append(((bool)item) ? "true" : "false");
+                stringBuilder.Append((bool)item ? "true" : "false");
             }
             else if (item is IList list)
             {
@@ -450,33 +455,31 @@ namespace TinyJson
                 foreach (var fieldInfo in fieldInfos)
                 {
                     object value = fieldInfo.GetValue(item);
-                    if (value != null)
-                    {
-                        if (isFirst)
-                            isFirst = false;
-                        else
-                            stringBuilder.Append(',');
-                        stringBuilder.Append('\"');
-                        stringBuilder.Append(GetMemberName(fieldInfo));
-                        stringBuilder.Append("\":");
-                        AppendValue(stringBuilder, value);
-                    }
+                    if (value == null) continue;
+
+                    if (isFirst)
+                        isFirst = false;
+                    else
+                        stringBuilder.Append(',');
+                    stringBuilder.Append('\"');
+                    stringBuilder.Append(GetMemberName(fieldInfo));
+                    stringBuilder.Append("\":");
+                    AppendValue(stringBuilder, value);
                 }
                 PropertyInfo[] propertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
                 foreach (var propertyInfo in propertyInfos)
                 {
                     object value = propertyInfo.GetValue(item, null);
-                    if (value != null)
-                    {
-                        if (isFirst)
-                            isFirst = false;
-                        else
-                            stringBuilder.Append(',');
-                        stringBuilder.Append('\"');
-                        stringBuilder.Append(GetMemberName(propertyInfo));
-                        stringBuilder.Append("\":");
-                        AppendValue(stringBuilder, value);
-                    }
+                    if (value == null) continue;
+
+                    if (isFirst)
+                        isFirst = false;
+                    else
+                        stringBuilder.Append(',');
+                    stringBuilder.Append('\"');
+                    stringBuilder.Append(GetMemberName(propertyInfo));
+                    stringBuilder.Append("\":");
+                    AppendValue(stringBuilder, value);
                 }
 
                 stringBuilder.Append('}');
@@ -485,10 +488,7 @@ namespace TinyJson
 
         static string GetMemberName(MemberInfo member)
         {
-            if (member.Name == "_type")
-                return "$type";
-            else
-                return member.Name;
+            return member.Name == "_type" ? "$type" : member.Name;
         }
     }
 }

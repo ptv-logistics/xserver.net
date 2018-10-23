@@ -209,7 +209,7 @@ namespace Ptv.XServer.Controls.Map.Tools
                 ForceAppend,
                 /// <summary> Begin a new polyline and append the point without further checks. </summary>
                 ForceAppendToNewPolyline
-            };
+            }
 
             /// <summary>
             /// Appends the given point to the current polyline, also updating the end point of the current polyline. 
@@ -236,7 +236,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             /// <returns>True if one of x or y difference is larger than the corresponding threshold value.</returns>
             private static bool IsDifferent(Point point1, Point point2, Size threshold)
             {
-                return (Math.Abs(point1.X - point2.X) >= threshold.Width) || (Math.Abs(point1.Y - point2.Y) >= threshold.Height);
+                return Math.Abs(point1.X - point2.X) >= threshold.Width || Math.Abs(point1.Y - point2.Y) >= threshold.Height;
             }
 
             #endregion

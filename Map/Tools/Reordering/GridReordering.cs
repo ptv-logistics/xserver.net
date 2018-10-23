@@ -124,7 +124,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <summary> True while element is being dragged. </summary>
         private bool IsDragging;
         /// <summary> Lock for synchronizing events. </summary>
-        private readonly object lockObject = new Object();
+        private readonly object lockObject = new object();
         /// <summary> Event reference counter. </summary>
         private long eventRef;
         /// <summary> Default color of text elements. Needed to reset the color. </summary>
@@ -274,7 +274,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <returns> Documentation in progress... </returns>
         private bool allowMoveRow(int sourceRow, int targetRow)
         {
-            var args = new RoutedAllowMoveRowEventArgs(AllowMoveRowEvent, sourceRow, (sourceRow < targetRow) ? targetRow - 1 : targetRow);
+            var args = new RoutedAllowMoveRowEventArgs(AllowMoveRowEvent, sourceRow, sourceRow < targetRow ? targetRow - 1 : targetRow);
 
             grid.RaiseEvent(args);
 
@@ -523,7 +523,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
         /// <returns> True, if elements have been / have to be reordered. </returns>
         private bool reorderElements(int dropIdx, int dragIdx, bool checkOnly)
         {
-            bool reorder = (dropIdx != -1) && (dropIdx < dragIdx || dropIdx > dragIdx + 1) && allowMoveRow(dragIdx, dropIdx);
+            bool reorder = dropIdx != -1 && (dropIdx < dragIdx || dropIdx > dragIdx + 1) && allowMoveRow(dragIdx, dropIdx);
 
             if (checkOnly || !reorder) return reorder;
 
@@ -633,7 +633,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reordering
                 double duration = i == idx ? ShowRowAnimationDuration : HideRowAnimationDuration;
 
                 // get easing function
-                IEasingFunction easing = (i == idx) ? ShowRowAnimationEasing : HideRowAnimationEasing;
+                IEasingFunction easing = i == idx ? ShowRowAnimationEasing : HideRowAnimationEasing;
 
                 // animate only if necessary
                 if (!rowDef.HasAnimatedProperties && !(Math.Abs(rowDef.ActualHeight - targetHeight) > 1e-4)) continue;

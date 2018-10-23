@@ -226,7 +226,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         private static Stream RenderTransparentImage(Size size)
         {
             // re-use transparent tile if possible, otherwise render image
-            Stream stm = (size.Width == 256 && size.Height == 256 && TransparentTile != null)
+            Stream stm = size.Width == 256 && size.Height == 256 && TransparentTile != null
                 ? new MemoryStream(TransparentTile)
                 : size.CreateImage(TransparentWhite).StreamPng();
 

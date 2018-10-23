@@ -290,7 +290,7 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public string XMapCopyright
         {
-            get => (string.IsNullOrEmpty(xMapCopyright) || xMapCopyright.Length < 3)
+            get => string.IsNullOrEmpty(xMapCopyright) || xMapCopyright.Length < 3
                 ? "Please configure a valid copyright text!"
                 : xMapCopyright;
             set
@@ -564,7 +564,7 @@ namespace Ptv.XServer.Controls.Map
         {
             if (obj == null) return null;
 
-            return (obj is ContentElement contentElement)
+            return obj is ContentElement contentElement
                 ? ContentOperations.GetParent(contentElement) ?? (contentElement as FrameworkContentElement)?.Parent
                 : VisualTreeHelper.GetParent(obj);
         }

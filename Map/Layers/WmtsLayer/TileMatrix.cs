@@ -166,7 +166,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
                 // use the formula from the WMTS specification to calculate the 
                 // bottom right corner. Assume metersPerUnit is "1".
 
-                var metersPerUnit = 1;
+                const int metersPerUnit = 1;
                 var pixelSpan = ScaleDenominator * 0.28 * 1e-3 / metersPerUnit;
 
                 var tileSpanX = TileWidth * pixelSpan;

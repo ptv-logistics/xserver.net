@@ -310,18 +310,17 @@ namespace Ptv.Components.Projections
             lock (lockInit)
             {
                 // run only, if not yet initialized ...
-                if (!Initialized && !disposed)
+                if (Initialized || disposed) return Valid;
+
+                Initialized = true;
+
+                // if we have a valid WKT, parse it and insert a 
+                // DEG to RAD conversion for lat lon systems
+                if (wkt.Length > 0 && !IsAlias)
                 {
-                    Initialized = true;
+                    pj = Library.Instance.InitProjection(wkt);
 
-                    // if we have a valid WKT, parse it and insert a 
-                    // DEG to RAD conversion for lat lon systems
-                    if (wkt.Length > 0 && !IsAlias)
-                    {
-                        pj = Library.Instance.InitProjection(wkt);
-
-                        InitLatLon();
-                    }
+                    InitLatLon();
                 }
             }
 
@@ -1194,7 +1193,7 @@ namespace Ptv.Components.Projections
         /// <returns>True, if the arrays are valid, false otherwise.</returns>
         private static bool ChkLen(double[] x, double[] y, double[] z, int idx, int length)
         {
-            bool IsValid(double[] theArray, bool arrayMayBeNull) => theArray == null ? arrayMayBeNull : idx >= 0 && length > 0 && idx < theArray.Length && (idx + length - 1) < theArray.Length;
+            bool IsValid(ICollection<double> theArray, bool arrayMayBeNull) => theArray == null ? arrayMayBeNull : idx >= 0 && length > 0 && idx < theArray.Count && (idx + length - 1) < theArray.Count;
 
             return IsValid(x, false) && IsValid(y, false) && IsValid(z, true);
         }
@@ -1386,7 +1385,7 @@ namespace Ptv.Components.Projections
 
             var t = new T[1024];
 
-            var xy = new double[][] { new double[t.Length], new double[t.Length] };
+            var xy = new[] { new double[t.Length], new double[t.Length] };
 
             do
             {
@@ -1458,7 +1457,7 @@ namespace Ptv.Components.Projections
                 throw new TransformationException("coordinate transformation and/or its associated coordinate reference systems are invalid");
 
             // zin, zout: both must be either null or non-null
-            if ((zin == null) != (zout == null))
+            if (zin == null != (zout == null))
                 throw new TransformationException("input and output z-coordinate array must both be either null or non-null");
 
             // arrays must be valid regarding indices and length

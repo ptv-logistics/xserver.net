@@ -7,7 +7,7 @@ using Ptv.XServer.Controls.Map.Canvases;
 
 namespace Ptv.XServer.Controls.Map.Layers.Shapes
 {
-    /// <summary> Extends class <see cref="Shape"/> to add functionality for geografical objects which change their presentation
+    /// <summary> Extends class <see cref="Shape"/> to add functionality for geographical objects which change their presentation
     /// according the currently used scale of the map. </summary>
     public abstract class MapShape : Shape
     {

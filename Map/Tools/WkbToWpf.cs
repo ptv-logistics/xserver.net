@@ -76,7 +76,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             yield return BuildPathFigure(CreateWKBLinearRing(reader, byteOrder, transform));
 
             // Create a new array of linear rings for the interior rings.
-            for (int i = 0; i < (numRings - 1); i++)
+            for (int i = 0; i < numRings - 1; i++)
                 yield return BuildPathFigure(CreateWKBLinearRing(reader, byteOrder, transform));
         }
 
@@ -112,7 +112,7 @@ namespace Ptv.XServer.Controls.Map.Tools
                         {
                             foreach (var p in segment.Points)
                             {
-                                skip = (double.IsInfinity(p.X) || double.IsInfinity(p.Y));
+                                skip = double.IsInfinity(p.X) || double.IsInfinity(p.Y);
                                 if (skip)
                                     break;
                             }
@@ -232,7 +232,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             {
                 IsFilled = true,
                 IsClosed = true,
-                StartPoint = new Point { X = coordinates[0].X, Y = coordinates[0].Y },
+                StartPoint = new Point { X = coordinates[0].X, Y = coordinates[0].Y }
             };
 
             var segments = new PathSegmentCollection {new PolyLineSegment {Points = ToSegments(coordinates)}};

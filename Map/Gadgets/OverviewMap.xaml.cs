@@ -44,7 +44,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <param name="e"> The event parameters. </param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            OverViewMapGrid.Visibility = (OverViewMapGrid.Visibility == Visibility.Collapsed) ? Visibility.Visible : Visibility.Collapsed;
+            OverViewMapGrid.Visibility = OverViewMapGrid.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
             overviewMap.IsEnabled = overviewMap.Visibility == Visibility.Visible;
 
             if (OverViewMapGrid.Visibility != Visibility.Visible) return;

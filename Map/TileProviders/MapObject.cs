@@ -39,7 +39,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <summary>
         /// Reads the source object that is wrapped by the IMapObject's implementation.
         /// </summary>
-        Object Source { get; }
+        object Source { get; }
     }
 
     /// <summary>
@@ -81,13 +81,11 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         {
             get
             {
-                if (attributes == null)
-                {
-                    var providedAttributes = provideAttributes?.Invoke();
+                if (attributes != null) return attributes;
+                var providedAttributes = provideAttributes?.Invoke();
 
-                    attributes = providedAttributes?.ToDictionary(item => item.Key, item => item.Value)
-                        ?? new Dictionary<string, string>();
-                }
+                attributes = providedAttributes?.ToDictionary(item => item.Key, item => item.Value)
+                             ?? new Dictionary<string, string>();
 
                 return attributes;
             }

@@ -92,10 +92,10 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                     var sourceLayer = layers[layerIndices[e.SourceRow]];
                     var targetLayer = layers[layerIndices[targetRow]];
 
-                    e.IsAllowed = (sourceLayer != null) && (targetLayer != null) &&
-                                  (sourceLayer.CanvasCategories != null) && (sourceLayer.CanvasCategories.Length != 0) &&
-                                  (targetLayer.CanvasCategories != null) && (targetLayer.CanvasCategories.Length != 0) &&
-                                  (sourceLayer.CanvasCategories[0] == targetLayer.CanvasCategories[0]);
+                    e.IsAllowed = sourceLayer != null && targetLayer != null &&
+                                  sourceLayer.CanvasCategories != null && sourceLayer.CanvasCategories.Length != 0 &&
+                                  targetLayer.CanvasCategories != null && targetLayer.CanvasCategories.Length != 0 &&
+                                  sourceLayer.CanvasCategories[0] == targetLayer.CanvasCategories[0];
                 });
             }
 
@@ -201,7 +201,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         private void selection_Exclusive(object sender, RoutedEventArgs e)
         {
             var layer = layers[(sender as CheckBox)?.Tag as string];
-            layers.ExclusiveSelectableLayer = (layer == layers.ExclusiveSelectableLayer) ? null : layer;
+            layers.ExclusiveSelectableLayer = layer == layers.ExclusiveSelectableLayer ? null : layer;
             UpdateSelection();
         }
 
@@ -350,28 +350,27 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                 Grid.SetRow(slider, item.index);
                 LayersStack.Children.Add(slider);
 
-                if (item.layer is ILayerGeoSearch)
-                {   // IsChecked = null for the existence of an exclusive selectable layer
-                    // and this layer itself is not exclusive selectable.
-                    checkBox = new CheckBox
-                    {
-                        IsChecked = true,
-                        Tag = item.layer.Name,
-                        Margin = new Thickness(3),
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-                    // checkBox.IsThreeState = true; // By clicking it can be iterated through all three states.
+                if (!(item.layer is ILayerGeoSearch)) continue; // IsChecked = null for the existence of an exclusive selectable layer
+                // and this layer itself is not exclusive selectable.
 
-                    checkBox.Checked += selection_Checked;
-                    checkBox.Unchecked += selection_Unchecked;
-                    checkBox.MouseRightButtonUp += selection_Exclusive;
-                    checkBox.ToolTip = MapLocalizer.GetString(MapStringId.Selectability);
+                checkBox = new CheckBox
+                {
+                    IsChecked = true,
+                    Tag = item.layer.Name,
+                    Margin = new Thickness(3),
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                // checkBox.IsThreeState = true; // By clicking it can be iterated through all three states.
 
-                    Grid.SetColumn(checkBox, selectionColumn);
-                    Grid.SetRow(checkBox, item.index);
-                    LayersStack.Children.Add(checkBox);
-                }
-            };
+                checkBox.Checked += selection_Checked;
+                checkBox.Unchecked += selection_Unchecked;
+                checkBox.MouseRightButtonUp += selection_Exclusive;
+                checkBox.ToolTip = MapLocalizer.GetString(MapStringId.Selectability);
+
+                Grid.SetColumn(checkBox, selectionColumn);
+                Grid.SetRow(checkBox, item.index);
+                LayersStack.Children.Add(checkBox);
+            }
 
             UpdateSelection();
         }
@@ -460,7 +459,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             var tmpHeader = inactiveLayersExpanderHeader;
             inactiveLayersExpanderHeader = LayersExpander.Header;
             LayersExpander.Header = tmpHeader;
-            (LayersExpander.Header as UIElement).Visibility = Visibility.Visible;
+            ((UIElement) LayersExpander.Header).Visibility = Visibility.Visible;
         }
 
         /// <summary> Sets the appropriate header on app startup. This helps at development time since the gadget is
@@ -469,7 +468,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <param name="e"> Event parameters. </param>
         private void LayersExpander_Loaded(object sender, RoutedEventArgs e)
         {
-            if (LayersExpander.IsExpanded != (LayersExpander.Header is Grid))
+            if (LayersExpander.IsExpanded != LayersExpander.Header is Grid)
                 ExchangeLayersExpanderHeader();
         }
 
@@ -517,7 +516,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                 var headerEnd = headerStart + HeaderGrid.ActualWidth;
 
                 // only calculate the reference offset if the gadget can be displayed reasonably
-                if ((ExpanderGrid.ActualWidth - headerEnd) > 0)
+                if (ExpanderGrid.ActualWidth - headerEnd > 0)
                     referenceOffset = double.IsNaN(referenceOffset) ? headerCoordinates.X + ExpanderGrid.ActualWidth - LayersStack.ActualWidth - LayersStack.Margin.Right - LayersStack.Margin.Left - 2 : referenceOffset;
                 else if (double.IsNaN(referenceOffset))
                     return;

@@ -87,7 +87,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             gp.AddPolygon(CreateWKBLinearRing(reader, byteOrder, transform));
 
             // Create a new array of linear rings for the interior rings.
-            for (int i = 0; i < (numRings - 1); i++)
+            for (int i = 0; i < numRings - 1; i++)
                 gp.AddPolygon(CreateWKBLinearRing(reader, byteOrder, transform));
 
             // Create and return the Polygon.

@@ -29,7 +29,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                 var c = n;
 
                 for (int k = 0; k < 8; k++)
-                    c = ((c & 1) != 0) ? (uint)(0xedb88320L ^ (c >> 1)) : c >> 1;
+                    c = (c & 1) != 0 ? (uint)(0xedb88320L ^ (c >> 1)) : c >> 1;
 
                 crc_table[n] = c;
             }

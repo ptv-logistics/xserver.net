@@ -58,9 +58,9 @@ namespace Ptv.Components.Projections
         static void SimpleTest()
         {
             // create some places
-            Place[] places = new Place[] {
-                new Place() { Location = new Location(841090, 5006420), Name = "Frankfurt" },
-                new Place() { Location = new Location(1323560, 5230020), Name = "Berlin" }
+            var places = new Place[] {
+                new Place { Location = new Location(841090, 5006420), Name = "Frankfurt" },
+                new Place { Location = new Location(1323560, 5230020), Name = "Berlin" }
             };
 
             // get a transformation for transforming from PTV GeoMinSek to PTV Mercator
@@ -95,7 +95,7 @@ namespace Ptv.Components.Projections
         {
             Console.WriteLine("-- extended test --\n");
 
-            foreach (Transform t in transformers)
+            foreach (Transform dummy in transformers)
                 projections.Add(new SortedList<int, ProjectionInfo>());
 
             foreach (CoreProjectionInfo cpi in rawProjectionData)
@@ -134,7 +134,7 @@ namespace Ptv.Components.Projections
                             catch (Exception ex)
                             {
                                 _ex = _ex ?? ex;
-                                p = new TestPoint() { epsgCode = projectionInfo.Key };
+                                p = new TestPoint { epsgCode = projectionInfo.Key };
                             }
 
 
@@ -197,13 +197,12 @@ namespace Ptv.Components.Projections
 
             Registry.SetContent(r1, true, true);
 
-            ICoordinateTransformation t =
-                Proj4.CoordinateTransformation.Get("cfGEOMINSEK", "EPSG:76131");
+            ICoordinateTransformation t = Proj4.CoordinateTransformation.Get("cfGEOMINSEK", "EPSG:76131");
 
             System.Windows.Point p = 
                 new System.Windows.Point(959361, 5332563);
 
-            p = t.Transform(p);
+            t.Transform(p);
 
             SimpleTest();
             ExtendedTest();
@@ -230,9 +229,10 @@ namespace Ptv.Components.Projections
 
         public static Delta operator -(TestPoint p, TestPoint q)
         {
-            return new Delta() {
+            return new Delta
+            {
                 dx = p.p.X - q.p.X,
-                dy = p.p.Y - q.p.Y,  
+                dy = p.p.Y - q.p.Y  
             };
         }
     }
@@ -263,7 +263,8 @@ namespace Ptv.Components.Projections
 
         public static void addNew(SortedList<Int32, ProjectionInfo> projections, CoreProjectionInfo cpi, Transform transformer)
         {
-            projections[cpi.code] = new ProjectionInfo() {
+            projections[cpi.code] = new ProjectionInfo
+            {
                 code = cpi.code,
                 proj4 = cpi.proj4,
                 transformer = transformer,
@@ -274,7 +275,7 @@ namespace Ptv.Components.Projections
 
         public TestPoint transform(TestPoint p)
         {
-            return new TestPoint() { epsgCode = code, p = transformer.transform(projections[p.epsgCode].info, info, p.p) };
+            return new TestPoint { epsgCode = code, p = transformer.transform(projections[p.epsgCode].info, info, p.p) };
         }
     }
 
@@ -473,8 +474,6 @@ namespace Ptv.Components.Projections
 
             try
             {
-                DateTime then = DateTime.Now;
-
                 double x = 0, y = 0;
                 object[] args = new object[] { ta, null, x, y };
 
@@ -663,7 +662,7 @@ namespace Ptv.Components.Projections
             List<Test> _test = new List<Test>();
 
             for (int i=0; i<xy[0].Length; i++)
-                _test.Add(new Test() { p = xy[0][i] });
+                _test.Add(new Test { p = xy[0][i] });
 
             ICoordinateTransformation t = GetTransformation(!bProj);
 
@@ -789,9 +788,9 @@ namespace Ptv.Components.Projections
 
     public class HiResTimer
     {
-        private readonly bool isPerfCounterSupported = false;
+        private readonly bool isPerfCounterSupported;
         private readonly Int64 frequency = 0;
-        private readonly Int64 startValue = 0;
+        private readonly Int64 startValue;
 
         [DllImport("kernel32")]
         private static extern int QueryPerformanceCounter(ref Int64 count);
@@ -834,7 +833,7 @@ namespace Ptv.Components.Projections
             get
             {
                 double timeElapsedInTicks = Value - startValue;
-                return (timeElapsedInTicks * 1000) / Frequency;
+                return timeElapsedInTicks * 1000 / Frequency;
             }
         }
     }

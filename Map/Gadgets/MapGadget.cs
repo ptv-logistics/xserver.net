@@ -108,8 +108,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <value> Flag showing whether the gadget is visible.</value>
         public virtual bool Visible
         {
-            get => (Visibility == Visibility.Visible);
-            set => Visibility = (value ? Visibility.Visible : Visibility.Collapsed);
+            get => Visibility == Visibility.Visible;
+            set => Visibility = value ? Visibility.Visible : Visibility.Collapsed;
         }
         #endregion
 
@@ -120,12 +120,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <param name="e"> The event parameters. </param>
         private void MapGadget_Loaded(object sender, RoutedEventArgs e)
         {
-            if (wasInitialized)
-                return;
-
-            // get parent 
-            var frameworkElement = Parent as FrameworkElement;
-            if (frameworkElement == null)
+            if (wasInitialized || !(Parent is FrameworkElement frameworkElement))
                 return;
 
             MapView = frameworkElement.FindRelative<MapView>();
@@ -152,6 +147,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             switch (MouseFocusBehavior)
             {
                 case FocusBehaviorMode.HandoverToMap: Dispatcher.BeginInvoke(new Action(() => MapView.Focus())); break;
+                case FocusBehaviorMode.Retain: break;
+                default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -164,6 +161,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             switch (KeyboardFocusBehavior)
             {
                 case FocusBehaviorMode.HandoverToMap: Dispatcher.BeginInvoke(new Action(() => MapView.Focus())); break;
+                case FocusBehaviorMode.Retain: break;
+                default: throw new ArgumentOutOfRangeException();
             }
         }
         #endregion

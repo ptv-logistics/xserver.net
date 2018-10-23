@@ -333,7 +333,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         private static void VerticallyScaledReprojection(ArgbImage source, ArgbImage target, ReprojectionBlock block, Func<PointD, PointD> transformTargetToSource, int scaleY)
         {
             // determine the number of sections of the scaled block
-            var nx = (block.X1 - block.X0);
+            var nx = block.X1 - block.X0;
             var ny = (block.Y1 - block.Y0 + 1) * scaleY - 1;
 
             // Interpolators for upper and lower line of block
@@ -364,7 +364,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                         a += (color >> 24) & 0xff;
                         r += (color >> 16) & 0xff;
                         g += (color >> 8) & 0xff;
-                        b += (color) & 0xff;
+                        b += color & 0xff;
                     }
 
                     // average the collected color components and set the target pixel
@@ -372,7 +372,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                         ((a / colorBlockSize) << 24) |
                         ((r / colorBlockSize) << 16) |
                         ((g / colorBlockSize) << 8) |
-                        ((b / colorBlockSize));
+                        (b / colorBlockSize);
                 }
             }
         }
@@ -428,7 +428,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                             a += (color >> 24) & 0xff;
                             r += (color >> 16) & 0xff;
                             g += (color  >> 8) & 0xff;
-                            b += (color      ) & 0xff;
+                            b += color & 0xff;
                         }
 
                     // average the collected color components and set the target pixel
@@ -436,7 +436,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                         ((a / colorBlockSize) << 24) |
                         ((r / colorBlockSize) << 16) |
                         ((g / colorBlockSize) <<  8) |
-                        ((b / colorBlockSize)      );
+                        (b / colorBlockSize);
                 }
             }
         }
@@ -494,5 +494,5 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 
             g.DrawLines(p, new[] { LeftTop, RightTop, RightBottom, LeftBottom, LeftTop }.Select(pointF).ToArray());
         }
-    };
+    }
 }

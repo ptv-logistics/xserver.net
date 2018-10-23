@@ -301,7 +301,7 @@ namespace Ptv.XServer.Controls.Map
             for (int index = 0; index < Count; index++)
             {
                 // Counts how many times the name occurs in the newly inserted layers.
-                if ((index >= newStartingIndex) && (index < newStartingIndex + newItemCount))
+                if (index >= newStartingIndex && index < newStartingIndex + newItemCount)
                 {
                     if (this[index].Name == layer.Name)
                         occurrenceCounter++;

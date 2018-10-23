@@ -85,7 +85,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         {
             try
             {
-                if ((left >= minX) && (right <= maxX) && (top >= minY) && (bottom <= maxY))
+                if (left >= minX && right <= maxX && top >= minY && bottom <= maxY)
                     return GetImageStreamInternal(left, top, right, bottom, width, height);
 
                 double leftClipped = Math.Max(left, minX);

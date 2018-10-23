@@ -42,7 +42,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         private static void OnPointCollectionChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
         {
             var shape = obj as MapShape;
-            if ((shape?.GeoTransform != null) && (shape.Parent is ShapeCanvas shapeCanvas))
+            if (shape?.GeoTransform != null && shape.Parent is ShapeCanvas shapeCanvas)
                 shape.UpdateShape(shapeCanvas.MapView, UpdateMode.Refresh, false);
         }
 
@@ -140,7 +140,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
 
                     gc.BeginFigure(points[0], true, false);
                     gc.PolyLineTo(destPoints, true, true);
-                };
+                }
 
             return geom;
         }
@@ -163,13 +163,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <param name="lazyUpdate"> Flag indicating if lazy updating is activated. </param>
         protected override void ClipShape(MapView mapView, UpdateMode updateMode, bool lazyUpdate)
         {
-            if (updateMode == UpdateMode.Refresh || updateMode == UpdateMode.EndTransition)
-            {
-                TransformShape(mapView);
-                Data = BuildGeometry(new[] { TransformedPoints });
+            if (updateMode != UpdateMode.Refresh && updateMode != UpdateMode.EndTransition) return;
 
-                InvalidateVisual();
-            }
+            TransformShape(mapView);
+            Data = BuildGeometry(new[] { TransformedPoints });
+
+            InvalidateVisual();
         }
 
         /// <inheritdoc/>
