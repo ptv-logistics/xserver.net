@@ -34,7 +34,7 @@ https://ptv-logistics.github.io/xserver.net-docs
 Code Samples and Demos
 ----------------------
 
-https://github.com/ptv-logistics/xservernet-bin
+https://github.com/ptv-logistics/xserver.net-bin
 
 
 Release Notes 
