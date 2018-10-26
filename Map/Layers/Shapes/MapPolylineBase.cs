@@ -69,6 +69,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <param name="mapView">Not used.</param>
         protected void TransformShape(MapView mapView)
         {
+            if (GeoTransform == null)
+                return;
+
             TransformedPoints.Clear();
             foreach (var point in Points)
                 TransformedPoints.Add(GeoTransform(point));
