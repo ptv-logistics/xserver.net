@@ -47,6 +47,7 @@ Version 1.6.0.0 (2018/08/14)
   - Optimized tile caching and pruning
   - Fixed rendering error if the Container-Control sets UseLayoutRounding
   - Some minor bugfixes
+  - Code is now 100% warning-free(!)
 
   New features and breaking changes:
   - Added support for integration of XMap2 Layers including Feature Layers
