@@ -45,7 +45,7 @@ Version 1.6.0.0 (2018/08/14)
   Fixes and Optimizations:
   - Optimized tile caching and pruning
   - Fixed rendering error if the Container-Control sets UseLayoutRounding
-  - Code refactoring for C#7
+  - Code refactoring for C# 7.0
   - Some minor bugfixes
 
   New features and breaking changes:
