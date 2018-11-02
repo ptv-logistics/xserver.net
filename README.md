@@ -42,21 +42,22 @@ Release Notes
 
 Version 1.6.0.0 (2018/08/14)
 
-  Bugfixes:
-  - Some minor bugfixes
+  Fixes and Optimizations:
+  - Optimized tile caching and pruning
   - Fixed rendering error if the Container-Control sets UseLayoutRounding
+  - Code refactoring for C#7
+  - Some minor bugfixes
 
-  Changes and Optimizations:
+  New features and breaking changes:
   - Added support for integration of XMap2 Layers including Feature Layers
   - Added support for integration of Web Map Tile Services (WMTS)
-  - Optimized tile caching and pruning
   - The InifiniteZoom property (to avoid jitter at deep zoom levels)
     is now set to true by default. This setting should be compatible 
     with the previous setting. If you experience problems with your 
     custom layer implementation, you can set it back to false. 
     However, this property will be removed in future releases.
   - The MemoryPressureMode flag is ignored and marked as obsolete. 
-  - The protocol for the provider returning tooltip information has changed. The provider now must implement
+  - The protocol for a provider returning tooltip information has changed. The provider now must implement
     IUntiledProviderWithMapObjects:GetImageStreamAndMapObjects().
 
 
