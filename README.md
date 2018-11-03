@@ -46,7 +46,7 @@ Version 1.6.0.0 (2018/08/14)
   - Code is now 100% warning-free(!)
 
   New features and breaking changes:
-  - Added support for integration of XMap2 Layers including Feature Layers
+  - Added support for integration of XMap2 Layers, including Feature Layers
   - Added support for integration of Web Map Tile Services (WMTS)
   - The InifiniteZoom property (to avoid jitter at deep zoom levels)
     is now set to true by default. This setting should be compatible 
