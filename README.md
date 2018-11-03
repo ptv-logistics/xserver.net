@@ -25,16 +25,12 @@ Prerequisites
 - The source code is implemented with C# 7.0, which requires at least **Visual Studio 2017 Community Edition**.
 
 
-API Documentation
------------------
+External Resources
+------------------
 
-https://ptv-logistics.github.io/xserver.net-docs
-
-
-Code Samples and Demos
-----------------------
-
-https://github.com/ptv-logistics/xserver.net-bin/blob/master/README.md
+* [xserver.net-docs](https://ptv-logistics.github.io/xserver.net-docs) - API Documentation
+* [xserver.net-bin](https://github.com/ptv-logistics/xserver.net-bin/blob/master/README.md) - Code Samples and Demos
+* [DemoCenter](https://xserverinternet.azurewebsites.net/xserver.net/) - PTV xServer.NET Demo Center
 
 
 Release Notes 
