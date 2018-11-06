@@ -29,7 +29,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <summary> Gets or sets the transformed points. The transformed points are a collection of points which have
         /// been transformed to the currently applied spatial reference system. This property helps to improve
         /// performance since the point transformation is only done once. </summary>
-        public PointCollection TransformedPoints { get; set; }
+        public PointCollection TransformedPoints { get; set; } = new PointCollection();
 
         /// <summary> Backing store for Points. This enables animation, styling, binding, etc.. </summary>
         public static readonly DependencyProperty PointsProperty =
@@ -44,12 +44,6 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
             var shape = obj as MapShape;
             if (shape?.GeoTransform != null && shape.Parent is ShapeCanvas shapeCanvas)
                 shape.UpdateShape(shapeCanvas.MapView, UpdateMode.Refresh, false);
-        }
-
-        /// <summary> Initializes a new instance of the <see cref="MapPolylineBase"/> class. </summary>
-        protected MapPolylineBase()
-        {
-            TransformedPoints = new PointCollection();
         }
     }
 

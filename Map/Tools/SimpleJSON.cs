@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -162,6 +163,16 @@ namespace TinyJson
             if (type.IsPrimitive)
             {
                 var result = Convert.ChangeType(json, type, System.Globalization.CultureInfo.InvariantCulture);
+                return result;
+            }
+            if (type == typeof(DateTime))
+            {
+                if (json[0] == '"' && json[json.Length - 1] == '"')
+                {
+                    json = json.Substring(1, json.Length - 2);
+                    json = json.Replace("\\", string.Empty);
+                }
+                DateTime.TryParse(json, System.Globalization.CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var result);
                 return result;
             }
             if (type == typeof(decimal))
@@ -402,6 +413,10 @@ namespace TinyJson
             else if (type == typeof(bool))
             {
                 stringBuilder.Append((bool)item ? "true" : "false");
+            }
+            else if (type == typeof(DateTime))
+            {
+                stringBuilder.Append(((DateTime)item).ToString("o"));
             }
             else if (item is IList list)
             {
