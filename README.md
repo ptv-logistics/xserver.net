@@ -29,7 +29,7 @@ External Resources
 ------------------
 
 * [xserver.net-docs](https://ptv-logistics.github.io/xserver.net-docs) - API Documentation
-* [xserver.net-bin](https://github.com/ptv-logistics/xserver.net-bin/blob/master/README.md) - Code Samples and Demos
+* [xserver.net-samples](https://github.com/ptv-logistics/xserver.net-samples/blob/master/README.md) - Code Samples and Demos
 * [DemoCenter](https://xserverinternet.azurewebsites.net/xserver.net/) - PTV xServer.NET Demo Center
 
 
