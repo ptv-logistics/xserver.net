@@ -75,7 +75,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
             if (!NeedsUpdate(lazyUpdate, mode))
                 return;
 
-            StrokeThickness = CurrentThickness(mapView.CurrentScale);
+            StrokeThickness = Math.Max(0.51, CurrentThickness(mapView.CurrentScale));
         }
     }
 }

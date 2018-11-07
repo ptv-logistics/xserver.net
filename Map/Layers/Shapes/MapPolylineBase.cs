@@ -80,16 +80,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
             if (updateMode == UpdateMode.Refresh || updateMode == UpdateMode.EndTransition)
                 TransformShape(mapView);
 
-            if (!(NeedsUpdate(lazyUpdate, updateMode) || updateMode == UpdateMode.EndTransition))
+            if (updateMode != UpdateMode.EndTransition && !NeedsUpdate(lazyUpdate, updateMode))
                 return;
 
             MapRectangle rect = mapView.CurrentEnvelope;
-            Size sz = new Size(mapView.ActualWidth, mapView.ActualHeight);
-            var minX = rect.West;
-            var minY = rect.South;
-            var maxX = rect.East;
-            var maxY = rect.North;
-            Rect clippingRect = new Rect(minX, -maxY, maxX - minX, maxY - minY);
+            Size mapViewSizeInPixels = new Size(mapView.ActualWidth, mapView.ActualHeight);
+            var clippingRect = new Rect(rect.West, -rect.North, rect.East - rect.West, rect.North - rect.South);
 
             double thickness = CurrentThickness(mapView.CurrentScale);
 
@@ -98,14 +94,14 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
             clippingRect.Width += thickness;
             clippingRect.Height += thickness;
 
-            ICollection<PointCollection> tmpPoints = LineReductionClipping.ClipPolylineReducePoints<PointCollection, Point>(
-                           sz,
+            ICollection<PointCollection> clippedLines = LineReductionClipping.ClipPolylineReducePoints<PointCollection, Point>(
+                           mapViewSizeInPixels,
                            clippingRect,
                            TransformedPoints,
                            p => p,
                            (poly, pnt) => poly.Add(pnt));
 
-            Data = BuildGeometry(tmpPoints);
+            Data = BuildGeometry(clippedLines);
 
             InvalidateVisual();
         }
