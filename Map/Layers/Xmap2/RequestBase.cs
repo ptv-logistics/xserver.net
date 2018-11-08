@@ -9,24 +9,23 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 {
     internal class RequestBase
     {
-        protected RequestBase(string baseUrl, string token)
+        protected RequestBase(IXServerVersion xServerVersion)
         {
-            this.baseUrl = baseUrl;
-            this.token = token;
+            this.xServerVersion = xServerVersion;
         }
 
-        protected readonly string baseUrl;
-        protected readonly string token;
+        protected readonly IXServerVersion xServerVersion;
 
-        public string CompleteUrl(string rightUrl) => baseUrl + '/' + rightUrl.TrimStart('/');
+        public string CompleteUrl(string protocolShortcut, string moduleName, string service) => xServerVersion.WithServicePath(protocolShortcut, moduleName) + '/' + service.TrimStart('/');
 
-        public string Response(string serviceUrl, string jsonRequest) => new Builder(CompleteUrl(serviceUrl), token, jsonRequest).Response
-        ;
-        public class Builder
+        public string Response(string protocolShortcut, string moduleName, string service, string jsonRequest) 
+            => new RequestBuilder(CompleteUrl(protocolShortcut, moduleName, service), xServerVersion.Token, jsonRequest).Response;
+
+        public class RequestBuilder
         {
-            public Builder(string uri, string xToken, string jsonRequest) => Uri(uri).XToken(xToken).JsonRequest(jsonRequest);
+            public RequestBuilder(string uri, string xToken, string jsonRequest) => Uri(uri).XToken(xToken).JsonRequest(jsonRequest);
 
-            public Builder Uri(string _uri)
+            public RequestBuilder Uri(string _uri)
             {
                 uri = _uri;
                 return this;
@@ -34,7 +33,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 
             private string uri;
 
-            public Builder XToken(string _xToken)
+            public RequestBuilder XToken(string _xToken)
             {
                 xToken = _xToken;
                 return this;
@@ -42,7 +41,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 
             private string xToken;
 
-            public Builder JsonRequest(string _jsonRequest)
+            public RequestBuilder JsonRequest(string _jsonRequest)
             {
                 jsonRequest = _jsonRequest;
                 return this;
@@ -50,7 +49,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 
             private string jsonRequest;
 
-            public Builder Method(string _method)
+            public RequestBuilder Method(string _method)
             {
                 method = _method;
                 return this;
@@ -58,7 +57,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 
             private string method = "POST";
 
-            public Builder ContentType(string _contentType)
+            public RequestBuilder ContentType(string _contentType)
             {
                 contentType = _contentType;
                 return this;

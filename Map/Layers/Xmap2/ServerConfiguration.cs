@@ -9,7 +9,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 {
     internal class ServerConfiguration : RequestBase
     {
-        public ServerConfiguration(string baseUrl, string token) : base(baseUrl, token) {}
+        public ServerConfiguration(IXServerVersion xServerVersion) : base(xServerVersion) { }
 
         public IEnumerable<string> AvailableMapStyles => GetResponseObject()?.profiles?
                                                              .Where(profile => profile?.useCases?.Contains("mapping") ?? false)
@@ -26,7 +26,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
                 resultFields = new { profiles = true }
             };
 
-            return response = Response("/services/rs/XRuntime/getServerConfiguration", requestObject.ToJson()).FromJson<ResponseObject>();
+            return response = Response("rs", "XRuntime", "getServerConfiguration", requestObject.ToJson()).FromJson<ResponseObject>();
         }
 
         [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local")]

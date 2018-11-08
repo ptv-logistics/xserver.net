@@ -65,7 +65,6 @@ namespace Ptv.XServer.Controls.Map
         }
         #endregion
 
-
         #region events
         /// <inheritdoc/>  
         public event EventHandler ViewportBeginChanged
@@ -215,50 +214,53 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public string XMapUrl
         {
-            get => xmapUrl;
+            get => xMapUrl;
             set
             {
-                if (xmapUrl == value) return;
+                if (xMapUrl == value) return;
 
-                xServerVersion = GetAllXserverVersions(value).FirstOrDefault(xServer => xServer.IsValidUrl());
+                xServerVersion = GetAllXserverVersions(value, xMapCredentials).FirstOrDefault(xServer => xServer.IsValidUrl());
 
-                xmapUrl = value;
+                xMapUrl = value;
 
                 InitializeMapLayers();
                 SetXMapUrlHint();
             }
         }
 
-        private string xmapUrl = "";
+        private string xMapUrl = string.Empty;
 
-        private static IEnumerable<IXServerVersion> GetAllXserverVersions(string url)
+        private static IEnumerable<IXServerVersion> GetAllXserverVersions(string url, string xMapCredentials)
         {
-            yield return new XServer1Version(url);
-            yield return new XServer2Version(url);
+            yield return new XServer1Version(url, xMapCredentials);
+            yield return new XServer2Version(url, xMapCredentials);
         }
 
         /// <inheritdoc/>  
         public string XMapCredentials
         {
-            get => xmapCredentials;
+            get => xMapCredentials;
             set
             {
-                if (xmapCredentials == value) return;
-                xmapCredentials = value;
+                if (xMapCredentials == value) return;
+                xMapCredentials = value;
 
                 if (xServerVersion?.IsCloudBased() ?? false)
+                {
+                    xServerVersion.XMapCredentials = xMapCredentials;
                     InitializeMapLayers();
+                }
             }
         }
 
-        private string xmapCredentials = "";
+        private string xMapCredentials = string.Empty;
 
         private void InitializeMapLayers()
         {
-            if (xServerVersion == null || (xServerVersion.IsCloudBased() && string.IsNullOrEmpty(xmapCredentials)))
+            if (xServerVersion == null || (xServerVersion.IsCloudBased() && string.IsNullOrEmpty(xMapCredentials)))
                 return;
 
-            xServerVersion.InitializeMapLayers(this, xmapCredentials);
+            xServerVersion.Initialize(this);
         }
 
         private IXServerVersion xServerVersion;

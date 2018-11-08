@@ -13,20 +13,18 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 {
     /// <summary>Generates layer objects based on xServer 2. </summary>
     /// <remarks>The provided layers have to be inserted into the <see cref="Map"/>'s layer management client-side.
-    /// There exist two different layers to make it is possible to 'inject' additional layers between background and foreground layer.</remarks>
+    /// There exist two different layers to make it is possible to 'inject' additional layers between background and label layer.</remarks>
     public class LayerFactory
     {
         /// <summary>Initializes the background and foreground layer which can be configured client-side with different themes.</summary>
-        /// <param name="baseUrl">URL specifying the root part of the URL from which a service like rendering a map can be composed.</param>
-        /// <param name="token">String needed for authentication in context of xServer Internet environments.</param>
-        public LayerFactory(string baseUrl, string token)
+        /// <param name="xServerVersion">Version helper for URL specifying the root part of the URL from which a service like rendering a map can be composed.</param>
+        internal LayerFactory(IXServerVersion xServerVersion)
         {
-            BaseUrl = baseUrl.TrimEnd('/');
-            Token = (token?.Contains(":") ?? false) ? token.Split(':')[1] : token;
+            this.xServerVersion = xServerVersion;
 
-            DataInformation = new DataInformation(BaseUrl, Token);
-            ServerConfiguration = new ServerConfiguration(BaseUrl, Token);
-            ContentSnapshots = new ContentSnapshots(BaseUrl, Token);
+            DataInformation = new DataInformation(xServerVersion);
+            ServerConfiguration = new ServerConfiguration(xServerVersion);
+            ContentSnapshots = new ContentSnapshots(xServerVersion);
 
             InitializeTiledLayer();
             InitializeUntiledLayer();
@@ -40,8 +38,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
             {
                 MinZoom = 0,
                 MaxZoom = 22,
-                RequestBuilderDelegate = (x, y, z) => BaseUrl
-                                                      + $"/services/rest/XMap/tile/{z}/{x}/{y}"
+                RequestBuilderDelegate = (x, y, z) => xServerVersion.WithServicePath("rest", "XMap")
+                                                      + $"/tile/{z}/{x}/{y}"
                                                       + $"?storedProfile={MapStyle}"
                                                       + $"&layers={string.Join(",", BackgroundThemes.ToArray())}"
                                                       + $"&xtok={Token}"
@@ -61,7 +59,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         {
             var untiledProvider = new UntiledProvider
             {
-                RequestUriString = DataInformation.CompleteUrl("services/rs/XMap/renderMap"),
+                RequestUriString = DataInformation.CompleteUrl("rs", "XMap", "renderMap"),
                 XToken = Token
             };
 
@@ -78,15 +76,17 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 
         private string FormatCopyRight(IEnumerable<string> themes) => string.Join("|", DataInformation.CopyRights(themes).ToArray());
 
+        private readonly IXServerVersion xServerVersion;
+
         /// <summary>URL specifying the root part of the URL from which a service like rendering a map can be composed. For example, 
         /// https://xserver2-europe-eu-test.cloud.ptvgroup.com
         /// can be used as a base URL providing access to a Cloud based XServer2 system. The renderMap service is composed to:
         /// https://xserver2-europe-eu-test.cloud.ptvgroup.com/services/rs/XMap/renderMap
         /// </summary>
-        public string BaseUrl { get; }
+        public string BaseUrl => xServerVersion.AdjustedUrl();
 
         /// <summary>For xServer internet, a token must be specified for authentication. </summary>
-        public string Token { get; }
+        public string Token => xServerVersion.Token;
 
         /// <summary>Callback for a final adaptation of a WebRequest before it is sent to XMap2 server.</summary>
         public static Func<WebRequest, WebRequest> ModifyRequest;

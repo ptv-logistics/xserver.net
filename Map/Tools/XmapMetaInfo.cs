@@ -215,7 +215,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             if (XServerUrl.IsXServerInternet(baseUrl) && CheckSampleRequest(baseUrl, password))
                 return; // Check OK
 
-            if (new XServer2Version(Url).IsValidUrl())
+            if (new XServer2Version(Url, password).IsValidUrl())
                 throw new ArgumentException("The XMap url addresses an XServer 2 service. This is currently not supported.");
 
             if (!CheckSampleRequest(baseUrl, null))

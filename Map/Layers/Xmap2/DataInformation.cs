@@ -9,7 +9,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 {
     internal class DataInformation : RequestBase
     {
-        public DataInformation(string baseUrl, string token) : base(baseUrl, token) { }
+        public DataInformation(IXServerVersion xServerVersion) : base(xServerVersion) { }
 
         public IEnumerable<string> AvailableFeatureLayerThemes =>
             GetResponseObject()?.mapDescription?.copyright?.featureLayers?.Select(theme => theme.themeId) ?? Enumerable.Empty<string>();
@@ -31,7 +31,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
             if (responseObject != null) return responseObject;
 
             var requestObject = new { }; // No sub elements are needed.
-            return responseObject = Response("/services/rs/XRuntime/getDataInformation", requestObject.ToJson()).FromJson<ResponseObject>();
+            return responseObject = Response("rs", "XRuntime", "getDataInformation", requestObject.ToJson()).FromJson<ResponseObject>();
         }
 
         [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local")]

@@ -9,7 +9,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 {
     internal class ContentSnapshots : RequestBase
     {
-        public ContentSnapshots(string baseUrl, string token) : base(baseUrl, token) {}
+        public ContentSnapshots(IXServerVersion xServerVersion) : base(xServerVersion) { }
 
         public IEnumerable<ContentSnapshotDescription> Available =>
             GetResponseObject()?.contentSnapshotInformation?.Select(singleInformation => singleInformation.contentSnapshotDescription) ?? Enumerable.Empty<ContentSnapshotDescription>();
@@ -17,7 +17,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         private ResponseObject GetResponseObject()
         {
             var requestObject = new { }; // No sub elements are needed.
-            return Response("/services/rs/XData/listContentSnapshots", requestObject.ToJson()).FromJson<ResponseObject>();
+            return Response("rs", "XData", "listContentSnapshots", requestObject.ToJson()).FromJson<ResponseObject>();
         }
 
         [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local")]

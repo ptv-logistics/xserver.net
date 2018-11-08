@@ -82,7 +82,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         public Stream GetImageStreamAndMapObjects(double left, double top, double right, double bottom, int width, int height,
             out IEnumerable<IMapObject> mapObjects)
         {
-            var responseObject = new RequestBase.Builder(RequestUriString, XToken, GetJsonRequest(left, top, right, bottom, width, height)).Response.FromJson<ResponseObject>();
+            var responseObject = new RequestBase.RequestBuilder(RequestUriString, XToken, GetJsonRequest(left, top, right, bottom, width, height)).Response.FromJson<ResponseObject>();
 
             mapObjects = responseObject?.features?.Select(feature =>
                 (IMapObject)new MapObject(
