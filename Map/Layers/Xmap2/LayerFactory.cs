@@ -81,15 +81,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// <summary>URL specifying the root part of the URL from which a service like rendering a map can be composed. For example, 
         /// https://xserver2-europe-eu-test.cloud.ptvgroup.com
         /// can be used as a base URL providing access to a Cloud based XServer2 system. The renderMap service is composed to:
-        /// https://xserver2-europe-eu-test.cloud.ptvgroup.com/services/rs/XMap/renderMap
+        /// https://xserver2-europe-eu-test.cloud.ptvgroup.com/services/rs/XMap/{version}/renderMap
         /// </summary>
         public string BaseUrl => xServerVersion.AdjustedUrl();
 
         /// <summary>For xServer internet, a token must be specified for authentication. </summary>
         public string Token => xServerVersion.Token;
-
-        /// <summary>Callback for a final adaptation of a WebRequest before it is sent to XMap2 server.</summary>
-        public static Func<WebRequest, WebRequest> ModifyRequest;
 
         /// <summary>An <see cref="ILayer"/> object providing a tile-based (i.e. more responsive) rendering. The geographical content is defined 
         /// by the list of background themes, see <see cref="BackgroundThemes"/>. This layer object should be inserted in a <see cref="Map"/>
@@ -167,5 +164,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         internal ServerConfiguration ServerConfiguration { get; }
 
         internal ContentSnapshots ContentSnapshots { get; }
+
+        /// <summary>Callback for a final adaptation of a WebRequest before it is sent to XMap2 server.</summary>
+        public static Func<WebRequest, WebRequest> ModifyRequest;
+
+        /// <summary>Callback for a reporting of errors which may occur during xServer requests.</summary>
+        public static Action<WebException> ReportXServerError;
     }
 }

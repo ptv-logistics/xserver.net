@@ -92,9 +92,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
                                 using (var reader = new StreamReader(stream, Encoding.UTF8))
                                     return reader.ReadToEnd();
                     }
-                    catch (Exception)
+                    catch (WebException exception)
                     {
-                        // ignored
+                        LayerFactory.ReportXServerError?.Invoke(exception);
                     }
 
                     return EmptyJson;
