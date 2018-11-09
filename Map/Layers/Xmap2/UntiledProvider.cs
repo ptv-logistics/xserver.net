@@ -70,9 +70,6 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         public string ContentSnapshotId { get; set; }
 
         /// <inheritdoc/>
-        public Action<IEnumerable<IMapObject>, Size> Update { get; set; }
-
-        /// <inheritdoc/>
         public Stream GetImageStream(double left, double top, double right, double bottom, int width, int height)
         {
             return GetImageStreamAndMapObjects(left, top, right, bottom, width, height, out _);

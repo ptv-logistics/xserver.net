@@ -28,8 +28,8 @@ namespace Ptv.XServer.Controls.Map.Layers
         double Opacity { get; set; }
 
         /// <summary> Adds the different layer canvases to the map. </summary>
-        /// <param name="mapView"> The map to which the canvases are to be added. </param>
-        void AddToMapView(MapView mapView);
+        /// <param name="mapViewToAdd"> The map to which the canvases are to be added. </param>
+        void AddToMapView(MapView mapViewToAdd);
 
         /// <summary> Removes the different layer canvases from the map. </summary>
         /// <param name="mapView"> The map from which the canvases are to be removed. </param>

@@ -270,7 +270,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
 
             if (!(element?.Parent is ShapeCanvas shapeCanvas)) return;
 
-            var location = GetLocation(obj as UIElement);
+            var location = GetLocation((UIElement) obj);
             UpdateLocation(element, location);
             var canvasPoint = shapeCanvas.transform(location);
             UpdateLocation(element, canvasPoint);
@@ -322,7 +322,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
             Children.Remove(shape);
         }
         
-        private void ShapeSizeChanged(object sender, SizeChangedEventArgs e)
+        private static void ShapeSizeChanged(object sender, SizeChangedEventArgs e)
         {
             var element = sender as FrameworkElement;
             if (!(element?.Parent is ShapeCanvas shapeCanvas)) return;

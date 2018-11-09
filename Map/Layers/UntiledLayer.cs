@@ -101,22 +101,22 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         #endregion
 
         /// <summary>Takes all parameters into members, commonly provided by the corresponding provider. </summary>
-        /// <param name="mapObjects">Set of map objects which can be used for showing tool tips.</param>
+        /// <param name="newMapObjects">Set of map objects which can be used for showing tool tips.</param>
         /// <param name="requestedSize">The size of the map image.</param>
-        protected void UpdateMapObjects(IEnumerable<IMapObject> mapObjects, Size requestedSize)
+        protected void UpdateMapObjects(IEnumerable<IMapObject> newMapObjects, Size requestedSize)
         {
-            this.mapObjects = mapObjects;
+            mapObjects = newMapObjects;
             imageSize = requestedSize;
         }
 
         /// <inheritdoc/>
-        public override void AddToMapView(MapView mapView)
+        public override void AddToMapView(MapView mapViewToAdd)
         {
-            // store the mapView, required for hit-testing
-            if (mapView?.Name == "Map")
-                this.mapView = mapView;
+            // store the mapViewToAdd, required for hit-testing
+            if (mapViewToAdd?.Name == "Map")
+                mapView = mapViewToAdd;
 
-            base.AddToMapView(mapView);
+            base.AddToMapView(mapViewToAdd);
         }
 
         /// <summary> Determines the tool tip texts for a given position </summary>

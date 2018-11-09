@@ -103,8 +103,8 @@ namespace Ptv.XServer.Controls.Map.Layers
         private static int UniqueCanvasID;
 
         /// <summary> Adds the layer to a map. </summary>
-        /// <param name="mapView"> The map to which the layer is to be added. </param>
-        public virtual void AddToMapView(MapView mapView)
+        /// <param name="mapViewToAdd"> The map to which the layer is to be added. </param>
+        public virtual void AddToMapView(MapView mapViewToAdd)
         {
             // Check if the maximum number of canvases is reached.
             if (canvasInstances.Count + 1 > 1000)
@@ -112,7 +112,7 @@ namespace Ptv.XServer.Controls.Map.Layers
 
             for (int i = 0; i < CanvasCategories.Length; i++)
             {
-                var mapCanvas = CanvasFactories[i](mapView);
+                var mapCanvas = CanvasFactories[i](mapViewToAdd);
                 if (mapCanvas == null)
                     continue;
                 mapCanvas.CanvasCategory = CanvasCategories[i];

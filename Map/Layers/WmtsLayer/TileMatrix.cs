@@ -286,7 +286,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
         /// <returns>Approximated bounding box</returns>
         public IBoundingBox ApproximateBoundingBox(string targetCRS, int nSupportingPoints = 8, double resizeFactor = 1.025)
         {
-            return ApproximateBoundingBox(sourceCrs: CRS, targetCrs: targetCRS, nSupportingPoints: nSupportingPoints, resizeFactor: resizeFactor);
+            return ApproximateBoundingBox(CRS, targetCRS, nSupportingPoints, resizeFactor);
         }
 
 

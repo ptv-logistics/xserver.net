@@ -73,7 +73,7 @@ namespace Ptv.XServer.Controls.Map.Layers
             set => wrappedLayer.Opacity = value;
         }
         /// <inheritdoc/>
-        public void AddToMapView(MapView mapView) => wrappedLayer.AddToMapView(mapView); 
+        public void AddToMapView(MapView mapViewToAdd) => wrappedLayer.AddToMapView(mapViewToAdd); 
         /// <inheritdoc/>
         public void RemoveFromMapView(MapView mapView) => wrappedLayer.RemoveFromMapView(mapView); 
         /// <inheritdoc/>
