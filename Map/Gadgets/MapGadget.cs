@@ -18,9 +18,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         // hint taken from http://stackoverflow.com/questions/156582/namespace-documentation-on-a-net-project-sandcastle
     }
 
-    /// <summary><para> Defines the mode of the focus behavior. By default the MapGadget hands over the focus if an event is
-    /// received (same as HandoverToMap mode). In the 'Retain' mode the focus is not handed over. </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> topic for an example. </para></summary>
+    /// <summary> Defines the mode of the focus behavior. By default the MapGadget hands over the focus if an event is
+    /// received (same as HandoverToMap mode). In the 'Retain' mode the focus is not handed over. </summary>
     public enum FocusBehaviorMode
     {
         /// <summary> Default. Hands over the focus to the map if an event is received. </summary>
@@ -50,8 +49,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         Copyright
     }
 
-    /// <summary><para> Interface containing all properties of the gadget which are client configurable. </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> topic for an example. </para></summary>
+    /// <summary> Interface containing all properties of the gadget which are client configurable. </summary>
     public interface IGadget
     {
         /// <summary> Gets or sets a value indicating whether the gadget is to be displayed or hidden. </summary>
@@ -59,8 +57,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         bool Visible { get; set; }
     }
 
-    /// <summary><para> Parent class of all map gadgets. A map gadget is an add-on to the map like a coordinates gadget, a scale gadget etc.. </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> topic for an example. </para></summary>
+    /// <summary> Parent class of all map gadgets. A map gadget is an add-on to the map like a coordinates gadget, a scale gadget etc... </summary>
     public class MapGadget : UserControl, IGadget
     {
         #region constructor

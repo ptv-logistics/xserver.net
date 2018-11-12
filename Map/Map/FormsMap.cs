@@ -75,7 +75,8 @@ namespace Ptv.XServer.Controls.Map
         #endregion
 
         #region disposal
-        /// <inheritdoc/>
+        /// <summary> Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. </summary>
+        /// <param name="disposing"> Flag indicating to dispose also the unmanaged resources of WPF map.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)

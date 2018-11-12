@@ -69,15 +69,15 @@ namespace DevelopMentor
     /// <summary> Documentation in progress... </summary>
     /// <param name="state"> Documentation in progress... </param>
     /// <param name="requestEnqueueTime"> Documentation in progress... </param>
-    internal delegate void WorkRequestDelegate(object state, DateTime requestEnqueueTime);
+    public delegate void WorkRequestDelegate(object state, DateTime requestEnqueueTime);
 
     /// <summary> Documentation in progress... </summary>
-    internal delegate void ThreadPoolDelegate();
+    public delegate void ThreadPoolDelegate();
     #endregion
 
     #region IWorkRequest interface
     /// <summary> Documentation in progress... </summary>
-    internal interface IWorkRequest
+    public interface IWorkRequest
     {
         /// <summary> Documentation in progress... </summary>
         /// <returns> Documentation in progress... </returns>
@@ -87,7 +87,7 @@ namespace DevelopMentor
 
     #region ThreadPool class
     /// <summary> Documentation in progress... </summary>
-    internal sealed class ThreadPool : WaitHandle
+    public sealed class ThreadPool : WaitHandle
     {
         /// <summary> Logging restricted to this class. </summary>
         private static readonly Logger logger = new Logger("ThreadPool");

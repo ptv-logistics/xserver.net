@@ -7,9 +7,7 @@ using System.Windows.Media.Animation;
 
 namespace Ptv.XServer.Controls.Map.Gadgets
 {
-    /// <summary><para> Interaction logic for NavigationGadget. </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> and
-    /// <conceptualLink target="fdaa5363-b092-43cc-950e-6f120dee0d92"/> topics for examples. </para></summary>
+    /// <summary> Interaction logic for NavigationGadget. </summary>
     public partial class NavigationGadget
     {
         #region constructor

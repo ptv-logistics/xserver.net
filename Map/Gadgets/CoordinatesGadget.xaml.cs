@@ -10,8 +10,7 @@ using System.Globalization;
 
 namespace Ptv.XServer.Controls.Map.Gadgets
 {
-    /// <summary><para> Gadget showing the map coordinates of the current mouse position in logical format (GeoMinSec). </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> topic for an example. </para></summary>
+    /// <summary> Gadget showing the map coordinates of the current mouse position in logical format (GeoMinSec). </summary>
     public partial class CoordinatesGadget
     {
         #region private variables

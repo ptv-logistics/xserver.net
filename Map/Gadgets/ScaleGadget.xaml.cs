@@ -8,8 +8,7 @@ using System.Linq;
 
 namespace Ptv.XServer.Controls.Map.Gadgets
 {
-    /// <summary><para> Gadget showing the current scale of the map. </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> topic for an example. </para></summary>
+    /// <summary> Gadget showing the current scale of the map. </summary>
     public partial class ScaleGadget
     {
         #region private variables
@@ -148,8 +147,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         #endregion
     }
 
-    /// <summary><para> Scale information object. </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> topic for an example. </para></summary>
+    /// <summary> Scale information object. </summary>
     public class ScaleInfo
     {
         #region public variables

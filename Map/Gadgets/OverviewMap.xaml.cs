@@ -5,9 +5,8 @@ using System.Windows;
 
 namespace Ptv.XServer.Controls.Map.Gadgets
 {
-    /// <summary><para> Gadget for showing the overview map. An overview map shows the whole map in small. A rectangle on
-    /// the overview map shows the borders of the currently displayed map section. </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> topic for an example. </para></summary>
+    /// <summary> Gadget for showing the overview map. An overview map shows the whole map in small. A rectangle on
+    /// the overview map shows the borders of the currently displayed map section. </summary>
     public partial class OverviewMap
     {
         #region constructor

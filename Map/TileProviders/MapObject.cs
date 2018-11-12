@@ -91,42 +91,46 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>Returns value which belongs to the key attribute. </summary>
+        /// <param name="key">Key of the corresponding key/value pair.</param>
+        /// <returns>Value of the corresponding key/value pair.</returns>
         public string this[string key] => Attributes.ContainsKey(key)
             ? Attributes[key]
             : string.Empty;
 
-        /// <inheritdoc/>
+        /// <summary> Identifier of the object. </summary>
         public string Id { get; protected set; }
 
-        /// <inheritdoc/>
+        /// <summary> Logical position of the map object. </summary>
         public Point LogicalPosition { get; protected set; }
 
-        /// <inheritdoc/>
+        /// <summary> Geographical coordinate. </summary>
         public Point Point { get; protected set; }
 
-        /// <inheritdoc/>
+        /// <summary> Layer to which this map object belongs to. </summary>
         public string Layer { get; protected set; }
 
-        /// <inheritdoc/>
+        /// <summary> Set of key/value pairs. </summary>
+        /// <returns> Enumeration of key value pairs. </returns>
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator() => Attributes.GetEnumerator();
 
-        /// <inheritdoc/>
+        /// <summary> Set of key/value pairs. </summary>
+        /// <returns> Enumeration of key value pairs. </returns>
         IEnumerator IEnumerable.GetEnumerator() => Attributes.GetEnumerator();
 
-        /// <inheritdoc/>
+        /// <summary> Number of key/value pairs. </summary>
         public int Count => Attributes.Count;
 
-        /// <inheritdoc/>
+        /// <summary> Enumeration of all available keys. </summary>
         public IEnumerable<string> Keys => Attributes.Keys;
 
-        /// <inheritdoc/>
+        /// <summary> Enumeration of all available values. </summary>
         public IEnumerable<string> Values => Attributes.Values;
 
-        /// <inheritdoc/>
+        /// <summary> Source of the map object. </summary>
         public object Source { get; protected set; }
 
-        /// <inheritdoc/>
+        /// <summary> Textual representation of the whole object. </summary>
         public override string ToString()
         {
             var result = new StringBuilder();
@@ -137,10 +141,15 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             return result.ToString();
         }
 
-        /// <inheritdoc/>
+        /// <summary> Checks if value exists for specified key. </summary>
+        /// <param name="key"> Key to look for. </param>
+        /// <returns> Indicates if a value exists for the specified key. </returns>
         public bool ContainsKey(string key) => Attributes.ContainsKey(key);
 
-        /// <inheritdoc/>
+        /// <summary> Tries to get a value for the specified key. </summary>
+        /// <param name="key"> Key to look for. </param>
+        /// <param name="value">If available, value belonging to the key. </param>
+        /// <returns> Indicates if a value exists for the specified key. </returns>
         public bool TryGetValue(string key, out string value)
         {
             value = this[key];
@@ -148,9 +157,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         }
     }
 
-    /// <summary>
-    /// Represents a MapRectangle corresponding to a tile.
-    /// </summary>
+    /// <summary> Represents a MapRectangle corresponding to a tile. </summary>
     public class TileMapRectangle : MapRectangle
     {
         /// <summary>

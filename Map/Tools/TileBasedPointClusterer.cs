@@ -81,14 +81,11 @@ namespace Ptv.XServer.Controls.Map.Tools
     /// <summary> Struct for a tile key. </summary>
     public struct Tile
     {
-        #region public variables
         /// <summary> Gets or sets the x key. </summary>
         public int X { get; set; }
         /// <summary> Gets or sets the y key. </summary>
         public int Y { get; set; }
-        #endregion
 
-        #region public methods
         /// <summary> Documentation in progress... </summary>
         /// <param name="obj"> Documentation in progress... </param>
         /// <returns> Documentation in progress... </returns>
@@ -102,17 +99,15 @@ namespace Ptv.XServer.Controls.Map.Tools
             return X == tile.X && Y == tile.Y;
         }
 
-        /// <inheritdoc/>  
+        /// <summary> Serves as the hash function </summary>
+        /// <returns> A hash code for the current object. </returns>
         public override int GetHashCode() => X ^ Y;
-
-        #endregion
     }
   
     /// <summary> This class holds the information for a single point. </summary>
     /// <typeparam name="T"> The item type for the cluster. </typeparam>
     public class PointInfo<T>
     {
-        #region public variables
         /// <summary> Gets or sets the x coordinate of the point. </summary>
         public double X { get; set; }
         /// <summary> Gets or sets the y coordinate of the point. </summary>
@@ -121,11 +116,9 @@ namespace Ptv.XServer.Controls.Map.Tools
         public double Aggregate { get; set; }
         /// <summary> Gets or sets the item of the point. </summary>
         public T Tag { get; set; }
-        #endregion
     }
 
-    /// <summary><para> This class creates cluster objects for points. </para>
-    /// <para> See the <conceptualLink target="4926f311-8333-4b18-b509-70c1d876d5eb"/> topic for an example. </para></summary>
+    /// <summary> This class creates cluster objects for points. </summary>
     /// <typeparam name="T"> The type of the items which should be clustered. </typeparam>
     public class TileBasedPointClusterer<T> : IPointClusterQuery<T>
     {

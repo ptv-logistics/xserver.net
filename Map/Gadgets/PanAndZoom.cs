@@ -11,8 +11,7 @@ using Ptv.XServer.Controls.Map.Tools;
 
 namespace Ptv.XServer.Controls.Map.Gadgets
 {
-    /// <summary><para> Mode describing what is to be done when clicking in the map. </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> topic for an example. </para></summary>
+    /// <summary> Mode describing what is to be done when clicking in the map. </summary>
     public enum DragMode
     {
         /// <summary> No special action. </summary>
@@ -29,9 +28,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         SelectOnShift
     }
 
-    /// <summary><para> User control for the <see cref="MapView"/>-object, translating user interactions into modification
-    /// of the visible map section. </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> topic for an example. </para></summary>
+    /// <summary> User control for the <see cref="MapView"/>-object, translating user interactions into modification of the visible map section. </summary>
     public class PanAndZoom : MapGadget
     {
         #region private variables

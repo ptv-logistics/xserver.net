@@ -88,7 +88,7 @@ namespace Ptv.Components.Projections.Direct
     /// methods can be ignored (reserved for future use).
     /// </para>
     /// </remarks>
-    internal static class CoordinateTransformations
+    public static class CoordinateTransformations
     {
         #region RAD / DEG
 
