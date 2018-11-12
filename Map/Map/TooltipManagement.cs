@@ -63,7 +63,7 @@ namespace Ptv.XServer.Controls.Map
 
             // test if position has changed
             var currentPosition = mouseEventArgs?.GetPosition(map);
-            if ((LatestPosition.HasValue == currentPosition.HasValue) && (!currentPosition.HasValue || ((LatestPosition.Value - currentPosition.Value).Length <= 1e-4)))
+            if (LatestPosition.HasValue == currentPosition.HasValue && (!currentPosition.HasValue || (LatestPosition.Value - currentPosition.Value).Length <= 1e-4))
                 return;
 
             ClearToolTip();
@@ -77,7 +77,7 @@ namespace Ptv.XServer.Controls.Map
             toolTipTimer.Stop();
 
             // flag indicating if a tool tip is to be shown. Initially, specified position must be valid.
-            bool showToolTips = currentPosition.HasValue && (ToolTipDelay >= 0) && IsHitTestOKFunc((Point)currentPosition);
+            bool showToolTips = currentPosition.HasValue && ToolTipDelay >= 0 && IsHitTestOKFunc((Point)currentPosition);
             if (!showToolTips) return;
 
             GetToolTipMapObjects();
@@ -112,12 +112,12 @@ namespace Ptv.XServer.Controls.Map
             {
                 var kvp = item.toolTipMapObject.ToArray();
 
-                string content = (kvp.Length == 1)
+                string content = kvp.Length == 1
                     ? item.toolTipMapObject.First().Value // XMap.Map.UntiledLayer provides only one key/value pair and all structuring is made in the value field.
                     : item.toolTipMapObject.ToString(); // Needed for layers which uses the data dictionary with multiple key/value pairs for structuring their data.
 
                 var label = new Label { Margin = new Thickness(1), Content = content };
-                result.Children.Add((item.index == 0) 
+                result.Children.Add(item.index == 0 
                     ? (UIElement) label 
                     : new Border {
                         BorderThickness = new Thickness(0, 1, 0, 0),

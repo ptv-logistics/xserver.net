@@ -19,9 +19,9 @@ namespace System.Reflection
         /// </summary>
         /// <remarks>
         /// With <see cref="System.Runtime.InteropServices.DllImportAttribute" /> requiring
-        /// 'static extern methods', this copy of the attribute class is necessary to allow the parameterization of interface methods.
+        /// 'static extern methods', this copy of the attribute class is necessary to allow the parametrization of interface methods.
         /// </remarks>
-        [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+        [AttributeUsage(AttributeTargets.Method)]
         internal class DllImportAttribute : Attribute
         {
             /// <summary>
@@ -85,7 +85,7 @@ namespace System.Reflection
         private static object[] GetFieldValues(object o)
         {
             FieldInfo[] fields = GetOrderedFields(o);
-            object[] values = new object[fields.Length];
+            var values = new object[fields.Length];
             for (int j = 0; j < fields.Length; j++)
                 values[j] = fields[j].GetValue(o);
             return values;
@@ -112,7 +112,7 @@ namespace System.Reflection
         /// <param name="dllName">The file name of the external library.</param>
         /// <returns>Returns the implementation of the specified type or null on any error.</returns>
         /// <remarks>The <see cref="DllImportAttribute"/> attribute is used on the interfaces methods 
-        /// to parameterize the inter operation.</remarks>
+        /// to parametrize the inter operation.</remarks>
         public static T CreateNativeApi<T>(string dllName) where T : class
         {
             Type intf = typeof(T);
@@ -144,12 +144,10 @@ namespace System.Reflection
                 pinvoke.SetCustomAttribute(new CustomAttributeBuilder(dllImportType.GetConstructor(
                     new[] { typeof(string) }), new object[] { dllName }, GetFieldInfoFromOther(import, dllImportType), GetFieldValues(import)));
 
-                ParameterBuilder[] pinvokeParameters = new ParameterBuilder[parameters.Length];
-
                 for (int i = -1; i < parameters.Length; i++)
                 {
                     ParameterBuilder parameter;
-                    object[] marshalAsAttributes = null;
+                    object[] marshalAsAttributes;
                     if (i == -1)
                     {
                         parameter = pinvoke.DefineParameter(0, m.ReturnParameter.Attributes, null);
@@ -160,13 +158,13 @@ namespace System.Reflection
                         parameter = pinvoke.DefineParameter(i + 1, parameters[i].Attributes, null);
                         marshalAsAttributes = parameters[i].GetCustomAttributes(typeof(MarshalAsAttribute), false);
                     }
-                    if (marshalAsAttributes != null && marshalAsAttributes.Length > 0)
-                    {
-                        MarshalAsAttribute marshalAs = (MarshalAsAttribute)marshalAsAttributes[0];
-                        parameter.SetCustomAttribute(new CustomAttributeBuilder(typeof(MarshalAsAttribute).GetConstructor(
+
+                    if (marshalAsAttributes.Length <= 0) continue;
+
+                    MarshalAsAttribute marshalAs = (MarshalAsAttribute)marshalAsAttributes[0];
+                    parameter.SetCustomAttribute(new CustomAttributeBuilder(typeof(MarshalAsAttribute).GetConstructor(
                             new[] { typeof(UnmanagedType) }), new object[] { marshalAs.Value }, 
-                            GetOrderedFields(marshalAs), GetFieldValues(marshalAs)));
-                    }
+                        GetOrderedFields(marshalAs), GetFieldValues(marshalAs)));
                 }
 
 

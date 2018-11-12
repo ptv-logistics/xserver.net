@@ -92,21 +92,19 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <summary> Documentation in progress... </summary>
         /// <param name="obj"> Documentation in progress... </param>
         /// <returns> Documentation in progress... </returns>
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             // Check for null values and compare run-time types.
             if (obj == null || GetType() != obj.GetType())
                 return false;
             
             var tile = (Tile)obj;
-            return (X == tile.X) && (Y == tile.Y);
+            return X == tile.X && Y == tile.Y;
         }
 
         /// <inheritdoc/>  
-        public override int GetHashCode()
-        {
-            return X ^ Y;
-        }
+        public override int GetHashCode() => X ^ Y;
+
         #endregion
     }
   
@@ -192,7 +190,7 @@ namespace Ptv.XServer.Controls.Map.Tools
 
                 // try to get the cluster from the dictionary.
                 // If not, create a new one
-                if (!(baseClusters.TryGetValue(tmpTile, out var cluster)))
+                if (!baseClusters.TryGetValue(tmpTile, out var cluster))
                 {
                     cluster = new Cluster<T>(tmpTile.X, tmpTile.Y);
                     baseClusters[tmpTile] = cluster;
@@ -219,7 +217,7 @@ namespace Ptv.XServer.Controls.Map.Tools
 
                     // try to get the cluster from the dictionary.
                     // If not, create a new one
-                    if (!(childClusters.TryGetValue(tmpTile, out var childCluster)))
+                    if (!childClusters.TryGetValue(tmpTile, out var childCluster))
                     {
                         childCluster = new Cluster<T>(tmpTile.X, tmpTile.Y);
                         childClusters[tmpTile] = childCluster;

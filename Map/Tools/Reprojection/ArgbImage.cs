@@ -7,6 +7,8 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 
+#pragma warning disable CS3003 // Type is not CLS-compliant
+
 namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 {
     using PointD = System.Windows.Point;
@@ -85,6 +87,9 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                     interpolationLevel = 0;
                     break;
 
+                case InterpolationMode.Invalid:
+                    break;
+
                 default:
                     throw new ArgumentException("unsupported interpolation mode " + mode);
             }
@@ -101,7 +106,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// image into a 32bpp ARGB bitmap.</remarks>
         public static ArgbImage FromImage(Image image, InterpolationMode mode = InterpolationMode.Bicubic)
         {
-            if ((image is Bitmap bitmap) && (bitmap.PixelFormat == PixelFormat.Format32bppArgb))
+            if (image is Bitmap bitmap && bitmap.PixelFormat == PixelFormat.Format32bppArgb)
                 return FromImage(bitmap);
 
             bitmap = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppArgb);
@@ -133,7 +138,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             var ptr = bmpData.Scan0;
 
             // Check stride
-            if (bmpData.Stride != (bmp.Width << 2))
+            if (bmpData.Stride != bmp.Width << 2)
                 throw new InvalidDataException("bitmap stride contains an unexpected value");
 
             // Declare an array to hold the bytes of the bitmap. 
@@ -158,7 +163,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         /// <returns></returns>
         private bool ValidIndex(int x, int y)
         {
-            return (x >= 0 && y >= 0 && x < Width && y < Height);
+            return x >= 0 && y >= 0 && x < Width && y < Height;
         }
 
         /// <summary>
@@ -256,7 +261,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                 // interpolation loops for the current color component. We need to interpolate 
                 // horizontally and vertically using the specified kernel function values.
 
-                for (int i = 0, idxH0 = idx0 + componentOffset; i < interpolationKernelV.Count; ++i, idxH0 += (Width << 2))
+                for (int i = 0, idxH0 = idx0 + componentOffset; i < interpolationKernelV.Count; ++i, idxH0 += Width << 2)
                 {
                     double intensityH = 0;
 
@@ -308,7 +313,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
             }
 
             // test pixel location for bi-linear interpolation
-            if (interpolationLevel < 1 || floorX < 0 || floorY < 0 || floorX >= (Width - 1) || floorY >= (Height - 1))
+            if (interpolationLevel < 1 || floorX < 0 || floorY < 0 || floorX >= Width - 1 || floorY >= Height - 1)
                 // simply do nearest color
                 return GetNearestColor(x, y);
             
@@ -433,7 +438,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                 var lineSize = (Width << 2) + 1;
                 var linesPerBlock = 32768 / lineSize;
                 var nBlocks = (Height + linesPerBlock - 1) / linesPerBlock;
-                var idatSize = 6 + (nBlocks * 5) + (lineSize * Height);
+                var idatSize = 6 + nBlocks * 5 + lineSize * Height;
 
                 mem.Write(BitConverter.GetBytes(idatSize).ToBigEndian());
 
@@ -560,3 +565,5 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         public int Height { get; }
     }
 }
+
+#pragma warning restore CS3003 // Type is not CLS-compliant

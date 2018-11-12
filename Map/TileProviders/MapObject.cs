@@ -8,7 +8,6 @@ using System.Text;
 using System.Windows;
 using Ptv.XServer.Controls.Map.Layers;
 using Ptv.XServer.Controls.Map.Tools;
-using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 namespace Ptv.XServer.Controls.Map.TileProviders
 {
@@ -40,7 +39,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <summary>
         /// Reads the source object that is wrapped by the IMapObject's implementation.
         /// </summary>
-        Object Source { get; }
+        object Source { get; }
     }
 
     /// <summary>
@@ -82,13 +81,11 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         {
             get
             {
-                if (attributes == null)
-                {
-                    var providedAttributes = provideAttributes?.Invoke();
+                if (attributes != null) return attributes;
+                var providedAttributes = provideAttributes?.Invoke();
 
-                    attributes = providedAttributes?.ToDictionary(item => item.Key, item => item.Value)
-                        ?? new Dictionary<string, string>();
-                }
+                attributes = providedAttributes?.ToDictionary(item => item.Key, item => item.Value)
+                             ?? new Dictionary<string, string>();
 
                 return attributes;
             }
@@ -133,7 +130,10 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         public override string ToString()
         {
             var result = new StringBuilder();
-            Attributes.ForEach(null, attribute => result.AppendWithSeparator(attribute.Key + " = " + attribute.Value, Environment.NewLine));
+
+            foreach (var attribute in Attributes)
+                result.AppendWithSeparator(attribute.Key + " = " + attribute.Value, Environment.NewLine);
+
             return result.ToString();
         }
 

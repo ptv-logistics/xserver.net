@@ -1,7 +1,5 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
-using Ptv.XServer.Controls.Map.Tools.Reprojection;
-
 namespace Ptv.XServer.Controls.Map
 {
     using System;
@@ -47,7 +45,7 @@ namespace Ptv.XServer.Controls.Map
         /// </summary>
         public MapRectangle()
         {
-            SetValues(Double.PositiveInfinity, Double.NegativeInfinity, Double.PositiveInfinity, Double.NegativeInfinity);
+            SetValues(double.PositiveInfinity, double.NegativeInfinity, double.PositiveInfinity, double.NegativeInfinity);
         }
 
         /// <summary>
@@ -101,7 +99,8 @@ namespace Ptv.XServer.Controls.Map
         /// no points results in an empty rectangle.</param>
         public MapRectangle(IEnumerable<Point> points) : this()
         {
-            points.ForEach(null, point => Union(point));
+            foreach (var point in points)
+                Union(point);
         }
 
         /// <summary>
@@ -143,7 +142,7 @@ namespace Ptv.XServer.Controls.Map
         /// Gets a value indicating whether the rectangle is empty. This is true,
         /// if the width or height value is lower 0.
         /// </summary>
-        public bool IsEmpty => (Width < 0) || (Height < 0);
+        public bool IsEmpty => Width < 0 || Height < 0;
 
         /// <summary>
         /// Gets or sets the West boundary of the rectangle. The rectangle is empty, if the value is higher than the <see cref="East"/> boundary value.
@@ -224,8 +223,8 @@ namespace Ptv.XServer.Controls.Map
         /// </summary>
         public Point Center
         {
-            get => new Point(Width < 0 ? Double.NaN : West / 2 + East / 2, 
-                Height < 0 ? Double.NaN : South / 2 + North / 2);
+            get => new Point(Width < 0 ? double.NaN : West / 2 + East / 2, 
+                Height < 0 ? double.NaN : South / 2 + North / 2);
             set 
             {
                 if (IsEmpty)
@@ -252,7 +251,7 @@ namespace Ptv.XServer.Controls.Map
         /// </returns>
         public bool Contains(Point point)
         {
-            return !IsEmpty && (West <= point.X) && (point.X <= East) && (South <= point.Y) && (point.Y <= North); 
+            return !IsEmpty && West <= point.X && point.X <= East && South <= point.Y && point.Y <= North; 
         }
 
         /// <summary>
@@ -273,7 +272,7 @@ namespace Ptv.XServer.Controls.Map
             if (rect.IsEmpty)
                 return true;
             
-            return (West <= rect.West) && (East >= rect.East) && (South <= rect.South) && (North >= rect.North);
+            return West <= rect.West && East >= rect.East && South <= rect.South && North >= rect.North;
         }
 
         #endregion
@@ -288,7 +287,7 @@ namespace Ptv.XServer.Controls.Map
         /// <returns>Returns true if the MapRect intersects with this rectangle, false otherwise. </returns>
         public bool IntersectsWith(MapRectangle rect)
         {
-            return !IsEmpty && !rect.IsEmpty && (rect.West <= East) && (rect.East >= West) && (rect.South <= North) && (rect.North >= South);
+            return !IsEmpty && !rect.IsEmpty && rect.West <= East && rect.East >= West && rect.South <= North && rect.North >= South;
         }
 
         /// <summary> 
@@ -311,7 +310,7 @@ namespace Ptv.XServer.Controls.Map
         /// <returns>The intersected rectangle is returned as a new instance.</returns>
         public static MapRectangle operator&(MapRectangle rect1, MapRectangle rect2)
         {
-            return (new MapRectangle(rect1)).Intersect(rect2);
+            return new MapRectangle(rect1).Intersect(rect2);
         }
 
         #endregion
@@ -328,7 +327,7 @@ namespace Ptv.XServer.Controls.Map
         /// <returns>The object itself is returned, so it can be reused in the same line of code.</returns>
         public MapRectangle Union(Point point)
         {
-            return (Double.IsNaN(point.X) || Double.IsNaN(point.Y)) 
+            return double.IsNaN(point.X) || double.IsNaN(point.Y) 
                 ? this 
                 : SetValues(Math.Min(West, point.X), Math.Max(East, point.X), Math.Min(South, point.Y), Math.Max(North, point.Y));
         }
@@ -343,7 +342,7 @@ namespace Ptv.XServer.Controls.Map
         /// <returns>Unified rectangle returned as a new instance.</returns>
         public static MapRectangle operator |(MapRectangle rect, Point point)
         {
-            return (new MapRectangle(rect)).Union(point);
+            return new MapRectangle(rect).Union(point);
         }
 
         /// <summary> 
@@ -356,7 +355,7 @@ namespace Ptv.XServer.Controls.Map
         /// <returns>The object itself is returned, so it can be reused in the same line of code.</returns>
         public MapRectangle Union(MapRectangle rect)
         {
-            return (rect.IsEmpty) ? this : Union(rect.SouthWest).Union(rect.NorthEast);
+            return rect.IsEmpty ? this : Union(rect.SouthWest).Union(rect.NorthEast);
         }
 
         /// <summary>
@@ -367,7 +366,7 @@ namespace Ptv.XServer.Controls.Map
         /// <returns>The unified rectangle is returned as a new instance.</returns>
         public static MapRectangle operator |(MapRectangle rect1, MapRectangle rect2)
         {
-            return (new MapRectangle(rect1)).Union(rect2);
+            return new MapRectangle(rect1).Union(rect2);
         }
 
         #endregion
@@ -422,7 +421,7 @@ namespace Ptv.XServer.Controls.Map
         /// <returns>The translated object is returned as a new instance.</returns>
         public static MapRectangle operator +(MapRectangle rect, Point offset)
         {
-            return (new MapRectangle(rect.West + offset.X, rect.East + offset.X, rect.South + offset.Y, rect.North + offset.Y));
+            return new MapRectangle(rect.West + offset.X, rect.East + offset.X, rect.South + offset.Y, rect.North + offset.Y);
         }
 
         #endregion
@@ -490,7 +489,7 @@ namespace Ptv.XServer.Controls.Map
         /// <returns>The object itself is returned, so it can be reused in the same line of code.</returns>
         public static MapRectangle operator *(MapRectangle rect, Point inflate)
         {
-            return (new MapRectangle(rect)).Inflate(inflate.X, inflate.Y);
+            return new MapRectangle(rect).Inflate(inflate.X, inflate.Y);
         }
 
         #endregion
@@ -514,7 +513,7 @@ namespace Ptv.XServer.Controls.Map
                 return false;
             if (rect1IsEmpty) // rect2 is also null or empty
                 return true;
-            return (rect1.West == rect2.West) && (rect1.East == rect2.East) && (rect1.South == rect2.South) && (rect1.North == rect2.North);
+            return rect1.West == rect2.West && rect1.East == rect2.East && rect1.South == rect2.South && rect1.North == rect2.North;
         }
 
         /// <summary>
@@ -557,7 +556,7 @@ namespace Ptv.XServer.Controls.Map
                 return false;
 
             var rectangle = o as MapRectangle;
-            return (rectangle != null) && Equals(this, rectangle);
+            return rectangle != null && Equals(this, rectangle);
         }
 
         /// <summary> 

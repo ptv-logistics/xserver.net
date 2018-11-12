@@ -86,7 +86,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         {
             var item = new KeyValuePair<TKey, TValue>(key, dictionary[key]);
             bool bTmp = dictionary.Remove(key);
-            if (!bTmp || (CollectionChanged == null)) return bTmp;
+            if (!bTmp || CollectionChanged == null) return bTmp;
 
             CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
             return true;
@@ -132,7 +132,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
             bool isRemoved = (dictionary as IDictionary<TKey, TValue>).Remove(item);
-            if (!isRemoved || (CollectionChanged == null)) return isRemoved;
+            if (!isRemoved || CollectionChanged == null) return isRemoved;
 
             CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
             return true;

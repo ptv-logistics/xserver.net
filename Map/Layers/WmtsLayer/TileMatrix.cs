@@ -166,7 +166,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
                 // use the formula from the WMTS specification to calculate the 
                 // bottom right corner. Assume metersPerUnit is "1".
 
-                var metersPerUnit = 1;
+                const int metersPerUnit = 1;
                 var pixelSpan = ScaleDenominator * 0.28 * 1e-3 / metersPerUnit;
 
                 var tileSpanX = TileWidth * pixelSpan;
@@ -286,7 +286,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
         /// <returns>Approximated bounding box</returns>
         public IBoundingBox ApproximateBoundingBox(string targetCRS, int nSupportingPoints = 8, double resizeFactor = 1.025)
         {
-            return ApproximateBoundingBox(sourceCrs: CRS, targetCrs: targetCRS, nSupportingPoints: nSupportingPoints, resizeFactor: resizeFactor);
+            return ApproximateBoundingBox(CRS, targetCRS, nSupportingPoints, resizeFactor);
         }
 
 

@@ -103,16 +103,16 @@ namespace Ptv.XServer.Controls.Map.Layers
         private static int UniqueCanvasID;
 
         /// <summary> Adds the layer to a map. </summary>
-        /// <param name="mapView"> The map to which the layer is to be added. </param>
-        public virtual void AddToMapView(MapView mapView)
+        /// <param name="mapViewToAdd"> The map to which the layer is to be added. </param>
+        public virtual void AddToMapView(MapView mapViewToAdd)
         {
             // Check if the maximum number of canvases is reached.
-            if ((canvasInstances.Count + 1) > 1000)
+            if (canvasInstances.Count + 1 > 1000)
                 return;
 
             for (int i = 0; i < CanvasCategories.Length; i++)
             {
-                var mapCanvas = CanvasFactories[i](mapView);
+                var mapCanvas = CanvasFactories[i](mapViewToAdd);
                 if (mapCanvas == null)
                     continue;
                 mapCanvas.CanvasCategory = CanvasCategories[i];
@@ -120,7 +120,7 @@ namespace Ptv.XServer.Controls.Map.Layers
                 // Her: In previous versions the name of the baseLayer is used for the MapCanvas' name. Because this name 
                 // may contain any characters, but the name of mapCanvas has to be conform to a C#-identifier (MapCanvas is a UIElement!),
                 // a generic naming of MapCanvases is used.
-                mapCanvas.Name = "Canvas" + (++UniqueCanvasID);
+                mapCanvas.Name = "Canvas" + ++UniqueCanvasID;
                 mapCanvas.Update(UpdateMode.Refresh);
                 canvasInstances.Add(mapCanvas);
                 UpdateZindex();
@@ -190,7 +190,7 @@ namespace Ptv.XServer.Controls.Map.Layers
         private void UpdateZindex()
         {
             for (int canvasPosition = 0; canvasPosition < canvasInstances.Count; canvasPosition++)
-                Panel.SetZIndex(canvasInstances[canvasPosition], (int)(canvasInstances[canvasPosition].CanvasCategory) * 1000000 + priority * 1000 + canvasPosition);
+                Panel.SetZIndex(canvasInstances[canvasPosition], (int)canvasInstances[canvasPosition].CanvasCategory * 1000000 + priority * 1000 + canvasPosition);
         }
         #endregion
 

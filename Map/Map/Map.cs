@@ -14,7 +14,6 @@ using Ptv.XServer.Controls.Map.Gadgets;
 using Ptv.XServer.Controls.Map.Layers.Tiled;
 using Ptv.XServer.Controls.Map.Layers.Untiled;
 using Ptv.XServer.Controls.Map.TileProviders;
-using Ptv.XServer.Controls.Map.Tools.Reprojection;
 using Ptv.XServer.Controls.Map.Layers.Xmap2;
 
 // ReSharper disable once CheckNamespace
@@ -65,7 +64,6 @@ namespace Ptv.XServer.Controls.Map
             };
         }
         #endregion
-
 
         #region events
         /// <inheritdoc/>  
@@ -124,7 +122,9 @@ namespace Ptv.XServer.Controls.Map
 
             SetXMapUrlHint();
             ((Grid)Content).Children.Insert(0, mapView);
-            MapElementExtensions.FindChildren<MapView>(this).ForEach(null, view => Layers.Register(view));
+
+            foreach (var view in MapElementExtensions.FindChildren<MapView>(this))
+                Layers.Register(view);
         }
 
         private void SetXMapUrlHint()
@@ -214,50 +214,53 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public string XMapUrl
         {
-            get => xmapUrl;
+            get => xMapUrl;
             set
             {
-                if (xmapUrl == value) return;
+                if (xMapUrl == value) return;
 
-                xServerVersion = GetAllXserverVersions(value).FirstOrDefault(xServer => xServer.IsValidUrl());
+                xServerVersion = GetAllXserverVersions(value, xMapCredentials).FirstOrDefault(xServer => xServer.IsValidUrl());
 
-                xmapUrl = value;
+                xMapUrl = value;
 
                 InitializeMapLayers();
                 SetXMapUrlHint();
             }
         }
 
-        private string xmapUrl = "";
+        private string xMapUrl = string.Empty;
 
-        private static IEnumerable<IXServerVersion> GetAllXserverVersions(string url)
+        private static IEnumerable<IXServerVersion> GetAllXserverVersions(string url, string xMapCredentials)
         {
-            yield return new XServer1Version(url);
-            yield return new XServer2Version(url);
+            yield return new XServer1Version(url, xMapCredentials);
+            yield return new XServer2Version(url, xMapCredentials);
         }
 
         /// <inheritdoc/>  
         public string XMapCredentials
         {
-            get => xmapCredentials;
+            get => xMapCredentials;
             set
             {
-                if (xmapCredentials == value) return;
-                xmapCredentials = value;
+                if (xMapCredentials == value) return;
+                xMapCredentials = value;
 
                 if (xServerVersion?.IsCloudBased() ?? false)
+                {
+                    xServerVersion.XMapCredentials = xMapCredentials;
                     InitializeMapLayers();
+                }
             }
         }
 
-        private string xmapCredentials = "";
+        private string xMapCredentials = string.Empty;
 
         private void InitializeMapLayers()
         {
-            if (xServerVersion == null || (xServerVersion.IsCloudBased() && string.IsNullOrEmpty(xmapCredentials)))
+            if (xServerVersion == null || (xServerVersion.IsCloudBased() && string.IsNullOrEmpty(xMapCredentials)))
                 return;
 
-            xServerVersion.InitializeMapLayers(this, xmapCredentials);
+            xServerVersion.Initialize(this);
         }
 
         private IXServerVersion xServerVersion;
@@ -289,7 +292,7 @@ namespace Ptv.XServer.Controls.Map
         /// <inheritdoc/>  
         public string XMapCopyright
         {
-            get => (string.IsNullOrEmpty(xMapCopyright) || xMapCopyright.Length < 3)
+            get => string.IsNullOrEmpty(xMapCopyright) || xMapCopyright.Length < 3
                 ? "Please configure a valid copyright text!"
                 : xMapCopyright;
             set
@@ -563,7 +566,7 @@ namespace Ptv.XServer.Controls.Map
         {
             if (obj == null) return null;
 
-            return (obj is ContentElement contentElement)
+            return obj is ContentElement contentElement
                 ? ContentOperations.GetParent(contentElement) ?? (contentElement as FrameworkContentElement)?.Parent
                 : VisualTreeHelper.GetParent(obj);
         }

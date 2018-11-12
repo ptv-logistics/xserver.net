@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -11,23 +12,12 @@ using System.Text;
 
 namespace TinyJson
 {
-    // Really simple JSON parser in ~300 lines
-    // - Attempts to parse JSON files with minimal GC allocation
-    // - Nice and simple "[1,2,3]".FromJson<List<int>>() API
-    // - Classes and structs can be parsed too!
-    //      class Foo { public int Value; }
-    //      "{\"Value\":10}".FromJson<Foo>()
-    // - Can parse JSON without type information into Dictionary<string,object> and List<object> e.g.
-    //      "[1,2,3]".FromJson<object>().GetType() == typeof(List<object>)
-    //      "{\"Value\":10}".FromJson<object>().GetType() == typeof(Dictionary<string,object>)
-    // - No JIT Emit support to support AOT compilation on iOS
-    // - Attempts are made to NOT throw an exception if the JSON is corrupted or invalid: returns null instead.
-    // - Only public fields and property setters on classes/structs will be written to
-    //
-    // Limitations:
-    // - No JIT Emit support to parse structures quickly
-    // - Limited to parsing <2GB JSON files (due to int.MaxValue)
-    // - Parsing of abstract classes or interfaces is NOT supported and will throw an exception.
+    /// <summary>
+    /// Really simple JSON parser which attempts to parse JSON files with minimal GC allocation
+    /// Attempts are made to NOT throw an exception if the JSON is corrupted or invalid: returns null instead.
+    /// Only public fields and property setters on classes/structs will be written to.
+    /// Parsing of abstract classes or interfaces is NOT supported and will throw an exception.
+    /// </summary>
     public static class JSONParser
     {
         [ThreadStatic]
@@ -39,6 +29,10 @@ namespace TinyJson
         [ThreadStatic]
         static Dictionary<Type, Dictionary<string, PropertyInfo>> propertyInfoCache;
 
+        /// <summary>Transforms a JSON string into the object of type T. </summary>
+        /// <typeparam name="T"> Type to which the JSON string is converted.</typeparam>
+        /// <param name="json">String to convert. </param>
+        /// <returns></returns>
         public static T FromJson<T>(this string json)
         {
             // Initialize, if needed, the ThreadStatic variables
@@ -72,20 +66,21 @@ namespace TinyJson
             stringBuilder.Append(json[startIdx]);
             for (int i = startIdx + 1; i < json.Length; i++)
             {
-                if (json[i] == '\\')
+                switch (json[i])
                 {
-                    if (appendEscapeCharacter)
+                    case '\\':
+                        if (appendEscapeCharacter)
+                            stringBuilder.Append(json[i]);
+                        stringBuilder.Append(json[i + 1]);
+                        i++;//Skip next character as it is escaped
+                        break;
+                    case '"':
                         stringBuilder.Append(json[i]);
-                    stringBuilder.Append(json[i + 1]);
-                    i++;//Skip next character as it is escaped
+                        return i;
+                    default:
+                        stringBuilder.Append(json[i]);
+                        break;
                 }
-                else if (json[i] == '"')
-                {
-                    stringBuilder.Append(json[i]);
-                    return i;
-                }
-                else
-                    stringBuilder.Append(json[i]);
             }
             return json.Length - 1;
         }
@@ -153,7 +148,7 @@ namespace TinyJson
                         }
                         if (json[i + 1] == 'u' && i + 5 < json.Length - 1)
                         {
-                            if (UInt32.TryParse(json.Substring(i + 2, 4), System.Globalization.NumberStyles.AllowHexSpecifier, null, out var c))
+                            if (uint.TryParse(json.Substring(i + 2, 4), System.Globalization.NumberStyles.AllowHexSpecifier, null, out var c))
                             {
                                 stringBuilder.Append((char)c);
                                 i += 5;
@@ -168,6 +163,16 @@ namespace TinyJson
             if (type.IsPrimitive)
             {
                 var result = Convert.ChangeType(json, type, System.Globalization.CultureInfo.InvariantCulture);
+                return result;
+            }
+            if (type == typeof(DateTime))
+            {
+                if (json[0] == '"' && json[json.Length - 1] == '"')
+                {
+                    json = json.Substring(1, json.Length - 2);
+                    json = json.Replace("\\", string.Empty);
+                }
+                DateTime.TryParse(json, System.Globalization.CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var result);
                 return result;
             }
             if (type == typeof(decimal))
@@ -288,15 +293,19 @@ namespace TinyJson
                     return result;
                 }
             }
-            if (json == "true")
-                return true;
-            if (json == "false")
-                return false;
-            // handles json == "null" as well as invalid JSON
-            return null;
+            switch (json)
+            {
+                case "true":
+                    return true;
+                case "false":
+                    return false;
+                default:
+                    // handles json == "null" as well as invalid JSON
+                    return null;
+            }
         }
 
-        static Dictionary<string, T> CreateMemberNameDictionary<T>(T[] members) where T : MemberInfo
+        static Dictionary<string, T> CreateMemberNameDictionary<T>(IEnumerable<T> members) where T : MemberInfo
         {
             Dictionary<string, T> nameToMember = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
             foreach (var member in members)
@@ -348,12 +357,12 @@ namespace TinyJson
         }
     }
 
-    //Really simple JSON writer
-    //- Outputs JSON structures from an object
-    //- Really simple API (new List<int> { 1, 2, 3 }).ToJson() == "[1,2,3]"
-    //- Will only output public fields and property getters on objects
+    /// <summary> Really simple JSON writer which outputs JSON structures from an object. </summary>
     public static class JSONWriter
     {
+        /// <summary> Converts an object to a JSON string representation. </summary>
+        /// <param name="item"> Object which should be converted to a JSON string representation. </param>
+        /// <returns> JSON string representation of the input object. </returns>
         public static string ToJson(this object item)
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -382,7 +391,7 @@ namespace TinyJson
                         if (j >= 0)
                             stringBuilder.Append("\"\\nrtbf"[j]);
                         else
-                            stringBuilder.AppendFormat("u{0:X4}", (UInt32)c);
+                            stringBuilder.AppendFormat("u{0:X4}", (uint)c);
                     }
                     else
                         stringBuilder.Append(c);
@@ -403,7 +412,11 @@ namespace TinyJson
             }
             else if (type == typeof(bool))
             {
-                stringBuilder.Append(((bool)item) ? "true" : "false");
+                stringBuilder.Append((bool)item ? "true" : "false");
+            }
+            else if (type == typeof(DateTime))
+            {
+                stringBuilder.Append(((DateTime)item).ToString("o"));
             }
             else if (item is IList list)
             {
@@ -457,33 +470,31 @@ namespace TinyJson
                 foreach (var fieldInfo in fieldInfos)
                 {
                     object value = fieldInfo.GetValue(item);
-                    if (value != null)
-                    {
-                        if (isFirst)
-                            isFirst = false;
-                        else
-                            stringBuilder.Append(',');
-                        stringBuilder.Append('\"');
-                        stringBuilder.Append(GetMemberName(fieldInfo));
-                        stringBuilder.Append("\":");
-                        AppendValue(stringBuilder, value);
-                    }
+                    if (value == null) continue;
+
+                    if (isFirst)
+                        isFirst = false;
+                    else
+                        stringBuilder.Append(',');
+                    stringBuilder.Append('\"');
+                    stringBuilder.Append(GetMemberName(fieldInfo));
+                    stringBuilder.Append("\":");
+                    AppendValue(stringBuilder, value);
                 }
                 PropertyInfo[] propertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
                 foreach (var propertyInfo in propertyInfos)
                 {
                     object value = propertyInfo.GetValue(item, null);
-                    if (value != null)
-                    {
-                        if (isFirst)
-                            isFirst = false;
-                        else
-                            stringBuilder.Append(',');
-                        stringBuilder.Append('\"');
-                        stringBuilder.Append(GetMemberName(propertyInfo));
-                        stringBuilder.Append("\":");
-                        AppendValue(stringBuilder, value);
-                    }
+                    if (value == null) continue;
+
+                    if (isFirst)
+                        isFirst = false;
+                    else
+                        stringBuilder.Append(',');
+                    stringBuilder.Append('\"');
+                    stringBuilder.Append(GetMemberName(propertyInfo));
+                    stringBuilder.Append("\":");
+                    AppendValue(stringBuilder, value);
                 }
 
                 stringBuilder.Append('}');
@@ -492,10 +503,7 @@ namespace TinyJson
 
         static string GetMemberName(MemberInfo member)
         {
-            if (member.Name == "_type")
-                return "$type";
-            else
-                return member.Name;
+            return member.Name == "_type" ? "$type" : member.Name;
         }
     }
 }

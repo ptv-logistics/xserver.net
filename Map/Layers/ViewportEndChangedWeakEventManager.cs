@@ -32,13 +32,13 @@ namespace Ptv.XServer.Controls.Map.Layers
 
         #region protected methods
         /// <inheritdoc/>
-        protected override void StartListening(Object source)
+        protected override void StartListening(object source)
         {
             var mapView = (MapView)source;
             mapView.ViewportEndChanged += DeliverEvent;
         }
         /// <inheritdoc/>
-        protected override void StopListening(Object source)
+        protected override void StopListening(object source)
         {
             var mapView = (MapView)source;
             mapView.ViewportEndChanged -= DeliverEvent;

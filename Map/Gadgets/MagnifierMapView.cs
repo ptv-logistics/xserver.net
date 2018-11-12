@@ -57,7 +57,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             get
             {
                 var map = MapElementExtensions.FindParent<Map>(this);
-                return (map != null) && map.UseAnimation;
+                return map != null && map.UseAnimation;
             }
         }
 

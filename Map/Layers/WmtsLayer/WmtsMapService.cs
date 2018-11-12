@@ -94,7 +94,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
             /// Creates and initializes an instance of BlockBuilder.
             /// </summary>
             /// <param name="blockSize">Target block size.</param>
-            private BlockBuilder(int blockSize) : base(new ReprojectionOptions() { BlockSize = blockSize })
+            private BlockBuilder(int blockSize) : base(new ReprojectionOptions { BlockSize = blockSize })
             {
             }
 
@@ -128,7 +128,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
             // determine colors to be used, 
             // set up reduced color set
 
-            var mod = 64;
+            const int mod = 64;
             var color0 = colors[(tileX + tileY)%colors.Length];
             var color1 = Color.FromArgb(255, Math.Max(0, color0.R - mod), Math.Max(0, color0.G - mod), Math.Max(0, color0.B - mod));
             var color2 = Color.FromArgb(255, Math.Min(255, color0.R + mod), Math.Min(255, color0.G + mod), Math.Min(255, color0.B + mod));
@@ -383,8 +383,8 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
                                     (int)Math.Round((boundingBox.MaxY - logicalTileRect.Top) / zoomY),
 
                                     // width & height
-                                    (int)Math.Round(((tileRight - tileLeft + 1) * logicalTileWidth) / zoomX),
-                                    (int)Math.Round(((tileBottom - tileTop + 1) * logicalTileHeight) / zoomY)
+                                    (int)Math.Round((tileRight - tileLeft + 1) * logicalTileWidth / zoomX),
+                                    (int)Math.Round((tileBottom - tileTop + 1) * logicalTileHeight / zoomY)
                                 );
 
                                 // draw the tile image using a high quality mode

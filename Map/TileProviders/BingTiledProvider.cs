@@ -117,7 +117,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         public Stream GetImageStream(int x, int y, int zoom)
         {
             string tmpUrl = metaInfo.ImageUrl;
-            tmpUrl = tmpUrl.Replace("{subdomain}", metaInfo.ImageUrlSubDomains[((x ^ y) % metaInfo.ImageUrlSubDomains.Length)]);
+            tmpUrl = tmpUrl.Replace("{subdomain}", metaInfo.ImageUrlSubDomains[(x ^ y) % metaInfo.ImageUrlSubDomains.Length]);
             tmpUrl = tmpUrl.Replace("{quadkey}", GeoTransform.TileXYToQuadKey(x, y, zoom));
             if (tmpUrl.Contains("{culture}"))
                 tmpUrl = tmpUrl.Replace("{culture}", Thread.CurrentThread.CurrentUICulture.Name.ToLower());

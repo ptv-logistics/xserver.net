@@ -50,6 +50,6 @@ namespace Ptv.XServer.Controls.Map
         /// <summary>
         /// Disable memory pressure when running as 64-bi and enable it when running in a 32-Bit process.        
         /// </summary>
-        Automatic = 2,
+        Automatic = 2
     }
 }

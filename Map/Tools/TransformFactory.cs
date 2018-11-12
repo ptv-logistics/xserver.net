@@ -35,10 +35,10 @@ namespace Ptv.XServer.Controls.Map.Tools
                 case SpatialReference.PtvMercator:
                     {
                         const double EARTH_RADIUS = 6371000.0;
-                        double mercatorSize = EARTH_RADIUS * 2.0 * Math.PI;
+                        const double MERCATOR_SIZE = EARTH_RADIUS * 2.0 * Math.PI;
 
                         var translateTransform = new TranslateTransform(MapView.ReferenceSize / 2, MapView.ReferenceSize / 2);
-                        var zoomTransform = new ScaleTransform(MapView.ZoomAdjust * MapView.ReferenceSize / mercatorSize, -MapView.ZoomAdjust * MapView.ReferenceSize / mercatorSize, MapView.ReferenceSize / 2, MapView.ReferenceSize / 2);
+                        var zoomTransform = new ScaleTransform(MapView.ZoomAdjust * MapView.ReferenceSize / MERCATOR_SIZE, -MapView.ZoomAdjust * MapView.ReferenceSize / MERCATOR_SIZE, MapView.ReferenceSize / 2, MapView.ReferenceSize / 2);
                         var transformGroup = new TransformGroup();
                         transformGroup.Children.Add(translateTransform);
                         transformGroup.Children.Add(zoomTransform);
@@ -52,10 +52,10 @@ namespace Ptv.XServer.Controls.Map.Tools
                 case SpatialReference.PtvMercatorInvertedY:
                     {
                         const double EARTH_RADIUS = 6371000.0;
-                        double mercatorSize = EARTH_RADIUS * 2.0 * Math.PI;
+                        const double MERCATOR_SIZE = EARTH_RADIUS * 2.0 * Math.PI;
                         
                         var translateTransform = new TranslateTransform(MapView.ReferenceSize / 2, MapView.ReferenceSize / 2);
-                        var zoomTransform = new ScaleTransform(MapView.ZoomAdjust * MapView.ReferenceSize / mercatorSize, MapView.ZoomAdjust * MapView.ReferenceSize / mercatorSize, MapView.ReferenceSize / 2, MapView.ReferenceSize / 2);
+                        var zoomTransform = new ScaleTransform(MapView.ZoomAdjust * MapView.ReferenceSize / MERCATOR_SIZE, MapView.ZoomAdjust * MapView.ReferenceSize / MERCATOR_SIZE, MapView.ReferenceSize / 2, MapView.ReferenceSize / 2);
                         var transformGroup = new TransformGroup();
                         transformGroup.Children.Add(translateTransform);
                         transformGroup.Children.Add(zoomTransform);
@@ -69,10 +69,10 @@ namespace Ptv.XServer.Controls.Map.Tools
                 case SpatialReference.WebMercator:
                     {
                         const double EARTH_RADIUS = 6378137.0;
-                        double mercatorSize = EARTH_RADIUS * 2.0 * Math.PI;
+                        const double MERCATOR_SIZE = EARTH_RADIUS * 2.0 * Math.PI;
 
                         var translateTransform = new TranslateTransform(MapView.ReferenceSize / 2, MapView.ReferenceSize / 2);
-                        var zoomTransform = new ScaleTransform(MapView.ZoomAdjust * MapView.ReferenceSize / mercatorSize, -MapView.ZoomAdjust * MapView.ReferenceSize / mercatorSize, MapView.ReferenceSize / 2, MapView.ReferenceSize / 2);
+                        var zoomTransform = new ScaleTransform(MapView.ZoomAdjust * MapView.ReferenceSize / MERCATOR_SIZE, -MapView.ZoomAdjust * MapView.ReferenceSize / MERCATOR_SIZE, MapView.ReferenceSize / 2, MapView.ReferenceSize / 2);
                         var transformGroup = new TransformGroup();
                         transformGroup.Children.Add(translateTransform);
                         transformGroup.Children.Add(zoomTransform);
@@ -86,10 +86,10 @@ namespace Ptv.XServer.Controls.Map.Tools
                 case SpatialReference.WebMercatorInvertedY:
                     {
                         const double EARTH_RADIUS = 6378137.0;
-                        double mercatorSize = EARTH_RADIUS * 2.0 * Math.PI;
+                        const double MERCATOR_SIZE = EARTH_RADIUS * 2.0 * Math.PI;
 
                         var translateTransform = new TranslateTransform(MapView.ReferenceSize / 2, MapView.ReferenceSize / 2);
-                        var zoomTransform = new ScaleTransform(MapView.ZoomAdjust * MapView.ReferenceSize / mercatorSize, MapView.ZoomAdjust * MapView.ReferenceSize / mercatorSize, MapView.ReferenceSize / 2, MapView.ReferenceSize / 2);
+                        var zoomTransform = new ScaleTransform(MapView.ZoomAdjust * MapView.ReferenceSize / MERCATOR_SIZE, MapView.ZoomAdjust * MapView.ReferenceSize / MERCATOR_SIZE, MapView.ReferenceSize / 2, MapView.ReferenceSize / 2);
                         var transformGroup = new TransformGroup();
                         transformGroup.Children.Add(translateTransform);
                         transformGroup.Children.Add(zoomTransform);

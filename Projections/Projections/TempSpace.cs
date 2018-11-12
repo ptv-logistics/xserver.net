@@ -13,7 +13,7 @@ namespace System.IO
         /// <summary>
         /// The tempBase variable.
         /// </summary>
-        private static readonly string tempBase = null;
+        private static readonly string tempBase;
         
         /// <summary>
         /// Tries to delete a directory.
@@ -22,10 +22,10 @@ namespace System.IO
         /// <remarks>Used by the static constructor to initially create the temp space.</remarks>
         private static void TryCleanup(string dir)
         {
-            if (Directory.Exists(dir))
-                foreach (string subdir in Directory.GetDirectories(dir))
-                    try { Directory.Delete(subdir, true); }
-                    catch { }
+            if (!Directory.Exists(dir)) return;
+            foreach (var subdir in Directory.GetDirectories(dir))
+                try { Directory.Delete(subdir, true); }
+                catch { }
         }
 
         /// <summary>

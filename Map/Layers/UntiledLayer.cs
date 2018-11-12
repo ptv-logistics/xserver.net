@@ -17,7 +17,6 @@ using Ptv.XServer.Controls.Map.Localization;
 using xserver;
 using Environment = System.Environment;
 using Timer = System.Threading.Timer;
-using UserControl = System.Windows.Controls.UserControl;
 using Image = System.Windows.Controls.Image;
 using Point = System.Windows.Point;
 
@@ -101,25 +100,23 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
         }
         #endregion
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="mapObjects"></param>
-        /// <param name="requestedSize"></param>
-        protected void UpdateMapObjects(IEnumerable<IMapObject> mapObjects, Size requestedSize)
+        /// <summary>Takes all parameters into members, commonly provided by the corresponding provider. </summary>
+        /// <param name="newMapObjects">Set of map objects which can be used for showing tool tips.</param>
+        /// <param name="requestedSize">The size of the map image.</param>
+        protected void UpdateMapObjects(IEnumerable<IMapObject> newMapObjects, Size requestedSize)
         {
-            this.mapObjects = mapObjects;
+            mapObjects = newMapObjects;
             imageSize = requestedSize;
         }
 
         /// <inheritdoc/>
-        public override void AddToMapView(MapView mapView)
+        public override void AddToMapView(MapView mapViewToAdd)
         {
-            // store the mapView, required for hit-testing
-            if (mapView?.Name == "Map")
-                this.mapView = mapView;
+            // store the mapViewToAdd, required for hit-testing
+            if (mapViewToAdd?.Name == "Map")
+                mapView = mapViewToAdd;
 
-            base.AddToMapView(mapView);
+            base.AddToMapView(mapViewToAdd);
         }
 
         /// <summary> Determines the tool tip texts for a given position </summary>
@@ -275,7 +272,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
 
                     break;
                 case UpdateMode.EndTransition:
-                    if (GlobalOptions.InfiniteZoom && mapImage?.Tag != null)
+                    if (mapImage?.Tag != null)
                     {
                         var mapParam = (MapParam)mapImage.Tag;
                         SetLeft(mapImage, mapParam.Left + MapView.OriginOffset.X);
@@ -313,7 +310,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             }
 
             // resize if > MaxSize
-            if ((mapParam.Width <= MaxRequestSize.Width) && (mapParam.Height <= MaxRequestSize.Height)) return mapParam;
+            if (mapParam.Width <= MaxRequestSize.Width && mapParam.Height <= MaxRequestSize.Height) return mapParam;
 
             double ratio = Math.Min(MaxRequestSize.Height / mapParam.Height, MaxRequestSize.Width / mapParam.Width);
             mapParam.Width *= ratio;
@@ -414,6 +411,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             UpdateMapObjects?.Invoke(mapObjects, new Size(mapParam.Width, mapParam.Height));
         }
 
+        /// <summary>Callback for a provider object to set the map objects which belong to a requested map image. </summary>
         public Action<IEnumerable<IMapObject>, Size> UpdateMapObjects { get; set; }
 
         /// <summary> Updates the overlay image. </summary>
@@ -427,7 +425,10 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             }
 
             var mapParam = GetMapParam();
-            if (!forceUpdate && (mapParam == lastParam)) return;
+            if (!forceUpdate && mapParam == lastParam) return;
+
+            // reset existing map map objects
+            UpdateMapObjects?.Invoke(null, new Size());
 
             lastParam = mapParam;
             mapParam.Index = ++index;
@@ -601,7 +602,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
             /// <returns>True, if Width and Height are in range. False otherwise.</returns>
             public bool IsSizeInRange(Size minSize, Size maxSize)
             {
-                return (Width >= minSize.Width && Height >= minSize.Height && Width <= maxSize.Width && Height <= maxSize.Height);
+                return Width >= minSize.Width && Height >= minSize.Height && Width <= maxSize.Width && Height <= maxSize.Height;
             }
         }
         #endregion
@@ -617,6 +618,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
     /// </remarks>
     public class XMap1MapObject : MapObject
     {
+        /// <summary> Creates an xMap-1 map object. </summary>
+        /// <param name="objectInfos">Set of object infos returned by xMap-1.</param>
+        /// <param name="layerObject">XServer layer object.</param>
         public XMap1MapObject(ObjectInfos objectInfos, LayerObject layerObject) : base(
             (((long) layerObject.hiId << 32) + layerObject.loId).ToString(),
             objectInfos.name,
@@ -630,28 +634,28 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
 
         private static string GetDescription(LayerObject layerObject)
         {
-            string result = layerObject?.descr;
-            if (string.IsNullOrEmpty(result)) return string.Empty;
+            string descr = layerObject?.descr;
+            if (string.IsNullOrEmpty(descr)) return string.Empty;
 
-            if (result.Contains('#'))
-                result = result.Split('#')[1];
-            result = result.Trim('|').Replace("|", "\n");
+            // match Values for xPOIAcc
+            if (descr.Contains('#'))
+            {
+                var poidesc = descr.Split('#')[1];
+                poidesc = poidesc.Trim('|').Replace("|", "\n");
 
-            var match = Regex.Match(result, @"^(?:[^\|=:]+):([^\|=:]*)$");
-            if (match.Success)
-                result = match.Groups[1].Value;
+                var match = Regex.Match(poidesc, @"^(?:[^\|=:]+):([^\|=:]*)$");
+                if (match.Success)
+                    poidesc = match.Groups[1].Value;
 
-            return result;
-        }
+                return poidesc;
+            }
 
-        /// <inheritdoc/>
-        public override string ToString()
-        {
-            // match KVP-style description string: a=b|b=c|...
-            var m = Regex.Match(((LayerObject)Source).descr, @"^(?!\|)(?:\|?([^\|=]+)=([^\|]+))+$");
+            // match KVP-style description string: a=b|b=c|... for Feature Layer
+            var m = Regex.Match(descr, @"^(?!\|)(?:\|?([^\|=]+)=([^\|]*))+$");
 
+            // no match - just return descr
             if (!m.Success)
-                return base.ToString();
+                return descr;
 
             var result = new StringBuilder(4);
             var message = string.Empty;

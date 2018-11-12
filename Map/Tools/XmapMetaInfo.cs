@@ -110,7 +110,7 @@ namespace Ptv.XServer.Controls.Map.Tools
                                 }, ref maxSizeResult))
                             {
                                 var values = maxSizeResult.Split(',');
-                                MaxRequestSize = new Size(Int32.Parse(values[0]), Int32.Parse(values[1]));
+                                MaxRequestSize = new Size(int.Parse(values[0]), int.Parse(values[1]));
                                 jspFound = true;
                             }
                         }
@@ -141,21 +141,17 @@ namespace Ptv.XServer.Controls.Map.Tools
                     // The tag in the configuration for the copyright text.
                     var i1 = metaInfo.IndexOf(copyrightTag, StringComparison.Ordinal) + copyrightTag.Length;
                     if (i1 > -1)
-                    {
-                        var i2 = metaInfo.IndexOf('\r', i1);
-                        CopyrightText = "© " + metaInfo.Substring(i1, i2 - i1);
-                    }
+                        CopyrightText = "© " + metaInfo.Substring(i1, metaInfo.IndexOf('\r', i1) - i1);
 
                     // max size
                     const string maxSizeTag = "doNotEdit.image.maxSize=";
                     // The tag in the configuration for the max size value.
                     i1 = metaInfo.IndexOf(maxSizeTag, StringComparison.Ordinal) + maxSizeTag.Length;
-                    if (i1 > -1)
-                    {
-                        var i2 = metaInfo.IndexOf('\r', i1);
-                        var values = metaInfo.Substring(i1, i2 - i1).Split(',');
-                        MaxRequestSize = new Size(Convert.ToInt32(values[0]), Convert.ToInt32(values[1]));
-                    }
+                    if (i1 <= -1) return;
+                    
+                    var i2 = metaInfo.IndexOf('\r', i1);
+                    var values = metaInfo.Substring(i1, i2 - i1).Split(',');
+                    MaxRequestSize = new Size(Convert.ToInt32(values[0]), Convert.ToInt32(values[1]));
                 }
                 catch (WebException exception)
                 {
@@ -173,7 +169,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns>Returns true if whole path succeeded and false if not.</returns>
         private static bool SearchValueInJSON(IEnumerable<string> path, ref string result)
         {
-            foreach (String pathElement in path)
+            foreach (string pathElement in path)
             {
                 if (!result.Contains(pathElement))
                     return false;
@@ -219,7 +215,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             if (XServerUrl.IsXServerInternet(baseUrl) && CheckSampleRequest(baseUrl, password))
                 return; // Check OK
 
-            if (new XServer2Version(Url).IsValidUrl())
+            if (new XServer2Version(Url, password).IsValidUrl())
                 throw new ArgumentException("The XMap url addresses an XServer 2 service. This is currently not supported.");
 
             if (!CheckSampleRequest(baseUrl, null))
@@ -231,7 +227,7 @@ namespace Ptv.XServer.Controls.Map.Tools
                                                   "Please note that the pre-supplied access token (15-day-test-license) may have expired.");
         }
 
-        private bool CheckSampleRequest(string baseUrl, string password)
+        private static bool CheckSampleRequest(string baseUrl, string password)
         {
             try
             {

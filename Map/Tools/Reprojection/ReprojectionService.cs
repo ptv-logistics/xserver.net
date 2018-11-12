@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using Ptv.Components.Projections;
 
+#pragma warning disable CS3003 // Type is not CLS-compliant
+
 namespace Ptv.XServer.Controls.Map.Tools.Reprojection
 {
     using SizeD = System.Windows.Size;
@@ -224,7 +226,7 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
         private static Stream RenderTransparentImage(Size size)
         {
             // re-use transparent tile if possible, otherwise render image
-            Stream stm = (size.Width == 256 && size.Height == 256 && TransparentTile != null)
+            Stream stm = size.Width == 256 && size.Height == 256 && TransparentTile != null
                 ? new MemoryStream(TransparentTile)
                 : size.CreateImage(TransparentWhite).StreamPng();
 
@@ -424,3 +426,4 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
     }
 }
 
+#pragma warning restore CS3003 // Type is not CLS-compliant

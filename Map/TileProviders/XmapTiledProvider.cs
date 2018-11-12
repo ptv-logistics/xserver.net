@@ -35,6 +35,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         Custom
     }
 
+    /// <summary>Setting a delegate handling map updates. </summary>
     public interface IObjectInfoProvider
     {
         /// <summary> MapUpdate event. See remarks on <see cref="MapUpdateDelegate"/>. </summary>
@@ -78,10 +79,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <param name="mode"> The mode of this tiled provider instance. </param>
         public XMapTiledProvider(string url, XMapMode mode) : this(url, string.Empty, string.Empty, mode) { }
 
-
-        /// <summary> MapUpdate event. See remarks on <see cref="MapUpdateDelegate"/>. </summary>
-        public event MapUpdateDelegate MapUdpate;
-
+        /// <summary> Customized caller constext properties. </summary>
         public IEnumerable<CallerContextProperty> CustomCallerContextProperties { get; set; }
 
         /// <summary> Gets or sets the custom layers of the xMapServer. </summary>
@@ -90,8 +88,6 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <inheritdoc/>
         public override byte[] TryGetStreamInternal(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects)
         {
-            var size = new System.Windows.Size(width, height);
-
             using (var service = new XMapWSServiceImpl(url))
             {
                 if (!string.IsNullOrEmpty(User) && !string.IsNullOrEmpty(Password))
@@ -142,7 +138,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                     foreach (var customXMapLayers in CustomXMapLayers)
                     {
                         var xMapLayers = customXMapLayers; // Temporary variable needed for solving closure issues in the next code line
-                        foreach (var layer in layers.Where(layer => (layer.GetType() == xMapLayers.GetType()) && (layer.name == xMapLayers.name)))
+                        foreach (var layer in layers.Where(layer => layer.GetType() == xMapLayers.GetType() && layer.name == xMapLayers.name))
                         {
                             layers.Remove(layer);
                             break;
@@ -152,7 +148,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                     layers.AddRange(CustomXMapLayers);
                 }
 
-                if (!String.IsNullOrEmpty(CustomProfile))
+                if (!string.IsNullOrEmpty(CustomProfile))
                 {
                     profile = CustomProfile;
                 }
@@ -178,7 +174,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                     IssueBoundingBoxWarning(bbox, map.visibleSection.boundingBox, width, height, profile);
 #endif
 
-                mapObjects = map?.wrappedObjects?
+                mapObjects = map.wrappedObjects?
                     .Select(objects => objects.wrappedObjects?.Select(layerObject => new XMap1MapObject(objects, layerObject)))
                     .Where(objects => objects != null && objects.Any())
                     .SelectMany(objects => objects)
@@ -232,7 +228,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <returns>True, if the bounding boxes are equal. False otherwise.</returns>
         public bool BoundingBoxesAreEqual(BoundingBox b1, BoundingBox b2, double epsilon = 1e-4)
         {
-            return GetDelta(b1, b2).All(delta => (delta <= epsilon));
+            return GetDelta(b1, b2).All(delta => delta <= epsilon);
         }
 
         /// <summary>
@@ -252,7 +248,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             var culture = System.Threading.Thread.CurrentThread.CurrentCulture;
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            logger.Writeline(TraceEventType.Warning, String.Format("xMap did not return the requested map rectangle:\n" +
+            logger.Writeline(TraceEventType.Warning, string.Format("xMap did not return the requested map rectangle:\n" +
                 "\trequested: [{3:0.000000}, {4:0.000000}, {5:0.000000}, {6:0.000000}], {1}x{2}, {0},\n" +
                 "\t returned: [{7:0.000000}, {8:0.000000}, {9:0.000000}, {10:0.000000}]\n" +
                 "\t    delta: [{11:0.000000}, {12:0.000000}, {13:0.000000}, {14:0.000000}]",
@@ -280,7 +276,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
 
                 if (CustomCallerContextProperties != null)
                 {
-                    cacheId = CustomCallerContextProperties.Aggregate(cacheId, (current, ccp) => current + ("/" + ccp.key + "/" + ccp.value));
+                    cacheId = CustomCallerContextProperties.Aggregate(cacheId, (current, ccp) => current + "/" + ccp.key + "/" + ccp.value);
                 }
                 return cacheId;
             } 

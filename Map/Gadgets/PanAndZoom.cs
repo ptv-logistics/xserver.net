@@ -26,7 +26,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <summary>
         /// The same as Select, but the Shift button has to be pressed for select, otherwise the map is panned.
         /// </summary>
-        SelectOnShift,
+        SelectOnShift
     }
 
     /// <summary><para> User control for the <see cref="MapView"/>-object, translating user interactions into modification
@@ -319,28 +319,33 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             if (!IsActive || !mapView.IsMouseCaptured)
                 return;
 
-            if (dragMode == DragMode.Pan)
+            switch (dragMode)
             {
-                var physicalPoint = mapView.CanvasToPtvMercator(mapView, e.GetPosition(mapView));
+                case DragMode.Pan:
+                {
+                    var physicalPoint = mapView.CanvasToPtvMercator(mapView, e.GetPosition(mapView));
 
-                if ((Math.Abs(WorldStartPoint.X - physicalPoint.X) < 1e-4) && (Math.Abs(WorldStartPoint.Y - physicalPoint.Y) < 1e-4))
-                    return;
+                    if (Math.Abs(WorldStartPoint.X - physicalPoint.X) < 1e-4 && Math.Abs(WorldStartPoint.Y - physicalPoint.Y) < 1e-4)
+                        return;
 
-                double x = mapView.CurrentX + WorldStartPoint.X - physicalPoint.X;
-                double y = mapView.CurrentY + WorldStartPoint.Y - physicalPoint.Y;
+                    double x = mapView.CurrentX + WorldStartPoint.X - physicalPoint.X;
+                    double y = mapView.CurrentY + WorldStartPoint.Y - physicalPoint.Y;
 
-                wasPanned = true;
+                    wasPanned = true;
 
-                mapView.SetXYZ(x, y, mapView.CurrentZoom, Map.UseAnimation);
-            }
-            else if (dragMode == DragMode.Select)
-            {
-                var physicalPoint = e.GetPosition(mapView);
+                    mapView.SetXYZ(x, y, mapView.CurrentZoom, Map.UseAnimation);
+                    break;
+                }
+                case DragMode.Select:
+                {
+                    var physicalPoint = e.GetPosition(mapView);
 
-                Canvas.SetLeft(dragRectangle, physicalPoint.X < ScreenStartPoint.X ? physicalPoint.X : ScreenStartPoint.X);
-                Canvas.SetTop(dragRectangle, physicalPoint.Y < ScreenStartPoint.Y ? physicalPoint.Y : ScreenStartPoint.Y);
-                dragRectangle.Width = Math.Abs(physicalPoint.X - ScreenStartPoint.X);
-                dragRectangle.Height = Math.Abs(physicalPoint.Y - ScreenStartPoint.Y);
+                    Canvas.SetLeft(dragRectangle, physicalPoint.X < ScreenStartPoint.X ? physicalPoint.X : ScreenStartPoint.X);
+                    Canvas.SetTop(dragRectangle, physicalPoint.Y < ScreenStartPoint.Y ? physicalPoint.Y : ScreenStartPoint.Y);
+                    dragRectangle.Width = Math.Abs(physicalPoint.X - ScreenStartPoint.X);
+                    dragRectangle.Height = Math.Abs(physicalPoint.Y - ScreenStartPoint.Y);
+                    break;
+                }
             }
 
             e.Handled = true;

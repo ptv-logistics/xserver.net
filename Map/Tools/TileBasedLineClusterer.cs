@@ -156,14 +156,14 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <summary> Documentation in progress... </summary>
         /// <param name="obj"> Documentation in progress... </param>
         /// <returns> Documentation in progress... </returns>
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             // Check for null values and compare run-time types.
             if (obj == null || GetType() != obj.GetType())
                 return false;
 
             var lineTile = (LineTile)obj;
-            return (X1 == lineTile.X1) && (Y1 == lineTile.Y1) && (X2 == lineTile.X2) && (Y2 == lineTile.Y2);
+            return X1 == lineTile.X1 && Y1 == lineTile.Y1 && X2 == lineTile.X2 && Y2 == lineTile.Y2;
         }
 
         /// <summary> Documentation in progress... </summary>
@@ -257,7 +257,7 @@ namespace Ptv.XServer.Controls.Map.Tools
 
                 // try to get the cluster from the dictionary.
                 // If not, create a new one
-                if (!(baseClusters.TryGetValue(tmpTile, out var cluster)))
+                if (!baseClusters.TryGetValue(tmpTile, out var cluster))
                 {
                     cluster = new LineCluster<T>(tmpTile.X1, tmpTile.Y1, tmpTile.X2, tmpTile.Y2);
                     baseClusters[tmpTile] = cluster;
@@ -286,7 +286,7 @@ namespace Ptv.XServer.Controls.Map.Tools
 
                     // try to get the cluster from the dictionary.
                     // If not, create a new one
-                    if (!(childClusters.TryGetValue(tmpTile, out var childCluster)))
+                    if (!childClusters.TryGetValue(tmpTile, out var childCluster))
                     {
                         childCluster = new LineCluster<T>(tmpTile.X1, tmpTile.Y1, tmpTile.X2, tmpTile.Y2);
                         childClusters[tmpTile] = childCluster;
@@ -313,12 +313,12 @@ namespace Ptv.XServer.Controls.Map.Tools
                 foreach (KeyValuePair<LineTile, LineCluster<T>> lineTile in clusterLevel.Value)
                 {
                     var tile1 = new Tile { X = lineTile.Key.X1, Y = lineTile.Key.Y1 };
-                    if (!(clusterLevel1.ContainsKey(tile1)))
+                    if (!clusterLevel1.ContainsKey(tile1))
                         clusterLevel1.Add(tile1, new List<LineCluster<T>>());
                     clusterLevel1[tile1].Add(lineTile.Value);
 
                     var tile2 = new Tile { X = lineTile.Key.X2, Y = lineTile.Key.Y2 };
-                    if (!(clusterLevel2.ContainsKey(tile2)))
+                    if (!clusterLevel2.ContainsKey(tile2))
                         clusterLevel2.Add(tile2, new List<LineCluster<T>>());
                     clusterLevel2[tile2].Add(lineTile.Value);
                 }
@@ -420,19 +420,18 @@ namespace Ptv.XServer.Controls.Map.Tools
             for (int i = xMinTile; i < xMaxTile; i++)
                 for (int j = yMinTile; j < yMaxTile; j++)
                 {
-                    if (clusters1.TryGetValue(new Tile { X = i, Y = j }, out var clusterList))
-                    {
-                        var cluster = new Cluster<T>(i, j) {Level = level};
-                        result.Add(cluster);
+                    if (!clusters1.TryGetValue(new Tile {X = i, Y = j}, out var clusterList)) continue;
 
-                        foreach (LineCluster<T> lineCluster in clusterList)
-                        {
-                            cluster.NumPoints += lineCluster.NumLines;
-                            cluster.Tags.AddRange(lineCluster.Tags);
-                            cluster.SumX += lineCluster.SumX1;
-                            cluster.SumY += lineCluster.SumY1;
-                            cluster.Aggregate += lineCluster.Aggregate1;
-                        }
+                    var cluster = new Cluster<T>(i, j) {Level = level};
+                    result.Add(cluster);
+
+                    foreach (LineCluster<T> lineCluster in clusterList)
+                    {
+                        cluster.NumPoints += lineCluster.NumLines;
+                        cluster.Tags.AddRange(lineCluster.Tags);
+                        cluster.SumX += lineCluster.SumX1;
+                        cluster.SumY += lineCluster.SumY1;
+                        cluster.Aggregate += lineCluster.Aggregate1;
                     }
                 }
 

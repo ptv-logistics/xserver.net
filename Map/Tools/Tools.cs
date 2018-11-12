@@ -27,8 +27,8 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns> Inflated/shrunken rectangle. </returns>
         public static Rect Inflate(this Rect rect, double factor)
         {
-            double dx = rect.Width / 2 * (factor - 1);
-            double dy = rect.Height / 2 * (factor - 1);
+            var dx = rect.Width / 2 * (factor - 1);
+            var dy = rect.Height / 2 * (factor - 1);
 
             return new Rect(new System.Windows.Point(rect.Left - dx, rect.Top - dy), new System.Windows.Point(rect.Right + dx, rect.Bottom + dy));
         }
@@ -190,7 +190,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <returns> The instance of the object or null if not found. </returns>
         public static T FindParent<T>(FrameworkElement fe) where T : DependencyObject
         {
-            return (fe.Parent is T variable) 
+            return fe.Parent is T variable 
                 ? variable
                 : fe.Parent is FrameworkElement element ? FindParent<T>(element) : null;
         }
@@ -272,7 +272,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <param name="src"> Source stream. </param>
         /// <param name="destinationStream"> Destination stream. </param>
         /// <returns>Destination stream.</returns>
-        public static System.IO.Stream CopyTo(this System.IO.Stream src, System.IO.Stream destinationStream)
+        public static Stream CopyTo(this Stream src, Stream destinationStream)
         {
             var buffer = new byte[4096];
             int bytesRead;
@@ -287,12 +287,12 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <param name="stm">Stream to get the bytes from.</param>
         /// <param name="forceNullIfEmpty">If set to true, forces null to be returned if the stream is empty.</param>
         /// <returns>Bytes read.</returns>
-        public static byte[] GetBytes(this System.IO.Stream stm, bool forceNullIfEmpty = false)
+        public static byte[] GetBytes(this Stream stm, bool forceNullIfEmpty = false)
         {
             if (stm is MemoryStream memoryStream)
                 return memoryStream.Length == 0 && forceNullIfEmpty ? null : memoryStream.ToArray();
 
-            using (memoryStream = new System.IO.MemoryStream())
+            using (memoryStream = new MemoryStream())
                 return stm.CopyTo(memoryStream).GetBytes(forceNullIfEmpty);
         }
         
@@ -368,7 +368,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         {
             string key = url + profile;
 
-            key = layers.Aggregate(key, (current, l) => current + ("_" + l.name));
+            key = layers.Aggregate(key, (current, l) => current + "_" + l.name);
 
             if (CheckedXMapLayers.ContainsKey(key) && CheckedXMapLayers[key] != null)
                 return CheckedXMapLayers[key].Value;
@@ -459,10 +459,6 @@ namespace Ptv.XServer.Controls.Map.Tools
     internal static class DesignTest
     {
         /// <summary> 
-        /// Contains true, if we are in design mode of Visual Studio 
-        /// </summary> 
-        static readonly bool _designMode;
-        /// <summary> 
         /// Initializes an instance of Util class 
         /// </summary> 
         static DesignTest()
@@ -474,14 +470,14 @@ namespace Ptv.XServer.Controls.Map.Tools
             using (var process = System.Diagnostics.Process.GetCurrentProcess())
             {
                 var processName = process.ProcessName.ToLower();
-                _designMode = designerHosts.Contains(processName);
+                DesignMode = designerHosts.Contains(processName);
             }
         }
 
         /// <summary> 
         /// Gets true, if we are in design mode of Visual Studio etc.. 
         /// </summary> 
-        public static bool DesignMode => _designMode;
+        public static bool DesignMode { get; }
     }
 
     /// <summary>
@@ -498,9 +494,9 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// <param name="targetWidth">Target width</param>
         /// <param name="targetHeight">Target height</param>
         /// <returns>Resized image.</returns>
-        public static System.IO.Stream ResizeImage(this System.IO.Stream stream, int targetWidth, int targetHeight)
+        public static Stream ResizeImage(this Stream stream, int targetWidth, int targetHeight)
         {
-            var memoryStream = new System.IO.MemoryStream();
+            var memoryStream = new MemoryStream();
 
             using (var bitmap = new System.Drawing.Bitmap(targetWidth, targetHeight))
             {
@@ -513,7 +509,7 @@ namespace Ptv.XServer.Controls.Map.Tools
                 }
             }
 
-            memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
+            memoryStream.Seek(0, SeekOrigin.Begin);
 
             return memoryStream;
         }

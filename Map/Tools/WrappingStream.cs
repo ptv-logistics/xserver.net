@@ -19,33 +19,33 @@ namespace Ptv.XServer.Controls.Map.Tools
         public WrappingStream(Stream streamBase)
         {
             // check parameters
-            m_streamBase = streamBase ?? throw new ArgumentNullException(nameof(streamBase));
+            WrappedStream = streamBase ?? throw new ArgumentNullException(nameof(streamBase));
         }
 
         /// <summary>
         /// Gets a value indicating whether the current stream supports reading.
         /// </summary>
         /// <returns><c>true</c> if the stream supports reading; otherwise, <c>false</c>.</returns>
-        public override bool CanRead => m_streamBase?.CanRead ?? false;
+        public override bool CanRead => WrappedStream?.CanRead ?? false;
 
         /// <summary>
         /// Gets a value indicating whether the current stream supports seeking.
         /// </summary>
         /// <returns><c>true</c> if the stream supports seeking; otherwise, <c>false</c>.</returns>
-        public override bool CanSeek => m_streamBase?.CanSeek ?? false;
+        public override bool CanSeek => WrappedStream?.CanSeek ?? false;
 
         /// <summary>
         /// Gets a value indicating whether the current stream supports writing.
         /// </summary>
         /// <returns><c>true</c> if the stream supports writing; otherwise, <c>false</c>.</returns>
-        public override bool CanWrite => m_streamBase?.CanWrite ?? false;
+        public override bool CanWrite => WrappedStream?.CanWrite ?? false;
 
         /// <summary>
         /// Gets the length in bytes of the stream.
         /// </summary>
         public override long Length
         {
-            get { ThrowIfDisposed(); return m_streamBase.Length; }
+            get { ThrowIfDisposed(); return WrappedStream.Length; }
         }
 
         /// <summary>
@@ -53,8 +53,8 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// </summary>
         public override long Position
         {
-            get { ThrowIfDisposed(); return m_streamBase.Position; }
-            set { ThrowIfDisposed(); m_streamBase.Position = value; }
+            get { ThrowIfDisposed(); return WrappedStream.Position; }
+            set { ThrowIfDisposed(); WrappedStream.Position = value; }
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
             ThrowIfDisposed();
-            return m_streamBase.BeginRead(buffer, offset, count, callback, state);
+            return WrappedStream.BeginRead(buffer, offset, count, callback, state);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
             ThrowIfDisposed();
-            return m_streamBase.BeginWrite(buffer, offset, count, callback, state);
+            return WrappedStream.BeginWrite(buffer, offset, count, callback, state);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public override int EndRead(IAsyncResult asyncResult)
         {
             ThrowIfDisposed();
-            return m_streamBase.EndRead(asyncResult);
+            return WrappedStream.EndRead(asyncResult);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public override void EndWrite(IAsyncResult asyncResult)
         {
             ThrowIfDisposed();
-            m_streamBase.EndWrite(asyncResult);
+            WrappedStream.EndWrite(asyncResult);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public override void Flush()
         {
             ThrowIfDisposed();
-            m_streamBase.Flush();
+            WrappedStream.Flush();
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public override int Read(byte[] buffer, int offset, int count)
         {
             ThrowIfDisposed();
-            return m_streamBase.Read(buffer, offset, count);
+            return WrappedStream.Read(buffer, offset, count);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public override int ReadByte()
         {
             ThrowIfDisposed();
-            return m_streamBase.ReadByte();
+            return WrappedStream.ReadByte();
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public override long Seek(long offset, SeekOrigin origin)
         {
             ThrowIfDisposed();
-            return m_streamBase.Seek(offset, origin);
+            return WrappedStream.Seek(offset, origin);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public override void SetLength(long value)
         {
             ThrowIfDisposed();
-            m_streamBase.SetLength(value);
+            WrappedStream.SetLength(value);
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         public override void Write(byte[] buffer, int offset, int count)
         {
             ThrowIfDisposed();
-            m_streamBase.Write(buffer, offset, count);
+            WrappedStream.Write(buffer, offset, count);
         }
 
         /// <summary>
@@ -159,14 +159,14 @@ namespace Ptv.XServer.Controls.Map.Tools
         public override void WriteByte(byte value)
         {
             ThrowIfDisposed();
-            m_streamBase.WriteByte(value);
+            WrappedStream.WriteByte(value);
         }
 
         /// <summary>
         /// Gets the wrapped stream.
         /// </summary>
         /// <value>The wrapped stream.</value>
-        protected Stream WrappedStream => m_streamBase;
+        protected Stream WrappedStream { get; private set; }
 
         /// <summary>
         /// Releases the unmanaged resources used by the <see cref="WrappingStream"/> and optionally releases the managed resources.
@@ -176,7 +176,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         {
             // doesn't close the base stream, but just prevents access to it through this WrappingStream
             if (disposing)
-                m_streamBase = null;
+                WrappedStream = null;
 
             base.Dispose(disposing);
         }
@@ -184,10 +184,8 @@ namespace Ptv.XServer.Controls.Map.Tools
         private void ThrowIfDisposed()
         {
             // throws an ObjectDisposedException if this object has been disposed
-            if (m_streamBase == null)
+            if (WrappedStream == null)
                 throw new ObjectDisposedException(GetType().Name);
         }
-
-        Stream m_streamBase;
     }
 }

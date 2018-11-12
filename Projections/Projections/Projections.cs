@@ -41,7 +41,7 @@ namespace Ptv.Components.Projections
     /// </para>
     /// </summary>
     [System.Runtime.CompilerServices.CompilerGenerated]
-    class NamespaceDoc
+    internal class NamespaceDoc
     {
         // NamespaceDoc is used for providing the root documentation for Ptv.Components.Projections
         // hint taken from http://stackoverflow.com/questions/156582/namespace-documentation-on-a-net-project-sandcastle
@@ -120,7 +120,7 @@ namespace Ptv.Components.Projections
         /// </remarks>
         public override string ToString()
         {
-            string z = Z.HasValue ? $"|{Z.Value:0.00000}" : "";
+            var z = Z.HasValue ? $"|{Z.Value:0.00000}" : string.Empty;
             return $"({X:0.00000}|{Y:0.00000}{z})";
         }
 
@@ -173,14 +173,14 @@ namespace Ptv.Components.Projections
                 return false;
             }
         }
-    };
+    }
     
     /// <summary>
     /// Represents a single coordinate reference system. Two of them are used when transforming 
     /// coordinates through <see cref="CoordinateTransformation"/>.
     /// </summary>
     /// <remarks>
-    /// <see cref="CoordinateReferenceSystem"/> stores the parameterization (Proj4 well known text) and the identifier of 
+    /// <see cref="CoordinateReferenceSystem"/> stores the parametrization (Proj4 well known text) and the identifier of 
     /// a CRS. It is the base for any coordinate transformation as it also provides the necessary transformation handles
     /// and is bound to necessary custom pre- or post-transformation. 
     /// </remarks>
@@ -205,7 +205,7 @@ namespace Ptv.Components.Projections
 
             /// <summary> Gets the 'PTV Geodecimal' reference system. </summary>
             public static CoordinateReferenceSystem cfGEODECIMAL => Registry.Get("cfGEODECIMAL");
-        };
+        }
 
         /// <summary> Defines well known XServer coordinate reference systems. </summary>
         public static class XServer
@@ -233,7 +233,7 @@ namespace Ptv.Components.Projections
 
             /// <summary> Gets the 'PTV Conform' reference system. </summary>
             public static CoordinateReferenceSystem PTV_CONFORM => Registry.Get("PTV_CONFORM");
-        };
+        }
 
         /// <summary> Name of the parameter used for CRS redirection / aliasing. </summary>
         public const string RedirectionParameter = "+redirect=";
@@ -244,10 +244,7 @@ namespace Ptv.Components.Projections
         /// <summary> Internal PROJ.4 projection handle. </summary>
         private IntPtr pj = IntPtr.Zero;
 
-        /// <summary> Initialization flag, used for lazy initialization in <see cref="CoordinateReferenceSystem.Init"/> method. </summary>
-        private bool initialized;
-
-        /// <summary> Disposed flag. </summary>
+	    /// <summary> Disposed flag. </summary>
         private bool disposed;
 
         /// <summary> CRS parameters (Proj4 well known text). </summary>
@@ -257,7 +254,7 @@ namespace Ptv.Components.Projections
         internal string id = "";
 
         /// <summary> Lock object for <see cref="CoordinateReferenceSystem.Init"/> method. </summary>
-        readonly object lockInit = Guid.NewGuid();
+        private readonly object lockInit = Guid.NewGuid();
 
         /// <summary> Gets the custom transformation associated with this CoordinateReferenceSystem. </summary>
         internal CustomTransformation CustomTransformation { get; private set; }
@@ -269,7 +266,7 @@ namespace Ptv.Components.Projections
         /// <remarks> The default constructor initializes a coordinate reference system which is invalid. </remarks>
         internal CoordinateReferenceSystem()
         {
-            initialized = true;
+            Initialized = true;
         }
         
         /// <summary>
@@ -283,7 +280,7 @@ namespace Ptv.Components.Projections
         /// The identifier of the CRS is not needed to create and initialize the coordinate reference system. The identifier
         /// comes into play when storing the CRS in the <see cref="Registry"/>.
         /// </remarks>
-        internal CoordinateReferenceSystem(String id, String wkt, CustomTransformation customTransform = null, bool lazy = false)
+        internal CoordinateReferenceSystem(string id, string wkt, CustomTransformation customTransform = null, bool lazy = false)
         {
             this.id = id.Trim();
             this.wkt = wkt.Trim();
@@ -308,24 +305,22 @@ namespace Ptv.Components.Projections
         /// do not re-initialize the CRS, even if initialization failed on the first call.</remarks>
         internal bool Init()
         {
-            if (!initialized && !disposed)
+            if (Initialized || disposed) return Valid;
+
+            lock (lockInit)
             {
-                lock (lockInit)
+                // run only, if not yet initialized ...
+                if (Initialized || disposed) return Valid;
+
+                Initialized = true;
+
+                // if we have a valid WKT, parse it and insert a 
+                // DEG to RAD conversion for lat lon systems
+                if (wkt.Length > 0 && !IsAlias)
                 {
-                    // run only, if not yet initialized ...
-                    if (!initialized && !disposed)
-                    {
-                        initialized = true;
+                    pj = Library.Instance.InitProjection(wkt);
 
-                        // if we have a valid WKT, parse it and insert a 
-                        // DEG to RAD conversion for lat lon systems
-                        if (wkt.Length > 0 && !IsAlias)
-                        {
-                            pj = Library.Instance.InitProjection(wkt);
-
-                            InitLatLon();
-                        }
-                    }
+                    InitLatLon();
                 }
             }
 
@@ -340,15 +335,14 @@ namespace Ptv.Components.Projections
         {
             const double DEG_TO_RAD = .0174532925199432958;
 
-            if (IsLatLon)
-            {
-                ShiftScaleTransformation sst = new ShiftScaleTransformation(0, DEG_TO_RAD);
+            if (!IsLatLon) return;
 
-                if (CustomTransformation == null)
-                    CustomTransformation = sst;
-                else
-                    CustomTransformation.InnerMost = sst;
-            }
+            var sst = new ShiftScaleTransformation(0, DEG_TO_RAD);
+
+            if (CustomTransformation == null)
+                CustomTransformation = sst;
+            else
+                CustomTransformation.InnerMost = sst;
         }
 
         /// <summary>
@@ -363,7 +357,7 @@ namespace Ptv.Components.Projections
         /// The identifier comes into play when storing the CRS in the <see cref="Registry"/>.
         /// </remarks>
         /// <example>See <see cref="Parse(System.String, bool)">CoordinateReferenceSystem.Parse</see> for an example.</example>
-        internal static CoordinateReferenceSystem Parse(String wkt, CustomTransformation customTransform, bool lazy = false)
+        internal static CoordinateReferenceSystem Parse(string wkt, CustomTransformation customTransform, bool lazy = false)
         {
             return Parse("", wkt, customTransform, lazy);
         }
@@ -391,7 +385,7 @@ namespace Ptv.Components.Projections
         /// ...
         /// </code>
         /// </example>
-        public static CoordinateReferenceSystem Parse(String wkt, bool lazy = false)
+        public static CoordinateReferenceSystem Parse(string wkt, bool lazy = false)
         {
             return Parse("", wkt, null, lazy);
         }
@@ -409,10 +403,9 @@ namespace Ptv.Components.Projections
         /// The identifier comes into play when storing the CRS in the <see cref="Registry"/>.
         /// </remarks>
         /// <example>See <see cref="Parse(System.String, bool)">CoordinateReferenceSystem.Parse</see> for an example.</example>
-        internal static CoordinateReferenceSystem Parse(String id, String wkt, CustomTransformation customTransform, bool lazy = false)
+        internal static CoordinateReferenceSystem Parse(string id, string wkt, CustomTransformation customTransform, bool lazy = false)
         {
-            CustomTransformation ct =
-                CustomTransformation.Parse(ref wkt, CustomParameter, true);
+            var ct = CustomTransformation.Parse(ref wkt, CustomParameter, true);
 
             if (ct != null)
                 ct.InnerMost = customTransform;
@@ -446,7 +439,7 @@ namespace Ptv.Components.Projections
         /// ...
         /// </code>
         /// </example>
-        internal static CoordinateReferenceSystem Parse(String id, String wkt, bool lazy = false)
+        internal static CoordinateReferenceSystem Parse(string id, string wkt, bool lazy = false)
         {
             return Parse(id, wkt, null, lazy);
         }
@@ -469,17 +462,17 @@ namespace Ptv.Components.Projections
         /// will return true. Use <see cref="CoordinateReferenceSystem.Init"/> method to force the handle 
         /// initialization.
         /// </remarks>
-        internal bool Valid => (!initialized || pj != IntPtr.Zero) && !disposed;
+        internal bool Valid => (!Initialized || pj != IntPtr.Zero) && !disposed;
 
 	    /// <summary>
         /// Gets a value indicating whether the <see cref="CoordinateReferenceSystem"/> has already been initialized.
         /// </summary>
-        internal bool Initialized => initialized;
+        internal bool Initialized { get; private set; }
 
 	    /// <summary>
         /// Gets the WKT of the associated custom transformation, if any.
         /// </summary>
-        private String CustomTransformationWKT
+        private string CustomTransformationWKT
         {
             get
             {
@@ -494,7 +487,7 @@ namespace Ptv.Components.Projections
         /// <summary>
         /// Gets the parameters of a <see cref="CoordinateReferenceSystem"/> (Proj4 well known text).
         /// </summary>
-        public String WKT => (wkt + " " + CustomTransformationWKT).Trim();
+        public string WKT => (wkt + " " + CustomTransformationWKT).Trim();
 
 	    /// <summary>
         /// Gets a value indicating whether the coordinate reference system is of type latitude/longitude.
@@ -508,7 +501,7 @@ namespace Ptv.Components.Projections
         /// The identifier of a CRS is empty by default until the <see cref="CoordinateReferenceSystem"/> 
         /// has been stored in the <see cref="Registry"/>.
         /// </remarks>
-		public String Id => id;
+		public string Id => id;
 
 	    /// <summary>
         /// Gets the transformation handle of the <see cref="CoordinateReferenceSystem"/>.
@@ -552,14 +545,13 @@ namespace Ptv.Components.Projections
             {
                 disposed = true;
 
-                if (pj != IntPtr.Zero)
-                {
-                    Library.Instance.FreeProjection(pj);
-                    pj = IntPtr.Zero;
-                }
+                if (pj == IntPtr.Zero) return;
+
+                Library.Instance.FreeProjection(pj);
+                pj = IntPtr.Zero;
             }
         }
-    };
+    }
 
     /// <summary>
     /// Manages coordinate reference systems in a reusable way.
@@ -587,7 +579,7 @@ namespace Ptv.Components.Projections
         /// <summary>
         /// The registry itself.
         /// </summary>
-        private static SortedList<String, CoordinateReferenceSystem> internalRegistry;
+        private static SortedList<string, CoordinateReferenceSystem> internalRegistry;
 
         /// <summary>
         /// Internal flag indicating if EPSG database was already initialized.
@@ -605,7 +597,7 @@ namespace Ptv.Components.Projections
         /// <param name="requiresFullInitialization">Flag indicating if registry has to be fully initialized on return. Full
         /// initialization forces GetRegistry to read and parse the internal EPSG database as well.</param>
         /// <returns>Returns the coordinate reference system registry.</returns>
-        private static SortedList<String, CoordinateReferenceSystem> GetRegistry(bool requiresFullInitialization = true)
+        private static SortedList<string, CoordinateReferenceSystem> GetRegistry(bool requiresFullInitialization = true)
         {
             if (internalRegistry == null)
             {
@@ -642,15 +634,16 @@ namespace Ptv.Components.Projections
                 Add("PTV_SUPERCONFORM", CoordinateReferenceSystem.RedirectionParameter + "PTV_EUROCONFORM");
             }
 
-            if (requiresFullInitialization && !epsgDatabaseLoaded) 
-                try 
-                {
-                    epsgDatabaseLoaded = true;
-                    ReadDatabase((id, wkt) => Add(id, CoordinateReferenceSystem.Parse(wkt, true), true));
-                }
-                catch
-                {
-                }
+            if (!requiresFullInitialization || epsgDatabaseLoaded) return internalRegistry;
+
+            try 
+            {
+                epsgDatabaseLoaded = true;
+                ReadDatabase((id, wkt) => Add(id, CoordinateReferenceSystem.Parse(wkt, true), true));
+            }
+            catch
+            {
+            }
 
             return internalRegistry;
         }
@@ -659,17 +652,16 @@ namespace Ptv.Components.Projections
         /// Reads the internal EPSG database and calls the specified action for every record.
         /// </summary>
         /// <param name="handleRecord">Action to trigger.</param>
-        private static void ReadDatabase(Action<String, String> handleRecord)
+        private static void ReadDatabase(Action<string, string> handleRecord)
         {
-            using (Package resources = Package.Open(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(Registry).Namespace + ".resources.zip")))
-                using (Stream stm = resources.GetPart(new Uri("/epsg", UriKind.Relative)).GetStream())
+            using (var resources = Package.Open(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(Registry).Namespace + ".resources.zip")))
+                using (var stream = resources.GetPart(new Uri("/epsg", UriKind.Relative)).GetStream())
                 {
                     int idx;
-                    string lastWkt = "";
+                    var lastWkt = "";
+                    var sr = new StreamReader(stream);
 
-                    StreamReader sr = new StreamReader(stm);
-
-                    for (string line = ""; line != null; line = sr.ReadLine())
+                    for (var line = ""; line != null; line = sr.ReadLine())
                         if ((line = line.Trim()).Length > 0 && (idx = line.IndexOf(';')) > 0)
                             handleRecord("EPSG:" + line.Substring(0, idx).Trim(), line.Substring(idx + 1).Trim().Decompress(ref lastWkt));
                 }
@@ -711,7 +703,7 @@ namespace Ptv.Components.Projections
         /// <param name="cs"><see cref="CoordinateReferenceSystem"/> to add.</param>
         /// <param name="allowReplace">Specifies if an existing coordinate reference system should be replaced, if it exists.</param>
         /// <returns>Returns true, if the coordinate reference system was added to the registry. Returns false otherwise.</returns>
-        public static bool Add(String id, CoordinateReferenceSystem cs, bool allowReplace = false)
+        public static bool Add(string id, CoordinateReferenceSystem cs, bool allowReplace = false)
         {
             return Add(id, cs, allowReplace, true);
         }
@@ -725,13 +717,13 @@ namespace Ptv.Components.Projections
         /// <param name="allowReplace">Specifies if an existing coordinate reference system should be replaced, if it exists.</param>
         /// <param name="mustBeValid">Specifies if the coordinate reference system must be valid</param>
         /// <returns>Returns true, if the coordinate reference system was added to the registry. Returns false otherwise.</returns>
-        private static bool Add(String id, CoordinateReferenceSystem cs, bool allowReplace = false, bool mustBeValid = true)
+        private static bool Add(string id, CoordinateReferenceSystem cs, bool allowReplace = false, bool mustBeValid = true)
 		{
             CoordinateReferenceSystem crs = Get(id);
 
             // fail if one of the following condition is true:
             // - id is invalid
-            // - crs already exsists and may not be overwritten
+            // - crs already exists and may not be overwritten
             // - given crs is invalid and not an alias
             // - given crs is an alias referring to an unknown crs
             if (id.Trim().Length < 1 || (crs != null && !allowReplace) || (!cs.Valid && mustBeValid && !cs.IsAlias) || (cs.IsAlias && !Contains(cs.AliasFor)))
@@ -762,7 +754,7 @@ namespace Ptv.Components.Projections
         /// </summary>
         /// <param name="id">Identifier of the coordinate reference system, e.g. <c>EPSG:4326</c></param>
         /// <returns>Returns true, if the registry contains the coordinate reference system. Returns false otherwise.</returns>
-        public static bool Contains(String id)
+        public static bool Contains(string id)
 		{
             return Get(id) != null;
         }
@@ -777,15 +769,15 @@ namespace Ptv.Components.Projections
         /// <remarks>
         /// <see cref="Get">Registry.Get</see> automatically resolves redirections and aliases, so that it always 
         /// returns a <see cref="CoordinateReferenceSystem"/> with a valid and applicable 
-        /// parameterization in <see cref="CoordinateReferenceSystem.WKT">CoordinateReferenceSystem.WKT</see>. 
+        /// parametrization in <see cref="CoordinateReferenceSystem.WKT">CoordinateReferenceSystem.WKT</see>. 
         /// As a result, the identifier of the <see cref="CoordinateReferenceSystem"/> returned must not necessarily 
         /// be equal to identifier requested.
         /// </remarks>
-        public static CoordinateReferenceSystem Get(String id)
+        public static CoordinateReferenceSystem Get(string id)
 		{
             CoordinateReferenceSystem cs = null;
 
-            List<String> visited = new List<String>();
+            List<string> visited = new List<string>();
 
             do
             {
@@ -808,7 +800,7 @@ namespace Ptv.Components.Projections
         /// Returns the identifiers of the coordinate reference systems currently known to the registry.
         /// </summary>
         /// <returns>Returns the list of the coordinate reference system identifiers.</returns>
-        public static IList<String> GetIds()
+        public static IList<string> GetIds()
         {
             return GetRegistry().Keys;
         }
@@ -820,25 +812,25 @@ namespace Ptv.Components.Projections
         /// <returns>String containing the registry contents in the CSV format <c>id;wkt</c>, one CRS per line.</returns>
         public static string GetContent(bool epsgDatabaseOnly = false)
         {
-            StringBuilder sb = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
             if (!epsgDatabaseOnly)
             {
                 lock (lockRegistry)
                 {
-                    SortedList<String, CoordinateReferenceSystem> registry = GetRegistry();
+                    SortedList<string, CoordinateReferenceSystem> registry = GetRegistry();
 
                     foreach (string key in registry.Keys)
-                        sb.Append(registry[key].Id + ";" + registry[key].WKT + "\n");
+                        stringBuilder.Append(registry[key].Id + ";" + registry[key].WKT + "\n");
                 }
             }
             else
             {
-                try { ReadDatabase((id, wkt) => sb.Append(id + ";" + wkt + "\n")); }
-                catch { sb = new StringBuilder(); }
+                try { ReadDatabase((id, wkt) => stringBuilder.Append(id + ";" + wkt + "\n")); }
+                catch { stringBuilder = new StringBuilder(); }
             }
 
-            return sb.ToString();
+            return stringBuilder.ToString();
         }
 
         /// <summary>
@@ -859,26 +851,23 @@ namespace Ptv.Components.Projections
 
             string[] lines = csv?.Split('\n');
 
-            List<CoordinateReferenceSystem> aliases = 
-                new List<CoordinateReferenceSystem>();
+            var aliases = new List<CoordinateReferenceSystem>();
 
             if (lines != null && lines.Length > 0)
                 for (int i=0, j; i<lines.Length; ++i)
                 {
                     string line = lines[i].Trim();
-                    if (line.Length > 0 && (j = line.IndexOf(';')) > 0)
-                    {
-                        string id = line.Substring(0, j).Trim();
-                        string wkt = line.Substring(j + 1).Trim();
+                    if (line.Length <= 0 || (j = line.IndexOf(';')) <= 0) continue;
 
-                        CoordinateReferenceSystem crs = 
-                            CoordinateReferenceSystem.Parse(id, wkt, true);
+                    string id = line.Substring(0, j).Trim();
+                    string wkt = line.Substring(j + 1).Trim();
+
+                    var crs = CoordinateReferenceSystem.Parse(id, wkt, true);
                         
-                        if (crs.IsAlias)
-                            aliases.Add(crs);
-                        else
-                            Add(crs, allowReplace);
-                    }
+                    if (crs.IsAlias)
+                        aliases.Add(crs);
+                    else
+                        Add(crs, allowReplace);
                 }
 
             foreach (CoordinateReferenceSystem crs in aliases)
@@ -899,7 +888,7 @@ namespace Ptv.Components.Projections
                 internalRegistry.Clear();
             }
         }
-	};
+	}
 
     /// <summary>
     /// Defines the core coordinate transformation routines. 
@@ -913,29 +902,29 @@ namespace Ptv.Components.Projections
         /// <summary>
         /// Transforms a single <see cref="System.Windows.Point">System.Windows.Point</see>.
         /// </summary>
-        /// <param name="pnt"><see cref="System.Windows.Point">System.Windows.Point</see> to transform.</param>
+        /// <param name="point"><see cref="System.Windows.Point">System.Windows.Point</see> to transform.</param>
         /// <returns>The transformed <see cref="System.Windows.Point">System.Windows.Point</see>.</returns>
         /// <exception cref="TransformationException">Thrown in the unlikely event that a coordinate transformation fails.</exception>
-        Point Transform(Point pnt);
+        Point Transform(Point point);
 
         /// <summary>
         /// Transforms an array of <see cref="System.Windows.Point">System.Windows.Point</see>.
         /// </summary>
-        /// <param name="pntsIn">Array containing the points to transform.</param>
+        /// <param name="pointsIn">Array containing the points to transform.</param>
         /// <returns>The array containing the transformed points.</returns>
         /// <exception cref="TransformationException">Thrown in the unlikely event that a coordinate transformation fails.</exception>
-        Point[] Transform(Point[] pntsIn);
+        Point[] Transform(Point[] pointsIn);
 
         /// <summary>
         /// Transforms an array of <see cref="System.Windows.Point">System.Windows.Point</see>.
         /// </summary>
-        /// <param name="pntsIn">Array containing the points to transform.</param>
-        /// <param name="pntsOut">Array in which to put the transformed points.</param>
-        /// <remarks>If <c>pntsOut</c> is set to null the transformed locations are written back to 
-        /// the input array. It is also valid to specify the input array in <c>pntsOut</c>, which is 
-        /// the same as setting <c>pntsOut</c> to null.</remarks>
+        /// <param name="pointsIn">Array containing the points to transform.</param>
+        /// <param name="pointsOut">Array in which to put the transformed points.</param>
+        /// <remarks>If <c>pointsOut</c> is set to null the transformed locations are written back to 
+        /// the input array. It is also valid to specify the input array in <c>pointsOut</c>, which is 
+        /// the same as setting <c>pointsOut</c> to null.</remarks>
         /// <exception cref="TransformationException">Thrown in the unlikely event that a coordinate transformation fails.</exception>
-        void Transform(Point[] pntsIn, Point[] pntsOut = null);
+        void Transform(Point[] pointsIn, Point[] pointsOut = null);
 
         /// <summary>
         /// Transforms a single <see cref="Location"/>.
@@ -947,23 +936,23 @@ namespace Ptv.Components.Projections
         /// <summary>
         /// Transforms an array of <see cref="Location"/>.
         /// </summary>
-        /// <param name="locsIn">Array containing the locations to transform.</param>
+        /// <param name="locationsIn">Array containing the locations to transform.</param>
         /// <returns>The array containing the transformed locations.</returns>
         /// <exception cref="TransformationException">Thrown in the unlikely event that a coordinate transformation fails.</exception>
-        Location[] Transform(Location[] locsIn);
+        Location[] Transform(Location[] locationsIn);
        
         /// <summary>
         /// Transforms an array of <see cref="Location"/>.
         /// </summary>
-        /// <param name="locsIn">Array containing the locations to transform.</param>
-        /// <param name="locsOut">Array in which to put the transformed locations.</param>
+        /// <param name="locationsIn">Array containing the locations to transform.</param>
+        /// <param name="locationsOut">Array in which to put the transformed locations.</param>
         /// <exception cref="TransformationException">Thrown in the unlikely event that a coordinate transformation fails.</exception>
         /// <remarks>
-        /// If <c>locsOut</c> is set to null the transformed locations are written back to the input array. 
-        /// It is also valid to specify the input array in <c>locsOut</c>, which is the same as setting 
-        /// <c>locsOut</c> to null.
+        /// If <c>locationsOut</c> is set to null the transformed locations are written back to the input array. 
+        /// It is also valid to specify the input array in <c>locationsOut</c>, which is the same as setting 
+        /// <c>locationsOut</c> to null.
         /// </remarks>
-        void Transform(Location[] locsIn, Location[] locsOut = null);
+        void Transform(Location[] locationsIn, Location[] locationsOut = null);
 
         /// <summary>
         /// Transforms a set of objects with coordinates.
@@ -1159,12 +1148,10 @@ namespace Ptv.Components.Projections
         /// </para><para>Changing the configuration in <see cref="Direct.CoordinateTransformation.Enabled">Direct.CoordinateTransformation.Enabled</see> 
         /// and / or <see cref="Proj4.CoordinateTransformation.Enabled">Proj4.CoordinateTransformation.Enabled</see> may influence this behavior.</para>
         /// </remarks>
-        public static ICoordinateTransformation Get(String sourceId, String targetId)
+        public static ICoordinateTransformation Get(string sourceId, string targetId)
         {
-            ICoordinateTransformation transform;
-
             if (Direct.CoordinateTransformation.Enabled)
-                if (Direct.CoordinateTransformation.TryGet(sourceId, targetId, out transform))
+                if (Direct.CoordinateTransformation.TryGet(sourceId, targetId, out ICoordinateTransformation transform))
                     return transform;
 
             if (Proj4.CoordinateTransformation.Enabled)
@@ -1185,10 +1172,8 @@ namespace Ptv.Components.Projections
         /// </remarks>
         public static ICoordinateTransformation Get(CoordinateReferenceSystem source, CoordinateReferenceSystem target)
         {
-            ICoordinateTransformation transformation;
-
             if (Direct.CoordinateTransformation.Enabled)
-                if (Direct.CoordinateTransformation.TryGet(source, target, out transformation))
+                if (Direct.CoordinateTransformation.TryGet(source, target, out var transformation))
                     return transformation;
 
             if (Proj4.CoordinateTransformation.Enabled)
@@ -1206,11 +1191,11 @@ namespace Ptv.Components.Projections
         /// <param name="idx">Index of the first coordinate.</param>
         /// <param name="length">Number of coordinates.</param>
         /// <returns>True, if the arrays are valid, false otherwise.</returns>
-        private bool ChkLen(double[] x, double[] y, double[] z, int idx, int length)
+        private static bool ChkLen(double[] x, double[] y, double[] z, int idx, int length)
         {
-            Func<double[], bool, bool> isValid = (theArray, arrayMayBeNull) => theArray == null ? arrayMayBeNull : idx >= 0 && length > 0 && idx < theArray.Length && (idx + length - 1) < theArray.Length;
+            bool IsValid(ICollection<double> theArray, bool arrayMayBeNull) => theArray == null ? arrayMayBeNull : idx >= 0 && length > 0 && idx < theArray.Count && (idx + length - 1) < theArray.Count;
 
-            return isValid(x, false) && isValid(y, false) && isValid(z, true);
+            return IsValid(x, false) && IsValid(y, false) && IsValid(z, true);
         }
 
         /// <summary>
@@ -1244,13 +1229,13 @@ namespace Ptv.Components.Projections
         /// <summary>
         /// Transforms an array of <see cref="System.Windows.Point">System.Windows.Point</see>.
         /// </summary>
-        /// <param name="pntsIn">Array containing the points to transform.</param>
-        /// <param name="pntsOut">Array in which to put the transformed points.</param>
-        /// <remarks>If <c>pntsOut</c> is set to null the transformed locations are written back to 
-        /// the input array. It is also valid to specify the input array in <c>pntsOut</c>, which is 
-        /// the same as setting <c>pntsOut</c> to null.</remarks>
+        /// <param name="pointsIn">Array containing the points to transform.</param>
+        /// <param name="pointsOut">Array in which to put the transformed points.</param>
+        /// <remarks>If <c>pointsOut</c> is set to null the transformed locations are written back to 
+        /// the input array. It is also valid to specify the input array in <c>pointsOut</c>, which is 
+        /// the same as setting <c>pointsOut</c> to null.</remarks>
         /// <exception cref="TransformationException">Thrown in the unlikely event that a coordinate transformation fails.</exception>
-        internal abstract void TransformUnchecked(Point[] pntsIn, Point[] pntsOut);
+        internal abstract void TransformUnchecked(Point[] pointsIn, Point[] pointsOut);
 
         /// <summary>
         /// Transforms an array of <see cref="Location"/>.
@@ -1259,84 +1244,78 @@ namespace Ptv.Components.Projections
         /// <param name="locsOut">Array in which to put the transformed locations.</param>
         /// <exception cref="TransformationException">Thrown in the unlikely event that a coordinate transformation fails.</exception>
         /// <remarks>
-        /// If <c>locsOut</c> is set to null the transformed locations are written back to the input array. 
-        /// It is also valid to specify the input array in <c>locsOut</c>, which is the same as setting 
-        /// <c>locsOut</c> to null.
+        /// If <c>locationsOut</c> is set to null the transformed locations are written back to the input array. 
+        /// It is also valid to specify the input array in <c>locationsOut</c>, which is the same as setting 
+        /// <c>locationsOut</c> to null.
         /// </remarks>
         internal abstract void TransformUnchecked(Location[] locsIn, Location[] locsOut);
 
         #region ICoordinateTransformation
 
         /// <inheritdoc/>
-        public virtual Point Transform(Point pnt)
+        public virtual Point Transform(Point point)
         {
-            double x, y;
-            Transform(pnt.X, pnt.Y, out x, out y);
+            Transform(point.X, point.Y, out double x, out double y);
             return new Point(x, y);
         }
 
         /// <inheritdoc/>
-        public virtual Point[] Transform(Point[] pntsIn)
+        public virtual Point[] Transform(Point[] pointsIn)
         {
-            Point[] pntsOut = 
-                pntsIn != null ? new Point[pntsIn.Length] : null;
+            Point[] pointsOut = pointsIn != null ? new Point[pointsIn.Length] : null;
 
-            Transform(pntsIn, pntsOut);
+            Transform(pointsIn, pointsOut);
 
-            return pntsOut;
+            return pointsOut;
         }
 
         /// <inheritdoc/>
-        public virtual void Transform(Point[] pntsIn, Point[] pntsOut)
+        public virtual void Transform(Point[] pointsIn, Point[] pointsOut)
         {
-            if (pntsOut == null)
-                pntsOut = pntsIn;
+            if (pointsOut == null)
+                pointsOut = pointsIn;
 
-            if (pntsIn == null && pntsOut == null)
+            if (pointsIn == null && pointsOut == null)
                 return;
 
-            if (pntsIn == null || pntsIn.Length != pntsOut.Length)
+            if (pointsIn == null || pointsIn.Length != pointsOut.Length)
                 throw new TransformationException("point arrays differ in size");
 
-            TransformUnchecked(pntsIn, pntsOut);
+            TransformUnchecked(pointsIn, pointsOut);
         }
 
         /// <inheritdoc/>
         public virtual Location Transform(Location loc)
         {
-            double? z;
-            double x, y;
 
-            Transform(loc.X, loc.Y, loc.Z, out x, out y, out z);
-
+            Transform(loc.X, loc.Y, loc.Z, out double x, out double y, out double? z);
             return new Location(x, y, z);
         }
 
 
         /// <inheritdoc/>
-        public virtual Location[] Transform(Location[] locsIn)
+        public virtual Location[] Transform(Location[] locationsIn)
         {
-            Location[] locsOut = 
-                locsIn != null ? new Location[locsIn.Length] : null;
+            Location[] locsOut = locationsIn != null ? new Location[locationsIn.Length] : null;
 
-            Transform(locsIn, locsOut);
+            Transform(locationsIn, locsOut);
 
             return locsOut;
         }
 
         /// <inheritdoc/>
-        public virtual void Transform(Location[] locsIn, Location[] locsOut)
+        public virtual void Transform(Location[] locationsIn, Location[] locationsOut)
         {
-            if (locsOut == null)
-                locsOut = locsIn;
+            if (locationsOut == null)
+                locationsOut = locationsIn;
 
-            if (locsIn == null && locsOut == null)
+            if (locationsIn == null && locationsOut == null)
                 return;
 
-            if (locsIn == null || locsIn.Length != locsOut.Length)
+            if (locationsIn == null || locationsIn.Length != locationsOut.Length)
                 throw new TransformationException("location arrays differ in size");
 
-            TransformUnchecked(locsIn, locsOut);
+            TransformUnchecked(locationsIn, locationsOut);
         }
 
         /// <inheritdoc/>
@@ -1346,53 +1325,52 @@ namespace Ptv.Components.Projections
 
             IEnumerator<T> enumerator = enumerable.GetEnumerator();
 
-            if (enumerator.MoveNext())
+            if (!enumerator.MoveNext()) return;
+
+            var hasZ = false;
+            var xyz = new double[3][];
+            T[] t = new T[1024];
+
+            for (int j = 0; j < 3; j++)
+                xyz[j] = new double[t.Length];
+
+            do
             {
-                bool hasZ = false;
-                double[][] xyz = new double[3][];
-                T[] t = new T[1024];
-
-                for (int j = 0; j < 3; j++)
-                    xyz[j] = new double[t.Length];
-
-                do
+                if (i >= xyz[0].Length)
                 {
-                    if (i >= xyz[0].Length)
-                    {
-                        Array.Resize(ref t, t.Length * 2);
+                    Array.Resize(ref t, t.Length * 2);
 
-                        for (int j = 0; j < 3; j++)
-                            Array.Resize(ref xyz[j], t.Length);
-                    }
-
-                    Location currentLocation = getLocation(t[i] = enumerator.Current);
-
-                    xyz[0][i] = currentLocation.X;
-                    xyz[1][i] = currentLocation.Y;
-                    xyz[2][i] = currentLocation.Z.GetValueOrDefault();
-
-                    if (i++ == 0)
-                        hasZ = currentLocation.Z.HasValue;
-
-                    if (hasZ != currentLocation.Z.HasValue)
-                        throw new TransformationException("use of z-coordinate differs from previous locations");
+                    for (int j = 0; j < 3; j++)
+                        Array.Resize(ref xyz[j], t.Length);
                 }
-                while (enumerator.MoveNext());
 
-                Transform(xyz[0], xyz[1], hasZ ? xyz[2] : null, 0, xyz[0], xyz[1], hasZ ? xyz[2] : null, 0, i);
+                Location currentLocation = getLocation(t[i] = enumerator.Current);
 
-                Location loc = new Location();
+                xyz[0][i] = currentLocation.X;
+                xyz[1][i] = currentLocation.Y;
+                xyz[2][i] = currentLocation.Z.GetValueOrDefault();
 
-                for (int j = 0; j < i; ++j)
-                {
-                    loc.X = xyz[0][j];
-                    loc.Y = xyz[1][j];
+                if (i++ == 0)
+                    hasZ = currentLocation.Z.HasValue;
 
-                    if (hasZ)
-                        loc.Z = xyz[2][j];
+                if (hasZ != currentLocation.Z.HasValue)
+                    throw new TransformationException("use of z-coordinate differs from previous locations");
+            }
+            while (enumerator.MoveNext());
 
-                    setLocation(t[j], loc);
-                }
+            Transform(xyz[0], xyz[1], hasZ ? xyz[2] : null, 0, xyz[0], xyz[1], hasZ ? xyz[2] : null, 0, i);
+
+            var loc = new Location();
+
+            for (int j = 0; j < i; ++j)
+            {
+                loc.X = xyz[0][j];
+                loc.Y = xyz[1][j];
+
+                if (hasZ)
+                    loc.Z = xyz[2][j];
+
+                setLocation(t[j], loc);
             }
         }
 
@@ -1403,50 +1381,48 @@ namespace Ptv.Components.Projections
 
             IEnumerator<T> enumerator = enumerable.GetEnumerator();
 
-            if (enumerator.MoveNext())
+            if (!enumerator.MoveNext()) return;
+
+            var t = new T[1024];
+
+            var xy = new[] { new double[t.Length], new double[t.Length] };
+
+            do
             {
-                T[] t = new T[1024];
-
-                double[][] xy = new double[][] { new double[t.Length], new double[t.Length] };
-
-                do
+                if (i >= xy[0].Length)
                 {
-                    if (i >= xy[0].Length)
-                    {
-                        Array.Resize(ref t, t.Length * 2);
+                    Array.Resize(ref t, t.Length * 2);
 
-                        Array.Resize(ref xy[0], t.Length);
-                        Array.Resize(ref xy[1], t.Length);
-                    }
-
-                    Point currentPoint = getPoint(t[i] = enumerator.Current);
-
-                    xy[0][i] = currentPoint.X;
-                    xy[1][i] = currentPoint.Y;
-
-                    i++;
+                    Array.Resize(ref xy[0], t.Length);
+                    Array.Resize(ref xy[1], t.Length);
                 }
-                while (enumerator.MoveNext());
 
-                Transform(xy[0], xy[1], null, 0, xy[0], xy[1], null, 0, i);
+                Point currentPoint = getPoint(t[i] = enumerator.Current);
 
-                Point p = new Point();
+                xy[0][i] = currentPoint.X;
+                xy[1][i] = currentPoint.Y;
 
-                for (int j = 0; j < i; ++j)
-                {
-                    p.X = xy[0][j];
-                    p.Y = xy[1][j];
+                i++;
+            }
+            while (enumerator.MoveNext());
 
-                    setPoint(t[j], p);
-                }
+            Transform(xy[0], xy[1], null, 0, xy[0], xy[1], null, 0, i);
+
+            var p = new Point();
+
+            for (int j = 0; j < i; ++j)
+            {
+                p.X = xy[0][j];
+                p.Y = xy[1][j];
+
+                setPoint(t[j], p);
             }
         }
 
         /// <inheritdoc/>
         public virtual void Transform(double xin, double yin, out double xout, out double yout)
         {
-            double? zout;
-            Transform(xin, yin, null, out xout, out yout, out zout);
+            Transform(xin, yin, null, out xout, out yout, out _);
         }
 
         /// <inheritdoc/>
@@ -1481,7 +1457,7 @@ namespace Ptv.Components.Projections
                 throw new TransformationException("coordinate transformation and/or its associated coordinate reference systems are invalid");
 
             // zin, zout: both must be either null or non-null
-            if ((zin == null) != (zout == null))
+            if (zin == null != (zout == null))
                 throw new TransformationException("input and output z-coordinate array must both be either null or non-null");
 
             // arrays must be valid regarding indices and length

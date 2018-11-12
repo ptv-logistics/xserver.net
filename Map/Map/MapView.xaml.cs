@@ -18,8 +18,6 @@ namespace Ptv.XServer.Controls.Map
         private double x;
         /// <summary> Y coordinate of the map center. </summary>
         private double y;
-        /// <summary> Zoom level of the map. </summary>
-        private double z = 1;
 
         /// <summary> Transformation object for the pan offset. </summary>
         private readonly TranslateTransform translateTransform;
@@ -108,7 +106,7 @@ namespace Ptv.XServer.Controls.Map
         }
 
         /// <summary> Gets the level of detail according to the standard tiling scheme (float value). </summary>
-        public double FinalZoom => z;
+        public double FinalZoom { get; private set; } = 1;
 
         /// <summary> Sets the level of detail according to the standard tiling scheme. </summary>
         /// <param name="value"> The new level. </param>
@@ -143,10 +141,10 @@ namespace Ptv.XServer.Controls.Map
 
         /// <summary> Gets the scale factor after the map was in animation mode / the anticipated scale factor while the map is
         /// in animation mode. Defined in logical units per pixel. </summary>
-        public double FinalScale => 1.0 / (Math.Pow(2, z + 8) / ReferenceSize / ZoomAdjust) * LogicalSize / ReferenceSize / ZoomAdjust;
+        public double FinalScale => 1.0 / (Math.Pow(2, FinalZoom + 8) / ReferenceSize / ZoomAdjust) * LogicalSize / ReferenceSize / ZoomAdjust;
 
         /// <summary> Gets the number of meters spanned by one pixel. </summary>
-        public double MetersPerPixel => CurrentScale * Math.Cos((Math.Atan(Math.Exp(CurrentY / 6371000.0)) - (Math.PI / 4)) / 0.5);
+        public double MetersPerPixel => CurrentScale * Math.Cos((Math.Atan(Math.Exp(CurrentY / 6371000.0)) - Math.PI / 4) / 0.5);
 
         /// <summary> Gets or sets the center of the map. </summary>
         public Point Center
@@ -181,7 +179,7 @@ namespace Ptv.XServer.Controls.Map
 
             InitializeComponent();
 
-            double zoomScale = Math.Pow(2, z + 8) / ReferenceSize / ZoomAdjust;
+            double zoomScale = Math.Pow(2, FinalZoom + 8) / ReferenceSize / ZoomAdjust;
 
             // initialize transformation stack
             var logicalOffsetTransform = new TranslateTransform(-ReferenceSize / 2, -ReferenceSize / 2); // Transformation object for the logical offset.
@@ -290,7 +288,7 @@ namespace Ptv.XServer.Controls.Map
         /// <param name="animate"> Flag showing if zooming should be animated or not. </param>
         private void DoZoom(bool animate)
         {
-            double zoomScale = Math.Pow(2, z + 8) / ReferenceSize / ZoomAdjust;
+            double zoomScale = Math.Pow(2, FinalZoom + 8) / ReferenceSize / ZoomAdjust;
 
             if (!animate)
             {
@@ -341,9 +339,6 @@ namespace Ptv.XServer.Controls.Map
 
         private void ResetOrigin()
         {
-            if (!GlobalOptions.InfiniteZoom)
-                return;
-
             var tx = FinalX;
             var ty = FinalY;
 
@@ -488,7 +483,7 @@ namespace Ptv.XServer.Controls.Map
                 zoomX = MaxZoom;
             else
             {
-                double scale = (dx / LogicalSize) * 256 / ActualWidth;
+                double scale = dx / LogicalSize * 256 / ActualWidth;
                 zoomX = -Math.Log(scale, 2);
             }
 
@@ -497,13 +492,13 @@ namespace Ptv.XServer.Controls.Map
                 zoomY = MaxZoom;
             else
             {
-                double scale = (dy / LogicalSize) * 256 / ActualHeight;
+                double scale = dy / LogicalSize * 256 / ActualHeight;
                 zoomY = -Math.Log(scale, 2);
             }
 
             double tmpZoom = Math.Min(zoomX, zoomY);
             double maxZoom = Math.Min(MaxZoom, maxAutoZoom);
-            maxZoom = Math.Max(z, maxZoom);
+            maxZoom = Math.Max(FinalZoom, maxZoom);
             tmpZoom = Math.Min(tmpZoom, maxZoom);
             tmpZoom = Math.Max(tmpZoom, MinZoom);
 
@@ -523,15 +518,12 @@ namespace Ptv.XServer.Controls.Map
 
             zoom = Math.Max(minZoom, Math.Min(zoom, maxZoom));
 
-            if (!GlobalOptions.InfiniteZoom && zoom > 19)
-                animatePan = animateZoom = false;
-
             // reset map rectangle if XYZ is set after Rect while map is not loaded
             envMapRectangle = new MapRectangle();
 
             if (FitInWindow)
             {
-                var scale = 1.0/(Math.Pow(2, z + 8)/ReferenceSize/ZoomAdjust)*LogicalSize/ReferenceSize/ZoomAdjust;
+                var scale = 1.0/(Math.Pow(2, FinalZoom + 8)/ReferenceSize/ZoomAdjust)*LogicalSize/ReferenceSize/ZoomAdjust;
                 var r = new MapRectangle(new Point(xCenter, yCenter), new Size(ActualWidth*scale, ActualHeight*scale));
                 if (r.West > -20015087 && r.East > 20015087)
                     xCenter = xCenter - Math.Min(r.East - 20015087, r.West + 20015087);
@@ -557,12 +549,12 @@ namespace Ptv.XServer.Controls.Map
                 }
             }
 
-            bool doPan = (FinalX != xCenter || FinalY != yCenter);
-            bool doZoom = (z != zoom);
+            bool doPan = FinalX != xCenter || FinalY != yCenter;
+            bool doZoom = FinalZoom != zoom;
 
             x = xCenter + canvasOffset.X / ZoomAdjust / ReferenceSize * LogicalSize;
             y = yCenter - canvasOffset.Y / ZoomAdjust / ReferenceSize * LogicalSize;
-            z = zoom;
+            FinalZoom = zoom;
 
             if (doPan)
                 ResetOffset();
@@ -587,7 +579,7 @@ namespace Ptv.XServer.Controls.Map
             double zTo = Math.Pow(2, zoom + 8) / ReferenceSize / ZoomAdjust;
             double zCurrent = zoomTransform.ScaleX;
 
-            double dZ = (zTo / zCurrent);
+            double dZ = zTo / zCurrent;
             dZ = dZ / (dZ - 1);
 
             double newX = (point.X - CurrentX) * dZ + CurrentX;
@@ -671,10 +663,7 @@ namespace Ptv.XServer.Controls.Map
             if (zoom < MinZoom)
                 zoom = MinZoom;
 
-            if (!GlobalOptions.InfiniteZoom && zoom > 19)
-                animate = false;
-
-            z = Math.Max(minZoom, Math.Min(zoom, maxZoom));
+            FinalZoom = Math.Max(minZoom, Math.Min(zoom, maxZoom));
 
             double dxa = point.X * ZoomAdjust / LogicalSize * ReferenceSize + canvasOffset.X;
             double dya = -point.Y * ZoomAdjust / LogicalSize * ReferenceSize + canvasOffset.Y;

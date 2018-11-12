@@ -1,6 +1,5 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
-using System;
 using Ptv.XServer.Controls.Map.Tools;
 using Ptv.XServer.Controls.Map.TileProviders;
 using Ptv.XServer.Controls.Map.Localization;
@@ -39,7 +38,7 @@ namespace Ptv.XServer.Controls.Map.Layers
                 Copyright = meta.CopyrightText,
                 Caption = MapLocalizer.GetString(MapStringId.Background),
                 IsBaseMapLayer = true,
-                Icon = ResourceHelper.LoadBitmapFromResource("Ptv.XServer.Controls.Map;component/Resources/Background.png"),
+                Icon = ResourceHelper.LoadBitmapFromResource("Ptv.XServer.Controls.Map;component/Resources/Background.png")
             };
 
             if (BaseLayerSuccessor != null && layers[BaseLayerSuccessor] != null)
@@ -61,7 +60,7 @@ namespace Ptv.XServer.Controls.Map.Layers
                 UntiledProvider = new XMapTiledProvider(meta.Url, meta.User, meta.Password, XMapMode.Town),
                 MaxRequestSize = meta.MaxRequestSize,
                 Caption = MapLocalizer.GetString(MapStringId.Labels),
-                Icon = ResourceHelper.LoadBitmapFromResource("Ptv.XServer.Controls.Map;component/Resources/Labels.png"),
+                Icon = ResourceHelper.LoadBitmapFromResource("Ptv.XServer.Controls.Map;component/Resources/Labels.png")
             };
 
             if (LabelLayerPredecessor != null && layers[LabelLayerPredecessor] != null && layers.IndexOf(layers[LabelLayerPredecessor]) < layers.Count)
@@ -161,10 +160,10 @@ namespace Ptv.XServer.Controls.Map.Layers
         public static void RemoveXMapBaseLayers(this LayerCollection layers)
         {
             var idx = layers.IndexOf(layers[BackgroundLayerName]);
-            BaseLayerSuccessor = (layers.Count > idx + 1) ? layers[idx + 1].Name : null;
+            BaseLayerSuccessor = layers.Count > idx + 1 ? layers[idx + 1].Name : null;
 
             idx = layers.IndexOf(layers[LabelsLayerName]);
-            LabelLayerPredecessor = (idx > 0) ? layers[idx - 1].Name : null;
+            LabelLayerPredecessor = idx > 0 ? layers[idx - 1].Name : null;
 
             layers.Remove(layers[BackgroundLayerName]);
             layers.Remove(layers[LabelsLayerName]);

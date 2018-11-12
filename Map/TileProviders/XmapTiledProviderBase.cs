@@ -47,13 +47,6 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             // parameters for scaling of the MSI
             Factor = 1;
 
-            // overlap tiles if InifiteZoom is disabled
-            if (!GlobalOptions.InfiniteZoom)
-            {
-                OverlapFactor = 1.0 / 64;
-                Border = 6;
-            }
-
             MinZoom = 0;
             MaxZoom = 19;
         }
@@ -85,8 +78,8 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         {
             double arc = earthHalfCircum / Math.Pow(2, zoom - 1);
 
-            xMin = (tileX * arc) - earthHalfCircum;
-            yMax = earthHalfCircum - (tileY * arc);
+            xMin = tileX * arc - earthHalfCircum;
+            yMax = earthHalfCircum - tileY * arc;
 
             xMax = xMin + arc;
             yMin = yMax - arc;
@@ -124,7 +117,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         {
             mapObjects = null;
 
-            if ((left >= minX) && (right <= maxX) && (top >= minY) && (bottom <= maxY) && border <= 0)
+            if (left >= minX && right <= maxX && top >= minY && bottom <= maxY && border <= 0)
                 return GetStreamInternal(left, top, right, bottom, width, height, out mapObjects);
 
             // request must be resized or clipped
@@ -138,10 +131,10 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                 double lWidth = (right - left) * resize;
                 double lHeight = (bottom - top) * resize;
 
-                leftResized = (left - lWidth);
-                rightResized = (right + lWidth);
-                topResized = (top - lHeight);
-                bottomResized = (bottom + lHeight);
+                leftResized = left - lWidth;
+                rightResized = right + lWidth;
+                topResized = top - lHeight;
+                bottomResized = bottom + lHeight;
             }
             else
             {
@@ -152,10 +145,10 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             }
 
             // calculate clipped bounds
-            double leftClipped = (leftResized < minX) ? minX : leftResized;
-            double rightClipped = (rightResized > maxX) ? maxX : rightResized;
-            double topClipped = (topResized < minY) ? minY : topResized;
-            double bottomClipped = (bottomResized > maxY) ? maxY : bottomResized;
+            double leftClipped = leftResized < minX ? minX : leftResized;
+            double rightClipped = rightResized > maxX ? maxX : rightResized;
+            double topClipped = topResized < minY ? minY : topResized;
+            double bottomClipped = bottomResized > maxY ? maxY : bottomResized;
 
             // calculate corresponding pixel width and height 
             //
@@ -292,6 +285,15 @@ namespace Ptv.XServer.Controls.Map.TileProviders
             return GetImageStreamAndMapObjects(left, top, height, bottom, width, height, out _);
         }
 
+        /// <summary> Retrieves the image stream and the corresponding map objects belonging to the returned map image. </summary>
+        /// <param name="left"> Left coordinate. </param>
+        /// <param name="top"> Top coordinate. </param>
+        /// <param name="right"> Right coordinate. </param>
+        /// <param name="bottom"> Bottom coordinate. </param>
+        /// <param name="width"> Width of the image. </param>
+        /// <param name="height"> Height of the image. </param>
+        /// <param name="mapObjects">Set of map objects belonging to the map image. These objects can be used to provide tool tips in an interactive map.</param>
+        /// <returns> The image as a stream. </returns>
         public Stream GetImageStreamAndMapObjects(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects)
         {
             return GetStream(left, top, right, bottom, width, height, 0, out mapObjects);
@@ -300,11 +302,14 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         #endregion
 
         #region ITilingOptions Members
+
         /// <inheritdoc/>
         public double Factor { get; set; }
+
         /// <inheritdoc/>
         public double OverlapFactor { get; set; }
 
+        /// <inheritdoc/>
         public int Border { get; set; }
         #endregion
     }

@@ -9,33 +9,30 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 {
     internal class ServerConfiguration : RequestBase
     {
-        public ServerConfiguration(string baseUrl, string token) : base(baseUrl, token) {}
+        public ServerConfiguration(IXServerVersion xServerVersion) : base(xServerVersion) { }
 
-        public IEnumerable<string> AvailableMapStyles => Response?.profiles?
+        public IEnumerable<string> AvailableMapStyles => GetResponseObject()?.profiles?
                                                              .Where(profile => profile?.useCases?.Contains("mapping") ?? false)
                                                              .Select(profile => profile.name) 
                                                          ?? Enumerable.Empty<string>();
 
-        private _Response response;
-        private _Response Response
+        private ResponseObject response;
+        private ResponseObject GetResponseObject()
         {
-            get
+            if (response != null) return response;
+
+            var requestObject = new
             {
-                if (response != null) return response;
+                resultFields = new { profiles = true }
+            };
 
-                var requestObject = new
-                {
-                    resultFields = new { profiles = true }
-                };
-
-                return response = Response("/services/rs/XRuntime/experimental/getServerConfiguration", requestObject.ToJson()).FromJson<_Response>();
-            }
+            return response = Response("rs", "XRuntime", "getServerConfiguration", requestObject.ToJson()).FromJson<ResponseObject>();
         }
 
         [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local")]
         [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
         [SuppressMessage("ReSharper", "CollectionNeverUpdated.Local")]
-        private class _Response
+        private class ResponseObject
         {
             public List<ProfileDescription> profiles { get; set; }
 

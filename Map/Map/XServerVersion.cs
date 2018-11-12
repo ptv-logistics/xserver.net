@@ -1,7 +1,6 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
 using Ptv.XServer.Controls.Map.Layers;
-using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
 using Ptv.XServer.Controls.Map.Tools;
@@ -15,28 +14,20 @@ namespace Ptv.XServer.Controls.Map
     {
         bool IsValidUrl();
         bool IsCloudBased();
-        void InitializeMapLayers(Map map, string xmapCredentials);
+        string AdjustedUrl(string moduleName = "xmap");
+        string WithServicePath(string protocolShortcut, string moduleName);
+        void Initialize(Map map);
+        string XMapCredentials { get; set; }
+        string Token { get; }
     }
 
-    internal class XServer1Version : IXServerVersion
+    internal class XServer1Version : XServerVersionBase, IXServerVersion
     {
-        private readonly string baseUrl;
-
-        public XServer1Version(string url)
-        {
-            baseUrl = url;
-        }
+        public XServer1Version(string url, string xMapCredentials) : base(url, xMapCredentials) { }
 
         public string AdjustedUrl(string moduleName = "xmap")
         {
             return XServerUrl.Complete(baseUrl, moduleName);
-        }
-
-        private static bool Match(string pattern, string input, out Match match)
-        {
-            var regex = new Regex(pattern, RegexOptions.IgnoreCase);
-            match = regex.Match(input);
-            return match.Success;
         }
 
         public static int Port(string moduleName)
@@ -81,7 +72,7 @@ namespace Ptv.XServer.Controls.Map
             return AdjustedUrl().ToLower().Contains(".cloud.ptvgroup.com");
         }
 
-        public void InitializeMapLayers(Map map, string xmapCredentials)
+        public void Initialize(Map map)
         {
             map.Layers.RemoveXMapBaseLayers();
 
@@ -89,22 +80,26 @@ namespace Ptv.XServer.Controls.Map
             if (string.IsNullOrEmpty(adjustedUrl)) return;
 
             var xmapMetaInfo = new XMapMetaInfo(adjustedUrl);
-            if (xmapCredentials?.Contains(":") ?? false)
+            if (XMapCredentials?.Contains(":") ?? false)
             {
-                var userPassword = xmapCredentials.Split(':');
+                var userPassword = XMapCredentials.Split(':');
                 xmapMetaInfo.SetCredentials(userPassword[0], userPassword[1]);
             }
             map.Layers.InsertXMapBaseLayers(xmapMetaInfo);
         }
     }
 
-    internal class XServer2Version : IXServerVersion
+    internal class XServer2Version : XServerVersionBase, IXServerVersion
     {
-        private readonly string baseUrl;
+        private readonly string minorVersion;
 
-        public XServer2Version(string url)
+        public XServer2Version(string url, string xMapCredentials) : base(url, xMapCredentials)
         {
-            baseUrl = url;
+            string[] items = url.Contains(";") ? url.Split(';') : null;
+            baseUrl = (items?[0] ?? url).Trim();
+
+            string[] minorVersionSubStrings = (items?[1].Contains("=") ?? false) ? items[1].Split('=') : null;
+            minorVersion = (minorVersionSubStrings?[0].Trim().Equals("version") ?? false) ? minorVersionSubStrings[1].Trim() : string.Empty;
         }
 
         public string AdjustedUrl(string moduleName = "xmap")
@@ -129,9 +124,10 @@ namespace Ptv.XServer.Controls.Map
 
         public string WithServicePath(string protocolShortcut, string moduleName)
         {
-            string camelModuleName = moduleName.Substring(0, 2).ToUpper() + moduleName.Substring(2).ToLower();
+            var camelModuleName = moduleName.Substring(0, 2).ToUpper() + moduleName.Substring(2).ToLower();
+            string minorVersionStringToAdd = string.IsNullOrEmpty(minorVersion) ? string.Empty : "/" + minorVersion;
 
-            return $"{AdjustedUrl(moduleName).TrimEnd('/')}/services/{protocolShortcut}/{camelModuleName}";
+            return $"{AdjustedUrl(moduleName).TrimEnd('/')}/services/{protocolShortcut}/{camelModuleName}{minorVersionStringToAdd}";
         }
 
         public bool IsValidUrl()
@@ -156,7 +152,7 @@ namespace Ptv.XServer.Controls.Map
             return adjustedUrl.Contains(".cloud.ptvgroup.com") && adjustedUrl.Contains("xserver2");
         }
 
-        public void InitializeMapLayers(Map map, string xmapCredentials)
+        public void Initialize(Map map)
         {
             if (map.Xmap2LayerFactory != null)
             {
@@ -167,7 +163,7 @@ namespace Ptv.XServer.Controls.Map
 
             if (string.IsNullOrEmpty(AdjustedUrl())) return;
 
-            map.Xmap2LayerFactory = new LayerFactory(AdjustedUrl(), xmapCredentials);
+            map.Xmap2LayerFactory = new LayerFactory(this);
             map.Xmap2LayerFactory.BackgroundLayer.Icon = ResourceHelper.LoadBitmapFromResource("Ptv.XServer.Controls.Map;component/Resources/Background.png");
             map.Xmap2LayerFactory.BackgroundLayer.Caption = MapLocalizer.GetString(MapStringId.Background);
             map.Xmap2LayerFactory.BackgroundThemes.Add("Background");
@@ -181,4 +177,20 @@ namespace Ptv.XServer.Controls.Map
             map.Layers.Add(map.Xmap2LayerFactory.LabelLayer);
         }
     }
+
+    internal class XServerVersionBase
+    {
+        protected XServerVersionBase(string url, string xMapCredentials)
+        {
+            baseUrl = url;
+            XMapCredentials = xMapCredentials;
+        }
+
+        protected string baseUrl;
+
+        public string XMapCredentials { get; set; }
+
+        public string Token => (XMapCredentials?.Contains(":") ?? false) ? XMapCredentials.Split(':')[1] : XMapCredentials;
+    }
+
 }

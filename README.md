@@ -21,15 +21,16 @@ been provided with this distribution.
 Prerequisites
 -------------
 
-- At least Windows Vista, Windows 7 or Windows 8 is recommended.
+- PTV xServer.NET is built to run with the minimum target framework with WPF support, which is **.NET 3.5 Client Profile**.
+- The source code is implemented with C# 7.0, which requires at least **Visual Studio 2017 Community Edition**.
 
-- At least Microsoft .NET 4.6.2 for building the corresponding binaries.
 
-- At least Visual Studio C# 2008 Express Edition for developing applications
-  based on PTV xServer .NET. With regards to the WPF integration and the 
-  overall development experience we recommend at least Visual Studio 2010.
+External Resources
+------------------
 
-- All third-party libraries used by the SDK are included in the SDK package.
+* [xserver.net-docs](https://ptv-logistics.github.io/xserver.net-docs) - API Documentation
+* [xserver.net-samples](https://github.com/ptv-logistics/xserver.net-samples/blob/master/README.md) - Code Samples and Demos
+* [DemoCenter](https://xserverinternet.azurewebsites.net/xserver.net/) - PTV xServer.NET Demo Center
 
 
 Release Notes 
@@ -37,18 +38,24 @@ Release Notes
 
 Version 1.6.0.0 (2018/08/14)
 
-  Bugfixes:
-  - Some minor bugfixes
-  - Fixed rendering error if the Container-Control set UseLayoutRounding
-
-  Changes and Optimizations:
-  - Added support for integration of Web Map Tile Services (WMTS)
+  Fixes and Optimizations:
+  - Code refactoring for C# 7.0
   - Optimized tile caching and pruning
+  - Fixed rendering error if the Container-Control sets UseLayoutRounding
+  - Some minor bugfixes
+  - Code is now 100% warning-free(!)
+
+  New features and breaking changes:
+  - Added support for integration of XMap2 Layers, including Feature Layers
+  - Added support for integration of Web Map Tile Services (WMTS)
   - The InifiniteZoom property (to avoid jitter at deep zoom levels)
     is now set to true by default. This setting should be compatible 
     with the previous setting. If you experience problems with your 
     custom layer implementation, you can set it back to false. 
     However, this property will be removed in future releases.
+  - The MemoryPressureMode flag is ignored and marked as obsolete. 
+  - The protocol for a provider returning tooltip information has changed. The provider now must implement
+    IUntiledProviderWithMapObjects:GetImageStreamAndMapObjects().
 
 
 Version 1.5.0.0 (2016/04/18)

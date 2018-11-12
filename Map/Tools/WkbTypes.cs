@@ -1,5 +1,7 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
+#pragma warning disable CS3009 // Base type is not CLS-compliant
+
 namespace Ptv.XServer.Controls.Map.Tools
 {
     /// <summary> Specifies the byte order value. </summary>
@@ -30,3 +32,5 @@ namespace Ptv.XServer.Controls.Map.Tools
         GeometryCollection = 7
     }
 }
+
+#pragma warning restore CS3009 // Base type is not CLS-compliant

@@ -1,5 +1,6 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
+using System;
 using System.Windows;
 using System.Windows.Input;
 using Ptv.XServer.Controls.Map.Tools;
@@ -81,6 +82,8 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                     case CoordinateDiplayFormat.Degree:
                         CoordinatesText.Text = GeoTransform.LatLonToString(wgsPoint.Y, wgsPoint.X, true);
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
         }

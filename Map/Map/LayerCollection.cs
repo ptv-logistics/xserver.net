@@ -8,7 +8,6 @@ using System.Linq;
 using System.Windows;
 using Ptv.XServer.Controls.Map.Layers;
 using System.ComponentModel;
-using Ptv.XServer.Controls.Map.Tools.Reprojection;
 
 namespace Ptv.XServer.Controls.Map
 {
@@ -34,6 +33,8 @@ namespace Ptv.XServer.Controls.Map
         private readonly List<MapView> mapViews = new List<MapView>();
         /// <summary> The single layer which is exclusive selectable (if existent). </summary>
         private ILayer exclusiveSelectableLayer;
+        /// <summary> Indicates the collection is changed from within the CollectionChanged. </summary>
+        private bool selfNotify;
         #endregion
 
         #region public variables
@@ -90,7 +91,8 @@ namespace Ptv.XServer.Controls.Map
             mapViews.Add(mapView);
             if (!mapView.IsVisible) return;
 
-            this.Where(IsVisible).ForEach(null, layer => layer.AddToMapView(mapView));
+            foreach (var layer in this.Where(IsVisible))
+                layer.AddToMapView(mapView);
         }
 
         /// <summary> Disconnect a <see cref="MapView"/>-object from the called LayerCollection. In return, all visible
@@ -102,7 +104,8 @@ namespace Ptv.XServer.Controls.Map
             mapViews.Remove(mapView);
             if (!mapView.IsVisible) return;
 
-            this.Where(IsVisible).ForEach(null, layer => layer.RemoveFromMapView(mapView));
+            foreach (var layer in this.Where(IsVisible))
+                layer.RemoveFromMapView(mapView);
         }
 
         /// <summary> Retrieves for a layer whether it is visible. </summary>
@@ -241,8 +244,12 @@ namespace Ptv.XServer.Controls.Map
             }
 
             // update z-index
+            selfNotify = true;
+
             for (int i = 0; i < Count; i++)
                 this[i].Priority = i;
+
+            selfNotify = false;
         }
 
         private void Layer_Added(object sender, LayerChangedEventArgs e)
@@ -261,7 +268,7 @@ namespace Ptv.XServer.Controls.Map
 
         private void layer_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != "Priority" || !(sender is ILayer layer)) return;
+            if (e.PropertyName != "Priority" || !(sender is ILayer layer) || selfNotify) return;
 
             if (IndexOf(layer) != layer.Priority)
                 Move(IndexOf(layer), layer.Priority);
@@ -294,7 +301,7 @@ namespace Ptv.XServer.Controls.Map
             for (int index = 0; index < Count; index++)
             {
                 // Counts how many times the name occurs in the newly inserted layers.
-                if ((index >= newStartingIndex) && (index < newStartingIndex + newItemCount))
+                if (index >= newStartingIndex && index < newStartingIndex + newItemCount)
                 {
                     if (this[index].Name == layer.Name)
                         occurrenceCounter++;
@@ -319,7 +326,9 @@ namespace Ptv.XServer.Controls.Map
         public object Clone()
         {
             var clone = new LayerCollection();
-            this.ForEach(null, clone.Add);
+
+            foreach (var layer in this)
+                clone.Add(layer);
 
             return clone;
         }
