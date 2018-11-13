@@ -196,7 +196,7 @@ namespace Ptv.XServer.Controls.Map.Layers
 
         #region INotifyPropertyChanged Members
 
-        /// <inheritdoc/>  
+        /// <summary> Occurs when a property value changes. </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion

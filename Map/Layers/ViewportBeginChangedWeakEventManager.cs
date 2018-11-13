@@ -1,6 +1,5 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
-using System;
 using System.Windows;
 
 
@@ -12,7 +11,6 @@ namespace Ptv.XServer.Controls.Map.Layers
     /// can be connected to the viewport end changed event and can be disconnected again if they are no more used. </summary>
     public class ViewportBeginChangedWeakEventManager : WeakEventManager
     {
-        #region private variables
         /// <summary> Gets the current viewport end changed weak event manager. Manages the different event listeners
         /// of one event source. </summary>
         private static ViewportBeginChangedWeakEventManager CurrentManager
@@ -28,26 +26,26 @@ namespace Ptv.XServer.Controls.Map.Layers
                 return manager;
             }
         }
-        #endregion
 
-        #region protected methods
-
-        /// <inheritdoc/>  
+        /// <summary>
+        /// Starts listening for the event being managed. After this method is first called,
+        /// the manager should be in the state of calling DeliverEvent(Object, EventArgs)
+        /// or DeliverEventToList(Object, EventArgs, WeakEventManager+ListenerList) whenever the relevant event from the provided source is handled.
+        /// </summary>
+        /// <param name="source">The source to begin listening on.</param>
         protected override void StartListening(object source)
         {
             var mapView = (MapView)source;
             mapView.ViewportBeginChanged += DeliverEvent;
         }
 
-        /// <inheritdoc/>  
+        /// <summary>Stops listening for the event on the specified object. </summary>
+        /// <param name="source">The object to that raises the event.</param>
         protected override void StopListening(object source)
         {
             var mapView = (MapView)source;
             mapView.ViewportBeginChanged -= DeliverEvent;
         }
-        #endregion
-
-        #region public methods
 
         /// <summary> Connects the listener to the event queue. </summary>
         /// <param name="mapView"> Map from which the viewport end changed events are delivered. </param>
@@ -64,6 +62,5 @@ namespace Ptv.XServer.Controls.Map.Layers
         {
             CurrentManager.ProtectedRemoveListener(mapView, listener);
         }
-        #endregion
     }
 }

@@ -322,7 +322,9 @@ namespace Ptv.XServer.Controls.Map
         #endregion
 
         #region ICloneable Members
-        /// <inheritdoc/>
+
+        /// <summary> Creates a new object that is a copy of the current instance. </summary>
+        /// <returns> A new object that is a copy of this instance. </returns>
         public object Clone()
         {
             var clone = new LayerCollection();
@@ -335,7 +337,7 @@ namespace Ptv.XServer.Controls.Map
         #endregion
 
         #region IDisposable Members
-        /// <inheritdoc/>
+        /// <summary> Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. </summary>
         public void Dispose()
         {
             foreach (var layer in this)

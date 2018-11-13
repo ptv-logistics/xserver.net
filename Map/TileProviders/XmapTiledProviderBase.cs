@@ -309,7 +309,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <inheritdoc/>
         public double OverlapFactor { get; set; }
 
-        /// <inheritdoc/>
+        /// <summary> Gets or sets the additional border size for a tile. </summary>
         public int Border { get; set; }
         #endregion
     }

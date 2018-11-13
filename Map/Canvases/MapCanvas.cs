@@ -92,7 +92,13 @@ namespace Ptv.XServer.Controls.Map.Canvases
         #endregion
 
         #region IWeakEventListener Members
-        /// <inheritdoc/>
+        /// <summary> Receives events from the centralized event manager. </summary>
+        /// <param name="managerType">The type of the WeakEventManager calling this method.</param>
+        /// <param name="sender">Object that originated the event.</param>
+        /// <param name="e">Event data.</param>
+        /// <returns> True if the listener handled the event. It is considered an error by the WeakEventManager
+        /// handling in WPF to register a listener for an event that the listener does not handle. Regardless,
+        /// the method should return false if it receives an event that it does not recognize or handle. </returns>
         public bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
         {
             switch (managerType.Name)

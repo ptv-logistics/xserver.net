@@ -7,8 +7,7 @@ using System.Windows;
 
 namespace Ptv.XServer.Controls.Map.Gadgets
 {
-    /// <summary><para> Struct containing all relevant data needed for each result of a nearest search. </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> topic for an example. </para></summary>
+    /// <summary> Struct containing all relevant data needed for each result of a nearest search. </summary>
     public struct NearestSearchResult
     {
         /// <summary> Gets or sets the identifier of a resulting object. </summary>
@@ -22,8 +21,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         public double Distance { get; set; }
     }
 
-    /// <summary><para> Collection of geographical search methods for layer objects. </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> topic for an example. </para></summary>
+    /// <summary> Collection of geographical search methods for layer objects. </summary>
     public interface ILayerGeoSearch
     {
         /// <summary> Search for layer objects which reside nearest to a point specified in <paramref name="point"/>. </summary>

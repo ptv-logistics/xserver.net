@@ -4,8 +4,7 @@ using System.Windows.Media;
 
 namespace Ptv.XServer.Controls.Map.Symbols
 {
-    /// <summary> <para>Interaction logic for Cube.xaml.</para>
-    /// <para>See the <conceptualLink target="101dba72-fb36-468b-aa99-4b9c5bbfb62f"/> topic for an example.</para> </summary>
+    /// <summary> Interaction logic for Cube.xaml. </summary>
 	public partial class Cube
     {
         /// <summary>

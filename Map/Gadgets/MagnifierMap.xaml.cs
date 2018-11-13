@@ -9,9 +9,7 @@ using System.Windows.Media;
 
 namespace Ptv.XServer.Controls.Map.Gadgets
 {
-    /// <summary><para> Gadget showing a magnifier on the map. The magnifier offers you to get a deeper look into the map
-    /// without zooming in. </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> topic for an example. </para></summary>
+    /// <summary> Gadget showing a magnifier on the map. The magnifier offers you to get a deeper look into the map without zooming in. </summary>
     public partial class MagnifierMap
     {
         #region private variables

@@ -8,8 +8,7 @@ using System.Windows.Media;
 
 namespace Ptv.XServer.Controls.Map.Gadgets
 {
-    /// <summary><para> Gadget with a dimmer slider to change the dim state of the map. </para>
-    /// <para> See the <conceptualLink target="eb8e522c-5ed2-4481-820f-bfd74ee2aeb8"/> topic for an example. </para></summary>
+    /// <summary> Gadget with a dimmer slider to change the dim state of the map. </summary>
     public partial class DimmerGadget
     {
         #region private variables

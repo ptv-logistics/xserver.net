@@ -16,7 +16,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
         /// <summary>Contains the geometry provided by property <see cref="DefiningGeometry"/>. </summary>
         protected Geometry Data;
 
-        /// <inheritdoc/>
+        /// <summary> Gets a value that represents the geometry of the shape. </summary>
         protected override Geometry DefiningGeometry => Data;
 
         /// <summary> Gets or sets the points of the polyline. </summary>

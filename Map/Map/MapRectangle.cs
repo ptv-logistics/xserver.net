@@ -318,9 +318,9 @@ namespace Ptv.XServer.Controls.Map
         #region Union methods
 
         /// <summary> 
-        /// Updates this rectangle to be the union of this and parameter <see cref="point"/>. I.e. the rectangle boundaries and the point
+        /// Updates this rectangle to be the union of this and parameter <paramref name="point"/>. I.e. the rectangle boundaries and the point
         /// itself are included in the new boundaries.
-        /// If <see cref="point"/> has Double.IsNaN coordinates, the boundaries remain unchanged. 
+        /// If <paramref name="point"/> has Double.IsNaN coordinates, the boundaries remain unchanged. 
         /// If this is empty, the boundaries are adapted to the point's coordinates (width and height will be 0).
         /// </summary>
         /// <param name="point">The point to 'incorporate' into this object. </param>

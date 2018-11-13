@@ -47,7 +47,7 @@ namespace Ptv.XServer.Controls.Map.Layers
             wrappedLayer.PropertyChanged += (_, e) => PropertyChanged?.Invoke(this, e);
         }
 
-        /// <inheritdoc/>
+        /// <summary> Occurs when a property value changes. </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <inheritdoc/>
