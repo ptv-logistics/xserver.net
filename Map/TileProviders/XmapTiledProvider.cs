@@ -85,9 +85,6 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <summary> Gets or sets the custom layers of the xMapServer. </summary>
         public IEnumerable<Layer> CustomXMapLayers { get; set; }
 
-        /// <summary> Gets or sets the reference time for feature layers. </summary>
-        public DateTime? ReferenceTime { get; set; }
-
         /// <inheritdoc/>
         public override byte[] TryGetStreamInternal(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects)
         {
@@ -168,9 +165,6 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                     callerContextProps.Add(new CallerContextProperty {key = "ContextKey", value = ContextKey});
 
                 var cc = new CallerContext {wrappedProperties = callerContextProps.ToArray()};
-
-                if (ReferenceTime.HasValue)
-                    mapParams.referenceTime = ReferenceTime.Value.ToString("o");
 
                 service.Timeout = 8000;
                 var map = service.renderMapBoundingBox(bbox, mapParams, imageInfo, layers.ToArray(), true, cc);
@@ -279,8 +273,6 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                     cacheId += "pwd=" + Password;
                 if(!string.IsNullOrEmpty(CustomProfile))
                     cacheId += "custProfile=" + CustomProfile;
-                if (ReferenceTime.HasValue)
-                    cacheId += ReferenceTime.ToString();
 
                 if (CustomCallerContextProperties != null)
                 {
