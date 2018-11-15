@@ -12,7 +12,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         public ServerConfiguration(IXServerVersion xServerVersion) : base(xServerVersion) { }
 
         public IEnumerable<string> AvailableMapStyles => GetResponseObject()?.profiles?
-                                                             .Where(profile => profile?.useCases?.Contains("mapping") ?? false)
+                                                             .Where(profile => (profile?.useCases?.Contains("mapping") ?? false) 
+                                                                               || (profile?.useCases?.Contains("rendering") ?? false))
                                                              .Select(profile => profile.name) 
                                                          ?? Enumerable.Empty<string>();
 

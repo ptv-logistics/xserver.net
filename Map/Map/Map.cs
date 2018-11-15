@@ -242,6 +242,7 @@ namespace Ptv.XServer.Controls.Map
             get => xMapCredentials;
             set
             {
+                value = CorrectNewXmapCredentials(value);
                 if (xMapCredentials == value) return;
                 xMapCredentials = value;
 
@@ -251,6 +252,11 @@ namespace Ptv.XServer.Controls.Map
                     InitializeMapLayers();
                 }
             }
+        }
+
+        private string CorrectNewXmapCredentials(string newXmapCredentials)
+        {
+            return string.IsNullOrEmpty(newXmapCredentials) || newXmapCredentials.Contains(':') ? newXmapCredentials : "xtok:" + newXmapCredentials;
         }
 
         private string xMapCredentials = string.Empty;
