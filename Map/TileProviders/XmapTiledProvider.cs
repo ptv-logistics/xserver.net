@@ -39,7 +39,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
     public interface IObjectInfoProvider
     {
         /// <summary> MapUpdate event. See remarks on <see cref="MapUpdateDelegate"/>. </summary>
-        event MapUpdateDelegate MapUdpate;  
+        event MapUpdateDelegate MapUdpate;
     }
 
     /// <summary> A provider implementation for the xMapServer delivering tiled bitmaps. </summary>
@@ -85,6 +85,9 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <summary> Gets or sets the custom layers of the xMapServer. </summary>
         public IEnumerable<Layer> CustomXMapLayers { get; set; }
 
+        /// <summary> Gets or sets the reference time for feature layers. </summary>
+        public DateTime? ReferenceTime { get; set; }
+
         /// <inheritdoc/>
         public override byte[] TryGetStreamInternal(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects)
         {
@@ -96,22 +99,22 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                     service.Credentials = new CredentialCache { { new Uri(url), "Basic", new NetworkCredential(User, Password) } };
                 }
 
-                var mapParams = new MapParams {showScale = false, useMiles = false};
-                var imageInfo = new ImageInfo {format = ImageFileFormat.GIF, height = height, width = width};
+                var mapParams = new MapParams { showScale = false, useMiles = false };
+                var imageInfo = new ImageInfo { format = ImageFileFormat.GIF, height = height, width = width };
                 var bbox = new BoundingBox
                 {
-                    leftTop = new Point {point = new PlainPoint {x = left, y = top}},
-                    rightBottom = new Point {point = new PlainPoint {x = right, y = bottom}}
+                    leftTop = new Point { point = new PlainPoint { x = left, y = top } },
+                    rightBottom = new Point { point = new PlainPoint { x = right, y = bottom } }
                 };
-                
+
                 var profile = string.Empty;
                 var layers = new List<Layer>();
                 switch (mode)
                 {
                     case XMapMode.Street: // only streets
                         profile = "ajax-bg";
-                        layers.Add(new StaticPoiLayer {name = "town", visible = false, category = -1, detailLevel = 0});
-                        layers.Add(new StaticPoiLayer {name = "background", visible = false, category = -1, detailLevel = 0});
+                        layers.Add(new StaticPoiLayer { name = "town", visible = false, category = -1, detailLevel = 0 });
+                        layers.Add(new StaticPoiLayer { name = "background", visible = false, category = -1, detailLevel = 0 });
                         break;
 
                     case XMapMode.Town: // only labels
@@ -120,14 +123,14 @@ namespace Ptv.XServer.Controls.Map.TileProviders
 
                     case XMapMode.Custom: // no base layer
                         profile = "ajax-fg";
-                        layers.Add(new StaticPoiLayer {name = "town", visible = false, category = -1, detailLevel = 0});
-                        layers.Add(new StaticPoiLayer {name = "street", visible = false, category = -1, detailLevel = 0});
-                        layers.Add(new StaticPoiLayer {name = "background", visible = false, category = -1, detailLevel = 0});
+                        layers.Add(new StaticPoiLayer { name = "town", visible = false, category = -1, detailLevel = 0 });
+                        layers.Add(new StaticPoiLayer { name = "street", visible = false, category = -1, detailLevel = 0 });
+                        layers.Add(new StaticPoiLayer { name = "background", visible = false, category = -1, detailLevel = 0 });
                         break;
 
                     case XMapMode.Background: // only streets and polygons
                         profile = "ajax-bg";
-                        layers.Add(new StaticPoiLayer {name = "town", visible = false, category = -1, detailLevel = 0});
+                        layers.Add(new StaticPoiLayer { name = "town", visible = false, category = -1, detailLevel = 0 });
                         break;
                 }
 
@@ -162,9 +165,12 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                     callerContextProps.AddRange(CustomCallerContextProperties);
 
                 if (!string.IsNullOrEmpty(ContextKey))
-                    callerContextProps.Add(new CallerContextProperty {key = "ContextKey", value = ContextKey});
+                    callerContextProps.Add(new CallerContextProperty { key = "ContextKey", value = ContextKey });
 
-                var cc = new CallerContext {wrappedProperties = callerContextProps.ToArray()};
+                var cc = new CallerContext { wrappedProperties = callerContextProps.ToArray() };
+
+                if (ReferenceTime.HasValue)
+                    mapParams.referenceTime = ReferenceTime.Value.ToString("o");
 
                 service.Timeout = 8000;
                 var map = service.renderMapBoundingBox(bbox, mapParams, imageInfo, layers.ToArray(), true, cc);
@@ -262,25 +268,26 @@ namespace Ptv.XServer.Controls.Map.TileProviders
 #endif
 
         /// <inheritdoc/>
-        public override string CacheId 
-        { 
-            get 
-            { 
+        public override string CacheId
+        {
+            get
+            {
                 var cacheId = "PtvXMap" + url + mode;
                 if (!string.IsNullOrEmpty(User))
                     cacheId += "usr=" + User;
                 if (!string.IsNullOrEmpty(Password))
                     cacheId += "pwd=" + Password;
-                if(!string.IsNullOrEmpty(CustomProfile))
+                if (!string.IsNullOrEmpty(CustomProfile))
                     cacheId += "custProfile=" + CustomProfile;
+                if (ReferenceTime.HasValue)
+                    cacheId += ReferenceTime.ToString();
 
                 if (CustomCallerContextProperties != null)
                 {
                     cacheId = CustomCallerContextProperties.Aggregate(cacheId, (current, ccp) => current + "/" + ccp.key + "/" + ccp.value);
                 }
                 return cacheId;
-            } 
+            }
         }
     }
 }
-
