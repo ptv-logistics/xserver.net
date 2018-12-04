@@ -7,7 +7,7 @@ What is PTV xServer .NET?
 -------------------------
 
 PTV xServer .NET is a supplement to the PTV xServer providing an abstraction 
-and convenience layer for integrating PTV xServer into applications based on 
+and convenience layer for integrating PTV xServer into desktop applications based on 
 the Microsoft .NET Framework. 
 
 
