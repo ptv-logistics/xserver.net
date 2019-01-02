@@ -33,13 +33,18 @@ External Resources
 * [DemoCenter](https://xserverinternet.azurewebsites.net/xserver.net/) - PTV xServer.NET Demo Center
 
 
-Release Notes 
+Release Notes
 -------------
+
+Version 1.7.0.0 (2019/01/02)
+
+  - Added ReferenceTime to xmap-1 tile provider
+  - Added strong name key signing
 
 Version 1.6.0.0 (2018/08/14)
 
   Fixes and Optimizations:
-  - Code refactoring for C# 7.0
+  - Code refactoring for C # 7.0
   - Optimized tile caching and pruning
   - Fixed rendering error if the Container-Control sets UseLayoutRounding
   - Some minor bugfixes

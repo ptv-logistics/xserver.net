@@ -40,11 +40,10 @@
     <NoWarn>649</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -53,6 +52,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="ApiFactory.cs" />
     <Compile Include="Direct.cs" />
     <Compile Include="Proj4.cs" />
@@ -63,6 +65,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources.zip" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\key.snk">
+      <Link>key.snk</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -5,12 +5,8 @@ using System.Reflection;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("PTV Group")]
-[assembly: AssemblyProduct("PTV xServer .NET")]
-[assembly: AssemblyCopyright("Copyright © 2018")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyCopyright("Copyright © PTV Group")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -22,4 +18,4 @@ using System.Reflection;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.6.1.*")]
+[assembly: AssemblyVersion("1.7.0.0")]
