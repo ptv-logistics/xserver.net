@@ -36,12 +36,13 @@ External Resources
 Release Notes
 -------------
 
-Version 1.7.0.0 (2019/01/02)
+**Version 1.7.0.0 (2019/01/02)**
 
   - Added ReferenceTime to xmap-1 tile provider
   - Added strong name key signing
+  
 
-Version 1.6.0.0 (2018/08/14)
+**Version 1.6.0.0 (2018/08/14)**
 
   Fixes and Optimizations:
   - Code refactoring for C # 7.0
@@ -63,7 +64,7 @@ Version 1.6.0.0 (2018/08/14)
     IUntiledProviderWithMapObjects:GetImageStreamAndMapObjects().
 
 
-Version 1.5.0.0 (2016/04/18)
+**Version 1.5.0.0 (2016/04/18)**
 
   Bugfixes:
   - xMap ObjectInfos were still displayed after layer was disabled.
@@ -80,7 +81,7 @@ Version 1.5.0.0 (2016/04/18)
   - Signing algorithm for SDK-Setup and DemoCenter.exe is now SHA256.
 
 
-Version 1.4.0.0 (2015/07/30)
+**Version 1.4.0.0 (2015/07/30)**
 
   Controls:
   - New interface IToolTips, which can be implemented by layers, to provide textual
@@ -93,7 +94,7 @@ Version 1.4.0.0 (2015/07/30)
 
   
 
-Version 1.3.0.0 (2014/11/21)
+**Version 1.3.0.0 (2014/11/21)**
 
   Controls:
   
@@ -125,7 +126,7 @@ Version 1.3.0.0 (2014/11/21)
     new version, also the WPF Map is integrated.
 
   
-Version 1.2.0.0 (2013/06/12)
+**Version 1.2.0.0 (2013/06/12)**
 
   Breaking Changes
 
@@ -169,7 +170,7 @@ Version 1.2.0.0 (2013/06/12)
     a large number of complex shapes
 
 
-Version 1.1.0.0 (2013/03/11)
+**Version 1.1.0.0 (2013/03/11)**
 
   Breaking Changes
 
@@ -188,23 +189,3 @@ Version 1.1.0.0 (2013/03/11)
 Version 1.0.0.0 (2012/12/18)
 
    First Release   
-
-
-Known Issues of Current Release
--------------------------------
-
-- Visual Studio versions have to be installed completely and have to be started
-  once before running the PTV xServer .NET setup. Otherwise the toolbox installer
-  which is integrated in the PTV xServer .Net setup will not work properly.
-
-- Printing the code samples of the documentation via the provided link currently
-  does not work.
-
-- Changing the visibility of a map gadget at runtime has no effect on the map display.
-  Currently, you can only change these settings at design time.
-
-- Using the shape layer for a large number of dynamic objects (or complex objects) may 
-  cause delays in the map's responsiveness. Unfortunately there is a limitation in 
-  .NET's WPF layer that cannot be fixed to number. If you experience performance problems
-  when using the shape layer we recommend to build an own rendering layer. Please refer
-  to the documentation for additional information.
