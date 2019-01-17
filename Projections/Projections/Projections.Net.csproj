@@ -60,7 +60,7 @@
     <Compile Include="Proj4.cs" />
     <Compile Include="Projections.cs" />
     <Compile Include="Custom.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\LocalAssemblyInfo.cs" />
     <Compile Include="TempSpace.cs" />
   </ItemGroup>
   <ItemGroup>
