@@ -6,9 +6,9 @@ Copyright (c) 2018 PTV Group, Karlsruhe, Germany.
 What is PTV xServer .NET?
 -------------------------
 
-PTV xServer .NET is a supplement to the PTV xServer providing an abstraction 
-and convenience layer for integrating PTV xServer into desktop applications based on 
-the Microsoft .NET Framework. 
+PTV xServer .NET is a Control for WPF and WinForms to build "slippy" maps for your application. 
+The control is intended to work with PTV xMapServer for the basemap imagery, 
+but it can also include gereric WMS and tile providers.
 
 
 Important Notes
@@ -31,6 +31,7 @@ External Resources
 * [xserver.net-docs](https://ptv-logistics.github.io/xserver.net-docs) - API Documentation
 * [xserver.net-samples](https://github.com/ptv-logistics/xserver.net-samples/blob/master/README.md) - Code Samples and Demos
 * [DemoCenter](https://xserverinternet.azurewebsites.net/xserver.net/) - PTV xServer.NET Demo Center
+* [xserver.net on nuget](https://nuget.xavierdecoster.com/packages/Ptv.XServer.Net/)
 
 
 Release Notes
