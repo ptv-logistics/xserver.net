@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Ptv.XServer.Net</id>
+    <version>1.7.0</version>
+    <title>PTV xServer.NET</title>
+    <authors>PTV Group</authors>
+    <owners>PTV Group</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/ptv-logistics/xserver.net</projectUrl>
+    <iconUrl>https://rawcdn.githack.com/ptv-logistics/xserver.net/683fa3e769b38ac8ca819580e1273113dee47364/NuGet.Icon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Build interactive maps for WPF and Windows Forms.</description>
+    <releaseNotes>First release for NuGet</releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <tags>wpf winforms gis wms sharmpmap ptv-xserver</tags>
+    <references>
+      <reference file="Ptv.XServer.Controls.Map.dll"/>
+    </references>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="WindowsBase"  />
+    </frameworkAssemblies>
+  </metadata>
+  <files>
+    <file src="bin\Release\**\*.*" target="lib" />
+  </files>
+</package>

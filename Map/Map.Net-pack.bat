@@ -1,0 +1,1 @@
+nuget.exe pack Map.Net.nuspec -Build -Properties Configuration=Release
