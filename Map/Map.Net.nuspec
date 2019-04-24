@@ -13,7 +13,7 @@
     <description>Build interactive maps for WPF and Windows Forms.</description>
     <releaseNotes>First release for NuGet</releaseNotes>
     <copyright>Copyright 2019</copyright>
-    <tags>wpf winforms gis wms sharmpmap ptv-xserver</tags>
+    <tags>wpf winforms gis wms sharpmap ptv-xserver</tags>
     <references>
       <reference file="Ptv.XServer.Controls.Map.dll"/>
     </references>
