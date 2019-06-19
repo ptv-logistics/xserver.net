@@ -678,7 +678,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Untiled
                     case "DELAY": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTrafficIncidentsDelay), Math.Round(Convert.ToDouble(value) / 60)), Environment.NewLine); break;
 
                     // Truck attributes
-                    case "TOTALPERMITTEDWEIGHT": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesPermittedTotalWeight), Convert.ToDouble(value)), Environment.NewLine); break;
+                    case "TOTALPERMITTEDWEIGHT": result.AppendWithSeparator(string.Format(MapLocalizer.GetString(MapStringId.ToolTipTruckAttributesTotalPermittedWeight), Convert.ToDouble(value)), Environment.NewLine); break;
                     case "LOADTYPE":
                         switch (value)
                         {

@@ -118,7 +118,7 @@ namespace Ptv.XServer.Controls.Map.Localization
         /// <summary> Tool tip text for more detailed description of a traffic incident. </summary>
         ToolTipTrafficIncidentsMessage,
         /// <summary> Tool tip text for value of truck attribute permitted total weight. </summary>
-        ToolTipTruckAttributesPermittedTotalWeight,
+        ToolTipTruckAttributesTotalPermittedWeight,
         /// <summary> Tool tip text for value of load type. </summary>
         ToolTipTruckAttributesLoadType,
         /// <summary> Tool tip text for value of load type passenger. </summary>
