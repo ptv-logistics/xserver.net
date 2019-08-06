@@ -64,15 +64,11 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <param name="mousePosition"> Current position of the mouse indicating where the magnifier is positioned. </param>
         public void SetPosition(Point mousePosition)
         {
-            double dxa = mousePosition.X - ReferenceSize / 2;
-            double dya = mousePosition.Y - ReferenceSize / 2;
-
-            double x = dxa / ZoomAdjust * LogicalSize / ReferenceSize;
-            double y = -dya / ZoomAdjust * LogicalSize / ReferenceSize;
+            var magCoord = parentMapView.CanvasToPtvMercator(parentMapView.GeoCanvas, mousePosition);
 
             int newZoom = (int)parentMapView.FinalZoom + ZoomDelta;
 
-            SetXYZ(x, y, newZoom, UseAnimation);
+            SetXYZ(magCoord.X, magCoord.Y, newZoom, UseAnimation);
         }
         #endregion
 

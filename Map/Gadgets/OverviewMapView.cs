@@ -65,7 +65,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                 if (parentMapView != null)
                 {
                     ViewportBeginChangedWeakEventManager.RemoveListener(parentMapView, this);
-                    ViewportBeginChangedWeakEventManager.RemoveListener(this, this);
+                    ViewportEndChangedWeakEventManager.RemoveListener(parentMapView, this);
                 }
 
                 parentMapView = value;
@@ -73,7 +73,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
                 if (parentMapView != null)
                 {
                     ViewportBeginChangedWeakEventManager.AddListener(parentMapView, this);
-                    ViewportBeginChangedWeakEventManager.AddListener(this, this);
+                    ViewportEndChangedWeakEventManager.AddListener(parentMapView, this);
 
                     SetZoom(false);
                 }
@@ -84,7 +84,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         /// <summary> Updates the rectangle showing the currently visible part of the parent map. </summary>
         public void UpdateRect()
         {
-            MapRectangle rect = parentMapView.FinalEnvelope;
+            MapRectangle rect = parentMapView.CurrentEnvelope;
 
             Canvas.SetLeft(dragRectangle, rect.West + parentMapView.OriginOffset.X);
             Canvas.SetTop(dragRectangle, rect.South - parentMapView.OriginOffset.Y);
@@ -128,8 +128,6 @@ namespace Ptv.XServer.Controls.Map.Gadgets
             SetXYZ(parentMapView.FinalX, parentMapView.FinalY, newZoom, animatePan && UseAnimation, UseAnimation);
 
             selfNotify = false;
-
-            UpdateRect();
         }
 
         /// <summary> Updates the parent map. </summary>
@@ -147,6 +145,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         #endregion
         
         #region IWeakEventListener Members
+
         /// <summary> Receives events from the centralized event manager. </summary>
         /// <param name="managerType"> The type of the System.Windows.WeakEventManager calling this method. </param>
         /// <param name="sender"> Object that originated the event. </param>
@@ -157,9 +156,10 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         ///           it does not recognize or handle. </returns>
         public bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
         {
-            if (managerType != typeof (ViewportBeginChangedWeakEventManager)) return false;
-            if (ReferenceEquals(sender, parentMapView))
+            if (managerType == typeof(ViewportBeginChangedWeakEventManager))
                 UpdateOverviewMap(UseAnimation);
+
+            UpdateRect();
 
             return true;
         }
