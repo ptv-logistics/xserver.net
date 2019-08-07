@@ -38,6 +38,16 @@ External Resources
 Release Notes
 -------------
 
+**Version 1.7.2.0 (2019/08/17)**
+
+  - Fixed display for overview and mapgnifier map ('M' key).
+  - Fixed toolbox registration for FormsMap by adding dependent framework assemplies to the nuget package.
+
+**Version 1.7.1.0 (2019/06/19)**
+
+  - Fixed crash when showing PTV traffic incidents.
+
+
 **Version 1.7.0.0 (2019/01/02)**
 
   - Added ReferenceTime to xmap-1 tile provider
