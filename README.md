@@ -41,7 +41,7 @@ Release Notes
 **Version 1.7.2.0 (2019/08/07)**
 
   - Fixed display for overview and mapgnifier map ('M' key).
-  - Fixed toolbox registration for FormsMap by adding dependent framework assemplies to the nuget package.
+  - Fixed toolbox registration for FormsMap by adding dependent framework assemblies to the nuget package.
 
 
 **Version 1.7.1.0 (2019/06/19)**

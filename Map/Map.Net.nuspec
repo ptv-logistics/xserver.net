@@ -11,7 +11,7 @@
     <iconUrl>https://rawcdn.githack.com/ptv-logistics/xserver.net/683fa3e769b38ac8ca819580e1273113dee47364/NuGet.Icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Build interactive maps for WPF and Windows Forms.</description>
-    <releaseNotes>Fixed display for overview and mapgnifier map ('M' key), fixed toolbox registration for FormsMap by adding dependent framework assemplies to the nuget package.</releaseNotes>
+    <releaseNotes>Fixed display for overview and mapgnifier map ('M' key), fixed toolbox registration for FormsMap.</releaseNotes>
     <copyright>Copyright 2019</copyright>
     <tags>wpf winforms gis wms sharpmap ptv-xserver</tags>
     <references>
