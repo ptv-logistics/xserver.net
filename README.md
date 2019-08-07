@@ -43,6 +43,7 @@ Release Notes
   - Fixed display for overview and mapgnifier map ('M' key).
   - Fixed toolbox registration for FormsMap by adding dependent framework assemplies to the nuget package.
 
+
 **Version 1.7.1.0 (2019/06/19)**
 
   - Fixed crash when showing PTV traffic incidents.
