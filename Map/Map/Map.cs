@@ -292,6 +292,9 @@ namespace Ptv.XServer.Controls.Map
                         xMapTiledProvider.CustomProfile = xmapStyle != null ? xmapStyle + "-fg" : null;
                     untiledLayer.Refresh();
                 }
+
+                if (Xmap2LayerFactory != null)
+                    Xmap2LayerFactory.MapStyle = xmapStyle;
             }
         }
 
