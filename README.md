@@ -38,6 +38,12 @@ External Resources
 Release Notes
 -------------
 
+**Version 1.7.4.0**
+
+  - Fix for xServer 2.14 with empty profile
+  - xServer-2 profile can be set using the XMapProfile property.
+
+
 **Version 1.7.3.0 (2019/08/07)**
 
   - Fixed display for overview and mapgnifier map ('M' key).
