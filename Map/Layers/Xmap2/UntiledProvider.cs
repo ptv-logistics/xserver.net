@@ -105,7 +105,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
                     userLanguage = UserLanguage ?? "en",
                     mapLanguage = MapLanguage ?? "x-ptv-DFT"
                 },
-                storedProfile = StoredProfile,
+                storedProfile = !string.IsNullOrEmpty(StoredProfile)? StoredProfile : null,
                 mapSection = new
                 {
                     _type = "MapSectionByBounds",

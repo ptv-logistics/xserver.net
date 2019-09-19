@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Ptv.XServer.Net</id>
-    <version>1.7.3</version>
+    <version>1.7.4</version>
     <title>PTV xServer.NET</title>
     <authors>PTV Group</authors>
     <owners>PTV Group</owners>
@@ -11,7 +11,7 @@
     <iconUrl>https://rawcdn.githack.com/ptv-logistics/xserver.net/683fa3e769b38ac8ca819580e1273113dee47364/NuGet.Icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Build interactive maps for WPF and Windows Forms.</description>
-    <releaseNotes>Fixed display for overview and mapgnifier map ('M' key), fixed toolbox registration for FormsMap.</releaseNotes>
+    <releaseNotes>Fix for xServer 2.14 with empty profile, xServer-2 profile can be set using the XMapProfile property.</releaseNotes>
     <copyright>Copyright 2019</copyright>
     <tags>wpf winforms gis wms sharpmap ptv-xserver</tags>
     <references>

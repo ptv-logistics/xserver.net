@@ -38,11 +38,21 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
             {
                 MinZoom = 0,
                 MaxZoom = 22,
-                RequestBuilderDelegate = (x, y, z) => xServerVersion.WithServicePath("rest", "XMap")
-                                                      + $"/tile/{z}/{x}/{y}"
-                                                      + $"?storedProfile={MapStyle}"
-                                                      + $"&layers={string.Join(",", BackgroundThemes.ToArray())}"
-                                                      + $"&xtok={Token}"
+                RequestBuilderDelegate = (x, y, z) =>
+                {
+                    var uri = xServerVersion.WithServicePath("rest", "XMap") + $"/tile/{z}/{x}/{y}?";
+                    if (!string.IsNullOrEmpty(MapStyle))
+                        uri += $"storedProfile={MapStyle}&";
+                    if (BackgroundThemes.Count > 0)
+                        uri += $"layers={string.Join(",", BackgroundThemes.ToArray())}&";
+                    if (!string.IsNullOrEmpty(Token))
+                        uri += $"xtok={Token}&";
+
+                    // remove last separator
+                    uri = uri.Substring(0, uri.Length - 1);
+
+                    return uri;
+                }
             };
 
             BackgroundLayer.TiledProvider = tiledProvider;

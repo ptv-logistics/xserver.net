@@ -164,6 +164,7 @@ namespace Ptv.XServer.Controls.Map
             if (string.IsNullOrEmpty(AdjustedUrl())) return;
 
             map.Xmap2LayerFactory = new LayerFactory(this);
+            map.Xmap2LayerFactory.MapStyle = map.XMapStyle;
             map.Xmap2LayerFactory.BackgroundLayer.Icon = ResourceHelper.LoadBitmapFromResource("Ptv.XServer.Controls.Map;component/Resources/Background.png");
             map.Xmap2LayerFactory.BackgroundLayer.Caption = MapLocalizer.GetString(MapStringId.Background);
             map.Xmap2LayerFactory.BackgroundThemes.Add("Background");
