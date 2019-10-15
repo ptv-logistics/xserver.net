@@ -476,6 +476,11 @@ namespace Ptv.XServer.Controls.Map.Layers.Tiled
                     return;
                 }
 
+                if (buffer == null)
+                {
+                    return;
+                }
+
                 var imageKey = tile;
                 if (shownImages.ContainsKey(imageKey))
                 {
