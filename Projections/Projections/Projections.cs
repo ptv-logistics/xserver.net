@@ -359,7 +359,7 @@ namespace Ptv.Components.Projections
         /// <example>See <see cref="Parse(System.String, bool)">CoordinateReferenceSystem.Parse</see> for an example.</example>
         internal static CoordinateReferenceSystem Parse(string wkt, CustomTransformation customTransform, bool lazy = false)
         {
-            return Parse("", wkt, null, lazy);
+            return Parse("", wkt, customTransform, lazy);
         }
 
 
@@ -387,7 +387,7 @@ namespace Ptv.Components.Projections
         /// </example>
         public static CoordinateReferenceSystem Parse(string wkt, bool lazy = false)
         {
-            return Parse("", wkt, null, lazy);
+            return Parse(Guid.NewGuid().ToString(), wkt, null, lazy);
         }
 
         /// <summary>
