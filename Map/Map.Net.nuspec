@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Ptv.XServer.Net</id>
-    <version>1.7.4</version>
+    <version>1.7.5</version>
     <title>PTV xServer.NET</title>
     <authors>PTV Group</authors>
     <owners>PTV Group</owners>
@@ -11,7 +11,7 @@
     <iconUrl>https://rawcdn.githack.com/ptv-logistics/xserver.net/683fa3e769b38ac8ca819580e1273113dee47364/NuGet.Icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Build interactive maps for WPF and Windows Forms.</description>
-    <releaseNotes>Fix for xServer 2.14 with empty profile, xServer-2 profile can be set using the XMapProfile property.</releaseNotes>
+    <releaseNotes>Fixes: unhandled exception for empty tiles; initializing CoordinateReferenceSystem using just a WKT requires an ID to be set internally; Otherwise CoordinateTransformation using two such CoordinateReferenceSystem instances may end up in an identity transform.</releaseNotes>
     <copyright>Copyright 2019</copyright>
     <tags>wpf winforms gis wms sharpmap ptv-xserver</tags>
     <references>
