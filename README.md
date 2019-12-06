@@ -38,6 +38,12 @@ External Resources
 Release Notes
 -------------
 
+**Version 1.7.5.0**
+
+  - Fixed unhandled exception for empty tiles.
+  - Fixed initializing CoordinateReferenceSystem using just a WKT requires an ID to be set internally; Otherwise CoordinateTransformation using two such CoordinateReferenceSystem instances may end up in an identity transform.
+
+
 **Version 1.7.4.0**
 
   - Fix for xServer 2.14 with empty profile
