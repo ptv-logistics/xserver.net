@@ -125,12 +125,12 @@ namespace Ptv.XServer.Controls.Map.Canvases
         /// <summary> This method implements a transformation from canvas coordinates to logical coordinates. </summary>
         /// <param name="canvasPoint"> The canvas point. </param>
         /// <returns> The logical point. </returns>
-        protected abstract Point CanvasToPtvMercator(Point canvasPoint);
+        public abstract Point CanvasToPtvMercator(Point canvasPoint);
 
         /// <summary> This method implements a transformation from logical coordinates to canvas coordinates. </summary>
         /// <param name="mercatorPoint"> The Mercator point. </param>
         /// <returns> The canvas point. </returns>
-        protected abstract Point PtvMercatorToCanvas(Point mercatorPoint);
+        public abstract Point PtvMercatorToCanvas(Point mercatorPoint);
         #endregion
     }
     
@@ -215,19 +215,15 @@ namespace Ptv.XServer.Controls.Map.Canvases
 
         #region public methods
         /// <inheritdoc/>  
-        protected override Point CanvasToPtvMercator(Point canvasPoint)
+        public override Point CanvasToPtvMercator(Point canvasPoint)
         {
             return MapView.CanvasToPtvMercator(this, canvasPoint);
         }
 
         /// <inheritdoc/>  
-        protected override Point PtvMercatorToCanvas(Point mercatorPoint)
+        public override Point PtvMercatorToCanvas(Point mercatorPoint)
         {
-            var geoCanvasPoint = new Point(
-                (mercatorPoint.X + 1.0 / MapView.ZoomAdjust * (MapView.LogicalSize / 2)) * (MapView.ZoomAdjust / MapView.LogicalSize) * MapView.ReferenceSize,
-                (-mercatorPoint.Y + 1.0 / MapView.ZoomAdjust * (MapView.LogicalSize / 2)) * (MapView.ZoomAdjust / MapView.LogicalSize) * MapView.ReferenceSize);
-
-            return MapView.GeoCanvas.RenderTransform.Transform(geoCanvasPoint);
+            return MapView.PtvMercatorToCanvas(this, mercatorPoint);
         }
         #endregion
     }
@@ -239,33 +235,22 @@ namespace Ptv.XServer.Controls.Map.Canvases
     public abstract class WorldCanvas : MapCanvas
     {
         #region private variables
-        /// <summary> Transformation instance of the canvas. This variable is used to transform coordinates from one
-        /// format to another. </summary>
-        private readonly Transform canvasTransform;
 
-        private readonly TranslateTransform offsetTransform;
+        private TranslateTransform offsetTransform;
+
+        private Point localOffset;
         #endregion
 
         #region constructor
-        /// <summary> Initializes a new instance of the <see cref="WorldCanvas"/> class. </summary>
-        /// <param name="mapView"> The instance of the parent map. </param>
-        protected WorldCanvas(MapView mapView) : this(mapView, true)
-        {
-        }
-
         /// <summary> Initializes a new instance of the <see cref="WorldCanvas"/> class. If the parameter
         /// <paramref name="addToMap"/> is set to true, the canvas is added to the parent map. </summary>
         /// <param name="mapView"> The instance of the parent map. </param>
         /// <param name="addToMap"> Indicates that the canvas should inserted to the parent map immediately. </param>
-        protected WorldCanvas(MapView mapView, bool addToMap)
+        /// <param name="localOffset"> An optional offset for the Mercator units. </param>
+        protected WorldCanvas(MapView mapView, bool addToMap = true, Point localOffset = new Point())
             : base(mapView)
         {
-            var ct = TransformFactory.CreateTransform(SpatialReference.PtvMercatorInvertedY);
-            offsetTransform = new TranslateTransform(mapView.OriginOffset.X, mapView.OriginOffset.Y);
-            var tg = new TransformGroup();
-            tg.Children.Add(offsetTransform);
-            tg.Children.Add(ct);
-            canvasTransform = tg;
+            this.localOffset = localOffset; //new Point(935569, 6268360);
 
             InitializeTransform();
 
@@ -277,27 +262,36 @@ namespace Ptv.XServer.Controls.Map.Canvases
         #endregion
 
         #region public methods
+
         /// <summary> Initializes the transformation instance which is needed to transform coordinates from one format
         /// to another one. </summary>
         public virtual void InitializeTransform()
         {
-            RenderTransform = canvasTransform;
+            var trans = TransformFactory.CreateTransform(SpatialReference.PtvMercatorInvertedY);
+
+            offsetTransform = new TranslateTransform(MapView.OriginOffset.X + localOffset.X,
+                MapView.OriginOffset.Y - localOffset.Y);
+            trans = new TransformGroup
+            {
+                Children = {offsetTransform, trans}
+            };
+
+            RenderTransform = trans;
         }
+
         #endregion
 
         #region protected methods
         /// <inheritdoc/>  
-        protected override Point CanvasToPtvMercator(Point canvasPoint)
+        public override Point CanvasToPtvMercator(Point canvasPoint)
         {
-            return MapView.CanvasToPtvMercator(this, canvasPoint);
+            return new Point(canvasPoint.X + localOffset.X, -canvasPoint.Y + localOffset.Y);
         }
 
         /// <inheritdoc/>  
-        protected override Point PtvMercatorToCanvas(Point mercatorPoint)
+        public override Point PtvMercatorToCanvas(Point mercatorPoint)
         {
-            return RenderTransform == canvasTransform 
-                ? new Point(mercatorPoint.X, -mercatorPoint.Y) 
-                : RenderTransform.Transform(canvasTransform.Inverse.Transform(new Point(mercatorPoint.X, -mercatorPoint.Y)));
+            return new Point(mercatorPoint.X - localOffset.X, -mercatorPoint.Y + localOffset.Y);
         }
 
         /// <inheritdoc/>  
@@ -305,8 +299,12 @@ namespace Ptv.XServer.Controls.Map.Canvases
         {
             if (updateMode != UpdateMode.EndTransition) return;
 
-            offsetTransform.X = MapView.OriginOffset.X;
-            offsetTransform.Y = MapView.OriginOffset.Y;
+            // unshift the local offset parameters
+            if(offsetTransform != null)
+            { 
+                offsetTransform.X = MapView.OriginOffset.X + localOffset.X;
+                offsetTransform.Y = MapView.OriginOffset.Y - localOffset.Y;
+            }
         }
 
         #endregion

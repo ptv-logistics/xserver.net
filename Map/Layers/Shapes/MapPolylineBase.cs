@@ -85,7 +85,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
 
             MapRectangle rect = mapView.CurrentEnvelope;
             Size mapViewSizeInPixels = new Size(mapView.ActualWidth, mapView.ActualHeight);
-            var clippingRect = new Rect(rect.West, -rect.North, rect.East - rect.West, rect.North - rect.South);
+            var sc = (WorldCanvas)Parent;
+            var p0 = sc.PtvMercatorToCanvas(new Point(rect.West, rect.North));
+            var clippingRect = new Rect(p0.X, p0.Y, rect.East - rect.West, rect.North - rect.South);
 
             double thickness = CurrentThickness(mapView.CurrentScale);
 
