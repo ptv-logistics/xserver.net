@@ -246,7 +246,7 @@ namespace Ptv.XServer.Controls.Map
                 if (xMapCredentials == value) return;
                 xMapCredentials = value;
 
-                if (xServerVersion?.IsCloudBased() ?? false)
+                if (xServerVersion != null)
                 {
                     xServerVersion.XMapCredentials = xMapCredentials;
                     InitializeMapLayers();
