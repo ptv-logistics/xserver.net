@@ -38,6 +38,12 @@ External Resources
 Release Notes
 -------------
 
+**Version 1.7.6.0**
+
+ - Added LocalOffset property to reduce jitter of objects on deep zoom levels.
+ - Fixed propagation of XMapCredentials property for on-premise xServer.
+
+
 **Version 1.7.5.0**
 
   - Fixed unhandled exception for empty tiles.
