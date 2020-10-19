@@ -405,12 +405,12 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                 var sourceOffset = new SizeD(
 
                     new[] {ContentAlignment.TopLeft, ContentAlignment.BottomLeft}.Contains(SourceMapService.MinAlignment)
-                        ? pLogicalSource.X - sourceBoundingBox.MinX
-                        : sourceBoundingBox.MaxX - pLogicalSource.X,
+                        ? Math.Max(0.0, pLogicalSource.X - sourceBoundingBox.MinX) 
+                        : Math.Max(0.0, sourceBoundingBox.MaxX - pLogicalSource.X),
 
                     new[] { ContentAlignment.BottomLeft, ContentAlignment.BottomRight }.Contains(SourceMapService.MinAlignment)
-                        ? sourceBoundingBox.MaxY - pLogicalSource.Y
-                        : pLogicalSource.Y - sourceBoundingBox.MinY
+                        ? Math.Max(0.0, sourceBoundingBox.MaxY - pLogicalSource.Y)
+                        : Math.Max(0.0, pLogicalSource.Y - sourceBoundingBox.MinY)
                 );
 
                 // and finally, we an turn the logical offsets into the pixel position  
