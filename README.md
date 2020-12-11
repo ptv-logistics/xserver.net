@@ -38,7 +38,13 @@ External Resources
 Release Notes
 -------------
 
-**Version 1.7.6.0**
+**Version 1.7.7.0**
+
+ - Fixed out-of-bounds exception in ProjectionService.
+ - Added reference to Projections assembly.
+ 
+ 
+ **Version 1.7.6.0**
 
  - Added LocalOffset property to reduce jitter of objects on deep zoom levels.
  - Fixed propagation of XMapCredentials property for on-premise xServer.

@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Ptv.XServer.Net</id>
-    <version>1.7.6</version>
+    <version>1.7.7</version>
     <title>PTV xServer.NET</title>
     <authors>PTV Group</authors>
     <owners>PTV Group</owners>
@@ -11,11 +11,12 @@
     <iconUrl>https://rawcdn.githack.com/ptv-logistics/xserver.net/683fa3e769b38ac8ca819580e1273113dee47364/NuGet.Icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Build interactive maps for WPF and Windows Forms.</description>
-    <releaseNotes>Added LocalOffset property to reduce jitter of objects on deep zoom levels; Fixed propagation of XMapCredentials property for on-premise xServer.</releaseNotes>
-    <copyright>Copyright 2019</copyright>
+    <releaseNotes>Fixed out-of-bounds exception in ProjectionService; Added reference to Projections assembly</releaseNotes>
+    <copyright>Copyright 2019-21</copyright>
     <tags>wpf winforms gis wms sharpmap ptv-xserver</tags>
     <references>
       <reference file="Ptv.XServer.Controls.Map.dll"/>
+      <reference file="Ptv.Components.Projections.dll"/>
     </references>
     <frameworkAssemblies>
       <frameworkAssembly assemblyName="WindowsBase"  />
