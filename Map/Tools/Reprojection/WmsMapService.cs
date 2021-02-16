@@ -136,6 +136,17 @@ namespace Ptv.XServer.Controls.Map.Tools.Reprojection
                 // should be an image ... return stream 
                 return response.GetResponseStream();
             }
+            catch (WebException webException)
+            {
+                logger.Writeline(TraceEventType.Error, "WebException occured :" + Environment.NewLine + "Exception Message : " + webException.Message);
+                logger.Writeline(TraceEventType.Error, string.Format("WebException Status : {0}", webException.Status));
+                if (webException.Status == WebExceptionStatus.ProtocolError)
+                {
+                    logger.Writeline(TraceEventType.Error, string.Format("Status Code : {0}", ((HttpWebResponse)webException.Response).StatusCode));
+                    logger.Writeline(TraceEventType.Error, string.Format("Status Description : {0}", ((HttpWebResponse)webException.Response).StatusDescription));
+                }
+                throw;
+            }
             catch (Exception exception)
             {
                 logger.Writeline(TraceEventType.Error, UrlTemplate + ":" + Environment.NewLine + exception.Message);

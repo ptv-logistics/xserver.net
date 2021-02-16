@@ -36,10 +36,22 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                 var request = (HttpWebRequest) WebRequest.Create(url);
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 request.KeepAlive = true;
+                request.Proxy.Credentials = CredentialCache.DefaultCredentials;
 
                 request = (HttpWebRequest) Layers.Xmap2.LayerFactory.ModifyRequest?.Invoke(request) ?? request;
                 return request.GetResponse().GetResponseStream();
-
+            }
+            catch (WebException webException)
+            {
+                logger.Writeline(TraceEventType.Error, "WebException occured :" + Environment.NewLine + "Exception Message : " + webException.Message);
+                logger.Writeline(TraceEventType.Error, "URL :" + url);
+                logger.Writeline(TraceEventType.Error, string.Format("WebException Status : {0}", webException.Status));
+                if (webException.Status == WebExceptionStatus.ProtocolError)
+                {
+                    logger.Writeline(TraceEventType.Error, string.Format("Status Code : {0}", ((HttpWebResponse)webException.Response).StatusCode));
+                    logger.Writeline(TraceEventType.Error, string.Format("Status Description : {0}", ((HttpWebResponse)webException.Response).StatusDescription));
+                }
+                throw;
             }
             catch (Exception exception)
             {
@@ -67,7 +79,17 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <inheritdoc/>
         public int MaxZoom { get; set; }
 
-        /// <summary> Logging restricted to this class. </summary>
-        private static readonly Logger logger = new Logger("RemoteTiledProvider");
+        private static string Clean(string toClean) => string.IsNullOrEmpty(toClean = toClean?.Trim()) ? null : toClean;
+
+        private string userAgent;
+        /// <summary> Gets or sets the value of the user agent HTTP header. </summary>
+        public string UserAgent
+        {
+          get => userAgent;
+          set => userAgent = Clean(value);
+        }
+
+    /// <summary> Logging restricted to this class. </summary>
+    private static readonly Logger logger = new Logger("RemoteTiledProvider");
     }
 }

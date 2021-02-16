@@ -141,6 +141,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
             request.KeepAlive = false;
+            request.Proxy.Credentials = CredentialCache.DefaultCredentials;
 
             return request.GetResponse().GetResponseStream();
         }

@@ -1,6 +1,7 @@
 ﻿// This source file is covered by the LICENSE.TXT file in the root folder of the SDK.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -134,11 +135,25 @@ namespace Ptv.XServer.Controls.Map.TileProviders
                 var request = (HttpWebRequest)WebRequest.Create(tmpUrl);
                 request.CachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable);
                 request.KeepAlive = false;
+                request.Proxy.Credentials = CredentialCache.DefaultCredentials;
 
                 return request.GetResponse().GetResponseStream();
             }
+            catch (WebException webException)
+            {
+                logger.Writeline(TraceEventType.Error, "WebException occured :" + Environment.NewLine + "Exception Message : " + webException.Message);
+                logger.Writeline(TraceEventType.Error, "URL :" + tmpUrl);
+                logger.Writeline(TraceEventType.Error, string.Format("WebException Status : {0}",  webException.Status));
+                if (webException.Status == WebExceptionStatus.ProtocolError)
+                {
+                    logger.Writeline(TraceEventType.Error, string.Format("Status Code : {0}", ((HttpWebResponse)webException.Response).StatusCode));
+                    logger.Writeline(TraceEventType.Error, string.Format("Status Description : {0}", ((HttpWebResponse)webException.Response).StatusDescription));
+                }
+                return TileExceptionHandler.RenderException(webException, 256, 256);
+            }
             catch (Exception exception)
             {
+                logger.Writeline(TraceEventType.Error, "Exception occured : " + Environment.NewLine + exception.Message);
                 return TileExceptionHandler.RenderException(exception, 256, 256);
             }
         }
@@ -152,6 +167,18 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <summary> Gets the maximum zoom level of the map where tiles are available. </summary>
         public int MaxZoom => metaInfo.MaxZoom;
 
+        private static string Clean(string toClean) => string.IsNullOrEmpty(toClean = toClean?.Trim()) ? null : toClean;
+
+        private string userAgent;
+        /// <summary> Gets or sets the value of the user agent HTTP header. </summary>
+        public string UserAgent
+        {
+          get => userAgent;
+          set => userAgent = Clean(value);
+        }
+
+        /// <summary> Logging restricted to this class. </summary>
+        private static readonly Logger logger = new Logger("BingTiledProvider");
         #endregion
     }
 
