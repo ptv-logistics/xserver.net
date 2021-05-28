@@ -83,6 +83,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Shapes
             if (updateMode != UpdateMode.EndTransition && !NeedsUpdate(lazyUpdate, updateMode))
                 return;
 
+            if (Parent == null)
+                return;
+
             MapRectangle rect = mapView.CurrentEnvelope;
             Size mapViewSizeInPixels = new Size(mapView.ActualWidth, mapView.ActualHeight);
             var sc = (WorldCanvas)Parent;
