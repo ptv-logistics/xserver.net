@@ -40,6 +40,12 @@ Release Notes
 
 **Version 1.7.7.0**
 
+ - Extended logging for web requests.
+ - Fixed NullReferenceException in ShapeLayer.
+ 
+ 
+**Version 1.7.7.0**
+
  - Fixed out-of-bounds exception in ProjectionService.
  - Added reference to Projections assembly.
  
