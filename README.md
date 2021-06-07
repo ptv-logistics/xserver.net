@@ -38,7 +38,7 @@ External Resources
 Release Notes
 -------------
 
-**Version 1.7.7.0**
+**Version 1.7.8.0**
 
  - Extended logging for web requests.
  - Fixed NullReferenceException in ShapeLayer.
