@@ -10,6 +10,20 @@ namespace Ptv.XServer.Controls.Map.TileProviders
     /// </summary>
     public class XMapWSServiceImpl : xserver.XMapWSService, xserver.IXMapWSBinding
     {
+        /// <summary> Initializes a new instance of the <see cref="XMapWSServiceImpl"/> class. </summary>
+        /// <param name="url"> The url of the xMapServer. </param>
+        public XMapWSServiceImpl(string url)
+        {
+            Url = url;
+        }
+    }
+
+    /// <summary>
+    /// Class which wraps the xServer web proxy and implements <see cref="xserver.IXMapWSBinding"/> interface.
+    /// This implementation has some optimizations, like KeepAlive 
+    /// </summary>
+    public class XMapWSServiceImplEx : xserver.XMapWSService, xserver.IXMapWSBinding
+    {
         /// <summary>
         /// The xserver user name.
         /// </summary>
@@ -22,16 +36,9 @@ namespace Ptv.XServer.Controls.Map.TileProviders
 
         /// <summary> Initializes a new instance of the <see cref="XMapWSServiceImpl"/> class. </summary>
         /// <param name="url"> The url of the xMapServer. </param>
-        public XMapWSServiceImpl(string url)
-        {
-            Url = url;
-        }
-
-        /// <summary> Initializes a new instance of the <see cref="XMapWSServiceImpl"/> class. </summary>
-        /// <param name="url"> The url of the xMapServer. </param>
         /// <param name="user"> The user of the xMapServer. </param>
         /// <param name="password"> The password of the xMapServer. </param>
-        public XMapWSServiceImpl(string url, string user, string password)
+        public XMapWSServiceImplEx(string url, string user, string password)
         {
             Url = url;
             User = user;

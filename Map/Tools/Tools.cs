@@ -375,7 +375,7 @@ namespace Ptv.XServer.Controls.Map.Tools
 
             try
             {
-                Service = Service ?? new XMapWSServiceImpl(url, xServerUser, xServerPassword);
+                Service = Service ?? new XMapWSServiceImplEx(url, xServerUser, xServerPassword);
 
                 var mapParams = new MapParams { showScale = false, useMiles = false };
                 var imageInfo = new ImageInfo { format = ImageFileFormat.GIF, height = 32, width = 32 };

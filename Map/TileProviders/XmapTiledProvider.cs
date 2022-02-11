@@ -91,7 +91,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <inheritdoc/>
         public override byte[] TryGetStreamInternal(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects)
         {
-            using (var service = new XMapWSServiceImpl(url, User, Password))
+            using (var service = new XMapWSServiceImplEx(url, User, Password))
             {
                 var mapParams = new MapParams { showScale = false, useMiles = false };
                 var imageInfo = new ImageInfo { format = ImageFileFormat.GIF, height = height, width = width };
