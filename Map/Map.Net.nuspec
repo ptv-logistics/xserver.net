@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Ptv.XServer.Net</id>
-    <version>1.7.8</version>
+    <version>1.7.9</version>
     <title>PTV xServer.NET</title>
     <authors>PTV Group</authors>
     <owners>PTV Group</owners>
@@ -12,7 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Build interactive maps for WPF and Windows Forms.</description>
     <releaseNotes>Extended logging for web requests; Fixed NullReferenceException in ShapeLayer</releaseNotes>
-    <copyright>Copyright 2019-21</copyright>
+    <copyright>Copyright 2018-22</copyright>
     <tags>wpf winforms gis wms sharpmap ptv-xserver</tags>
     <references>
       <reference file="Ptv.XServer.Controls.Map.dll"/>

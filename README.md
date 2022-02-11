@@ -1,6 +1,6 @@
 PTV xServer .NET
 
-Copyright (c) 2019 PTV Group, Karlsruhe, Germany.
+Copyright (c) 2018-22 PTV Group, Karlsruhe, Germany.
 
 
 What is PTV xServer .NET?
@@ -37,6 +37,12 @@ External Resources
 
 Release Notes
 -------------
+
+**Version 1.7.9.0**
+
+ - Avoiding internally thrown exceptions.
+ - XMap-1 provider now uses KeepAlive to minimize preflight requests.
+ 
 
 **Version 1.7.8.0**
 
