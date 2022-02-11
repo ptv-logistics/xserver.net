@@ -61,8 +61,8 @@ namespace Ptv.XServer.Controls.Map
 
                 var request = (HttpWebRequest) WebRequest.Create(wsdlUrl);
                 request.Timeout = 5000;
-                using (var response = request.GetResponse() as HttpWebResponse)
-                    return response?.StatusCode == HttpStatusCode.OK;
+                var response = request.GetResponse() as HttpWebResponse;
+                return response?.StatusCode == HttpStatusCode.OK;
             }
             catch { return false; }
         }
@@ -140,8 +140,8 @@ namespace Ptv.XServer.Controls.Map
 
                 var request = (HttpWebRequest) WebRequest.Create(wsdlUrl);
                 request.Timeout = 5000;
-                using (var response = request.GetResponse() as HttpWebResponse)
-                    return response?.StatusCode == HttpStatusCode.OK;
+                var response = request.GetResponse() as HttpWebResponse;
+                return response?.StatusCode == HttpStatusCode.OK;
             }
             catch { return false; }
         }

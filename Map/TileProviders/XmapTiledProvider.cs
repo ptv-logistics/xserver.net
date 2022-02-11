@@ -91,14 +91,8 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         /// <inheritdoc/>
         public override byte[] TryGetStreamInternal(double left, double top, double right, double bottom, int width, int height, out IEnumerable<IMapObject> mapObjects)
         {
-            using (var service = new XMapWSServiceImpl(url))
+            using (var service = new XMapWSServiceImpl(url, User, Password))
             {
-                if (!string.IsNullOrEmpty(User) && !string.IsNullOrEmpty(Password))
-                {
-                    service.PreAuthenticate = true;
-                    service.Credentials = new CredentialCache { { new Uri(url), "Basic", new NetworkCredential(User, Password) } };
-                }
-
                 var mapParams = new MapParams { showScale = false, useMiles = false };
                 var imageInfo = new ImageInfo { format = ImageFileFormat.GIF, height = height, width = width };
                 var bbox = new BoundingBox

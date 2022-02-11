@@ -237,8 +237,8 @@ namespace Ptv.XServer.Controls.Map.Tools
 
                 HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
                 request.Timeout = 5000;
-                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
-                    return response?.StatusCode == HttpStatusCode.OK;
+                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                return response?.StatusCode == HttpStatusCode.OK;
             }
             catch { return false; }
         }

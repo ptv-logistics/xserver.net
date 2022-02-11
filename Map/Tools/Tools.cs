@@ -375,13 +375,7 @@ namespace Ptv.XServer.Controls.Map.Tools
 
             try
             {
-                Service = Service ?? new XMapWSServiceImpl(url);
-
-                if (!string.IsNullOrEmpty(xServerUser) && !string.IsNullOrEmpty(xServerPassword))
-                {
-                    ((SoapHttpClientProtocol)Service).PreAuthenticate = true;
-                    ((SoapHttpClientProtocol)Service).Credentials = new CredentialCache { { new Uri(url), "Basic", new NetworkCredential(xServerUser, xServerPassword) } };
-                }
+                Service = Service ?? new XMapWSServiceImpl(url, xServerUser, xServerPassword);
 
                 var mapParams = new MapParams { showScale = false, useMiles = false };
                 var imageInfo = new ImageInfo { format = ImageFileFormat.GIF, height = 32, width = 32 };
