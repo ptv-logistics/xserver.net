@@ -34,6 +34,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// the renderMap service request. Commonly, this set is restricted to Feature Layer themes like <em>Truck Attributes</em>.</summary>
         public IEnumerable<string> ThemesWithMapObjects { get; set; }
 
+        /// <summary>A set of network classifications of the preferred routes. Examples are <em>BK_2</em>.
+        public IEnumerable<string> PreferredRouteTypes { get; set; }
+
         /// <summary>Time consideration scenario which should be used when the map is rendered and
         /// map objects are retrieved. Currently supported scenarios are
         /// <em>OptimisticTimeConsideration</em>, <em>SnapshotTimeConsideration</em> and <em>TimeSpanConsideration</em>. 
@@ -121,7 +124,8 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
                     contentSnapshotId = ContentSnapshotId,
                     layers = ThemesForRendering?.ToArray(),
                     timeConsideration = GetTimeConsideration(),
-                    showOnlyRelevantByTime = ShowOnlyRelevantByTime
+                    showOnlyRelevantByTime = ShowOnlyRelevantByTime,
+                    preferredRouteTypes = PreferredRouteTypes?.ToArray()
                 },
                 resultFields = new
                 {

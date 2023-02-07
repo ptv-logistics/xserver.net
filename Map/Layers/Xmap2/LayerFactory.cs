@@ -82,6 +82,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
                 LabelLayer.Copyright = FormatCopyRight(LabelThemes);
                 LabelLayer.Refresh();
             };
+
+            PreferredRouteTypes.CollectionChanged += (sender, e) =>
+            {
+                untiledProvider.PreferredRouteTypes = PreferredRouteTypes;
+                LabelLayer.Refresh();
+            };
         }
 
         private string FormatCopyRight(IEnumerable<string> themes) => string.Join("|", DataInformation.CopyRights(themes).ToArray());
@@ -120,6 +126,9 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// zoom levels available according the classification of tile sizes. Only in such environments a tile-based rendering is
         /// recommended. </summary>
         public ObservableCollection<string> LabelThemes { get; } = new ObservableCollection<string>();
+
+        /// <summary>A set of network classifications of the preferred routes. Examples are <em>BK_2</em>.
+        public ObservableCollection<string> PreferredRouteTypes { get; } = new ObservableCollection<string>();
 
         /// <summary>Function which returns the language, used for  geographical objects in the map like names for town and streets. 
         /// The language code is defined in BCP47, for example <em>en</em>, <em>fr</em> or <em>de</em>. </summary>
