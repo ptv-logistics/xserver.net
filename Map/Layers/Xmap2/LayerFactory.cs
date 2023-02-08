@@ -127,7 +127,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// recommended. </summary>
         public ObservableCollection<string> LabelThemes { get; } = new ObservableCollection<string>();
 
-        /// <summary>A set of network classifications of the preferred routes. Examples are <em>BK_2</em>. <summary>A
+        /// <summary>A set of network classifications of the preferred routes. Examples are <em>BK_2</em>.</summary>
         public ObservableCollection<string> PreferredRouteTypes { get; } = new ObservableCollection<string>();
 
         /// <summary>Function which returns the language, used for  geographical objects in the map like names for town and streets. 
