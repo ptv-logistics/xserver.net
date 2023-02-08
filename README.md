@@ -1,6 +1,6 @@
 PTV xServer .NET
 
-Copyright (c) 2018-22 PTV Group, Karlsruhe, Germany.
+Copyright (c) 2018-23 PTV Group, Karlsruhe, Germany.
 
 
 What is PTV xServer .NET?
