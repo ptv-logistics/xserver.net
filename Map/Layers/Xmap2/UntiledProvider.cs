@@ -34,7 +34,7 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
         /// the renderMap service request. Commonly, this set is restricted to Feature Layer themes like <em>Truck Attributes</em>.</summary>
         public IEnumerable<string> ThemesWithMapObjects { get; set; }
 
-        /// <summary>A set of network classifications of the preferred routes. Examples are <em>BK_2</em>.
+        /// <summary>A set of network classifications of the preferred routes. Examples are <em>BK_2</em>. </summary>
         public IEnumerable<string> PreferredRouteTypes { get; set; }
 
         /// <summary>Time consideration scenario which should be used when the map is rendered and
