@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Ptv.XServer.Net</id>
-    <version>1.7.9</version>
+    <version>1.7.10</version>
     <title>PTV xServer.NET</title>
     <authors>PTV Group</authors>
     <owners>PTV Group</owners>
@@ -11,8 +11,8 @@
     <iconUrl>https://rawcdn.githack.com/ptv-logistics/xserver.net/683fa3e769b38ac8ca819580e1273113dee47364/NuGet.Icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Build interactive maps for WPF and Windows Forms.</description>
-    <releaseNotes>Extended logging for web requests; Fixed NullReferenceException in ShapeLayer</releaseNotes>
-    <copyright>Copyright 2018-22</copyright>
+    <releaseNotes>Add PreferredRouteTypes to Xmap2LayerFactory.</releaseNotes>
+    <copyright>Copyright 2018-23</copyright>
     <tags>wpf winforms gis wms sharpmap ptv-xserver</tags>
     <references>
       <reference file="Ptv.XServer.Controls.Map.dll"/>

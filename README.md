@@ -38,6 +38,11 @@ External Resources
 Release Notes
 -------------
 
+**Version 1.7.10.0**
+
+ - Add PreferredRouteTypes to Xmap2LayerFactory.
+
+
 **Version 1.7.9.0**
 
  - Avoiding internally thrown exceptions.
