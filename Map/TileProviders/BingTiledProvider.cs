@@ -218,7 +218,7 @@ namespace Ptv.XServer.Controls.Map.TileProviders
         public BingMetaInfo(BingImagerySet imagerySet, BingMapVersion mapVersion, string key)
         {
             Key = key;
-            var url = $@"http://dev.virtualearth.net/REST/v1/Imagery/Metadata/{Enum.GetName(typeof(BingImagerySet), imagerySet)}?mapVersion={Enum.GetName(typeof(BingMapVersion), mapVersion)}&o=xml&key={key}";
+            var url = $@"https://dev.virtualearth.net/REST/v1/Imagery/Metadata/{Enum.GetName(typeof(BingImagerySet), imagerySet)}?mapVersion={Enum.GetName(typeof(BingMapVersion), mapVersion)}&o=xml&key={key}";
 
             // parse xml using linq
             XNamespace restNamespace = "http://schemas.microsoft.com/search/local/ws/rest/v1";
