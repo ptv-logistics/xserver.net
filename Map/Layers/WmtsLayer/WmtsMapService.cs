@@ -322,7 +322,7 @@ namespace Ptv.XServer.Controls.Map.Layers.WmtsLayer
                                             ? RenderTestImage(matrixSet.TileWidth, matrixSet.TileHeight, 32, tx, ty)
                                             : LoadImage(matrixSet.Identifier, tx, ty);
 
-                                        tileGraphics.DrawImageUnscaled(image, new Point(ox, oy));
+                                        tileGraphics.DrawImage(image, ox, oy, 256, 256);
                                     }
 
                                     // pass on WebException, swallow others
