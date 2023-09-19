@@ -117,7 +117,7 @@ namespace Ptv.XServer.Controls.Map.Gadgets
         private void CoordinatesText_Loaded(object sender, RoutedEventArgs e)
         {
             var formattedText = new FormattedText(EXTENT_CALC_DUMMY, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
-                new Typeface(CoordinatesText.FontFamily.ToString()), CoordinatesText.FontSize, Brushes.Black);
+                new Typeface(CoordinatesText.FontFamily.ToString()), CoordinatesText.FontSize, Brushes.Black, VisualTreeHelper.GetDpi(this).PixelsPerDip);
             CoordinatesText.Width = formattedText.Width + CoordinatesText.Padding.Left + CoordinatesText.Padding.Right;
             CoordinatesText.MinWidth = CoordinatesText.Width;
         }
