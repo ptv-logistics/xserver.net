@@ -292,8 +292,7 @@ namespace Ptv.XServer.Controls.Map.Tools
             if (stm is MemoryStream memoryStream)
                 return memoryStream.Length == 0 && forceNullIfEmpty ? null : memoryStream.ToArray();
 
-            using (memoryStream = new MemoryStream())
-                return stm.CopyTo(memoryStream).GetBytes(forceNullIfEmpty);
+            return stm.GetBytes(forceNullIfEmpty);
         }
         
         #endregion
