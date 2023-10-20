@@ -38,6 +38,11 @@ External Resources
 Release Notes
 -------------
 
+**Version 1.x**
+
+ - Update to .NET Framework 4.8
+ - Fix: WMTS Layer tile misalignment when display scaling is not 100%
+
 **Version 1.7.10.0**
 
  - Add PreferredRouteTypes to Xmap2LayerFactory.
