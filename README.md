@@ -21,8 +21,7 @@ been provided with this distribution.
 Prerequisites
 -------------
 
-- PTV xServer.NET is built to run with the minimum target framework with WPF support, which is **.NET 3.5 Client Profile**.
-- The source code is implemented with C# 7.0, which requires at least **Visual Studio 2017 Community Edition**.
+- PTV xServer.NET is built to run with the minimum target framework **.NET 4.6.2**.
 
 
 External Resources
@@ -39,7 +38,7 @@ Release Notes
 
 **Version 1.x**
 
- - Update to .NET Framework 4.8
+ - Update to .NET Framework 4.6.2
  - Fix: WMTS Layer tile misalignment when display scaling is not 100%
 
 **Version 1.7.10.0**
