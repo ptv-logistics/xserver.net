@@ -69,7 +69,8 @@ namespace Ptv.XServer.Controls.Map
 
         public bool IsCloudBased()
         {
-            return AdjustedUrl().ToLower().Contains(".cloud.ptvgroup.com");
+            var lower = AdjustedUrl().ToLower();
+            return lower.Contains(".cloud.ptvgroup.com") || lower.Contains(".cloud.ptvlogistics.com");
         }
 
         public void Initialize(Map map)
@@ -116,8 +117,9 @@ namespace Ptv.XServer.Controls.Map
             if (string.IsNullOrEmpty(scheme))
                 scheme = host.ToLower().StartsWith("xserver2") ? "https://" : "http://";
 
-            if (host.ToLower().StartsWith("xserver2") && !host.ToLower().EndsWith(".cloud.ptvgroup.com"))
-                host += ".cloud.ptvgroup.com";
+            var lower = host.ToLower();
+            if (lower.StartsWith("xserver2") && !lower.EndsWith(".cloud.ptvgroup.com") && !lower.EndsWith(".cloud.ptvlogistics.com"))
+                host += ".cloud.ptvlogistics.com";
 
             return scheme + host + port; // Everything beyond the port has to be omitted
         }
@@ -149,7 +151,7 @@ namespace Ptv.XServer.Controls.Map
         public bool IsCloudBased()
         {
             var adjustedUrl = AdjustedUrl().ToLower();
-            return adjustedUrl.Contains(".cloud.ptvgroup.com") && adjustedUrl.Contains("xserver2");
+            return (adjustedUrl.Contains(".cloud.ptvgroup.com") || adjustedUrl.Contains(".cloud.ptvlogistics.com")) && adjustedUrl.Contains("xserver2");
         }
 
         public void Initialize(Map map)

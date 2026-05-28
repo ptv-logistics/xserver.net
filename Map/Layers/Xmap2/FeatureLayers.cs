@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 {
-    /// <summary>Concentrates functionality around Feature Layers in XMap2 environment, especially the installed
-    /// <a href="https://xserver2-dashboard.cloud.ptvgroup.com/dashboard/Default.htm#TechnicalConcepts/FeatureLayer/DSC_About_FeatureLayer.htm%3FTocPath%3DTechnical%2520Concepts%7CFeature%2520Layer%7C_____2">Feature Layer themes</a>
-    /// and all parameters related to
-    /// <a href="https://xserver2-dashboard.cloud.ptvgroup.com/dashboard/Default.htm#API-Documentation/timeconsideration.html%3FTocPath%3DAPI%2520Documentation%7Ccommon%7Ctimeconsideration%7C_____0">time consideration</a>.
-    /// </summary>
-    public class FeatureLayers
+  /// <summary>Concentrates functionality around Feature Layers in XMap2 environment, especially the installed
+  /// <a href="https://xserver2-dashboard.cloud.ptvlogistics.com/dashboard/Default.htm#TechnicalConcepts/FeatureLayer/DSC_About_FeatureLayer.htm%3FTocPath%3DTechnical%2520Concepts%7CFeature%2520Layer%7C_____2">Feature Layer themes</a>
+  /// and all parameters related to
+  /// <a href="https://xserver2-dashboard.cloud.ptvlogistics.com/dashboard/Default.htm#API-Documentation/timeconsideration.html%3FTocPath%3DAPI%2520Documentation%7Ccommon%7Ctimeconsideration%7C_____0">time consideration</a>.
+  /// </summary>
+  public class FeatureLayers
     {
         /// <summary>Initializes the new instance with a reference to the possessing layer factory.</summary>
         /// <param name="owner">Owner of the new object.</param>

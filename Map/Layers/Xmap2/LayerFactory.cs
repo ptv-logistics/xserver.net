@@ -94,12 +94,12 @@ namespace Ptv.XServer.Controls.Map.Layers.Xmap2
 
         private readonly IXServerVersion xServerVersion;
 
-        /// <summary>URL specifying the root part of the URL from which a service like rendering a map can be composed. For example, 
-        /// https://xserver2-europe-eu-test.cloud.ptvgroup.com
-        /// can be used as a base URL providing access to a Cloud based XServer2 system. The renderMap service is composed to:
-        /// https://xserver2-europe-eu-test.cloud.ptvgroup.com/services/rs/XMap/{version}/renderMap
-        /// </summary>
-        public string BaseUrl => xServerVersion.AdjustedUrl();
+    /// <summary>URL specifying the root part of the URL from which a service like rendering a map can be composed. For example, 
+    /// https://xserver2-europe-eu-test.cloud.ptvlogistics.com
+    /// can be used as a base URL providing access to a Cloud based XServer2 system. The renderMap service is composed to:
+    /// https://xserver2-europe-eu-test.cloud.ptvlogistics.com/services/rs/XMap/{version}/renderMap
+    /// </summary>
+    public string BaseUrl => xServerVersion.AdjustedUrl();
 
         /// <summary>For xServer internet, a token must be specified for authentication. </summary>
         public string Token => xServerVersion.Token;

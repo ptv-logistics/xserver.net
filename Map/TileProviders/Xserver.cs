@@ -39,7 +39,7 @@ namespace xserver
         /// <remarks/>
         public XMapWSService()
         {
-            this.Url = "https://xmap-eu-n.cloud.ptvgroup.com/xmap/ws/XMap";
+            this.Url = "https://xmap-eu-n.cloud.ptvlogistics.com/xmap/ws/XMap";
         }
 
         /// <remarks/>

@@ -535,7 +535,7 @@ namespace Ptv.XServer.Controls.Map.Tools
         /// followed by one of the letters 'h', 'n' or 't'. Optionally, the module name may precede this construct, and the texts
         /// '-test' or '-integration' may follow also optionally. The path is completely ignored. 
         /// The scheme is set to https, if an xServer internet host name is detected, otherwise http is used.
-        /// The following URLs will all be transformed to https://xmap-eu-n.cloud.ptvgroup.com/xmap/ws/XMap :
+        /// The following URLs will all be transformed to https://xmap-eu-n.cloud.logistics.com/xmap/ws/XMap :
         /// eu-n,
         /// xmap-eu-n,
         /// eu-n.cloud.ptvgroup.com
@@ -568,16 +568,16 @@ namespace Ptv.XServer.Controls.Map.Tools
             var host = match.Groups[2].ToString();
             var port = match.Groups[3].ToString();
 
-            if (Match(@"^(?:" + lowerModuleName + @"-)?([a-z]+-[hnt](?:-test|-integration)?)(?:\.cloud\.ptvgroup\.com)?$", host, out match)) // eu-n style
+            if (Match(@"^(?:" + lowerModuleName + @"-)?([a-z]+-[hnt](?:-test|-integration)?)(?:\.cloud\.ptv.*\.com)?$", host, out match)) // eu-n style
             {
                 scheme = "https://";
-                host = lowerModuleName + "-" + match.Groups[1] + ".cloud.ptvgroup.com";
+                host = lowerModuleName + "-" + match.Groups[1] + ".cloud.ptvlogistics.com";
                 port = string.Empty;
             }
-            else if (Match(@"^(?:([a-z]+(?:-[a-z]{2})?(?:-test|-integration)?))(?:\.cloud\.ptvgroup\.com)?$", host, out match)) // api(-eu) style
+            else if (Match(@"^(?:([a-z]+(?:-[a-z]{2})?(?:-test|-integration)?))(?:\.cloud\.ptv.*\.com)?$", host, out match)) // api(-eu) style
             {
                 scheme = "https://";
-                host = match.Groups[1] + ".cloud.ptvgroup.com";
+                host = match.Groups[1] + ".cloud.ptvlogistics.com";
                 port = string.Empty;
             }
             else // on-premise
@@ -597,12 +597,13 @@ namespace Ptv.XServer.Controls.Map.Tools
             return match.Success;
         }
 
-        /// <summary> Checks if the provided URL address is an XServer deployed in an XServer Internet environment. </summary>
-        /// <param name="url">URL to check for xServer internet deployment.</param>
-        /// <returns>True if it contains ".cloud.ptvgroup.com".</returns>
-        public static bool IsXServerInternet(string url)
+    /// <summary> Checks if the provided URL address is an XServer deployed in an XServer Internet environment. </summary>
+    /// <param name="url">URL to check for xServer internet deployment.</param>
+    /// <returns>True if it contains ".cloud.ptvgroup.com" or ".cloud.ptvlogistics.com".</returns>
+    public static bool IsXServerInternet(string url)
         {
-            return url.ToLower().Contains(".cloud.ptvgroup.com");
+            var lower = url.ToLower();
+            return lower.Contains(".cloud.ptvgroup.com") || lower.Contains(".cloud.ptvlogistics.com");
         }
 
         /// <summary>
