@@ -1,7 +1,7 @@
 ﻿//--------------------------------------------------------------
-// Copyright (c) 2012 PTV Group
-// 
-// For license details, please refer to the file COPYING, which 
+// Copyright (c) 2012 PTV Logistics GmbH
+//
+// For license details, please refer to the file COPYING, which
 // should have been provided with this distribution.
 //--------------------------------------------------------------
 
